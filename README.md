@@ -1,8 +1,7 @@
 CascadeCanvas
 =============
 
-this is just a preview, a lot of features is already implemented
-soon in english
+this is just a preview, a lot of features is already implemented. Soon in english
 
 ```javascript
 
