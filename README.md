@@ -1,6 +1,11 @@
 CascadeCanvas
 =============
 
+CascadeCanvas (CC) is an API to work with canvas rich applications (or games), drawing and organizing classes that works with mult-inheritance and will help to encapsulate behaviours to be reused to a lot of subclasses and instances. You should create classes, inherit this classes by other classes or "elements" and manipulate this classes or elements in the easiest way. It was made with the inspiration of jQuery and Crafty.
+
+Our drawing features is in its earlydays but the idea is to do something with layers of shapes in a declarative way.
+
+#Some features
 
 ```javascript
 
@@ -35,7 +40,7 @@ CC.new("#elementId Class1 Class2", {
 */
 var all = CC("*");
 var allClass1AndOtherClass = CC("Class1 OtherClass");
-var marioB = CC.("#mario");
+var marioB = CC("#mario");
 
 
 
