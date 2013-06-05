@@ -188,6 +188,60 @@ CC("Pokemon").became({
 	this.evolutionSequence = 2;
 });
 
-//TODO: tell about: addDrawShape, removeDrawShape, addCustomDrawer
+
+
+/***********/
+/* Classes */
+/***********/
+
+//classes need to be defined before instantiate or inherit them
+CC.def("Class1", function(opts){
+	
+	//declaring a public attribute
+	this.attr1 = 3;
+
+	//declaring a private attribute
+	var attr2 = 6;
+
+	//declaring a public method
+	this.method1 = function(){
+		this.attr1 = 4; //modifing a property
+	};
+
+	var el = this; //to use in private methods...
+
+	//declaring a private method
+	var method2 = function(){
+		//warning: 'this' will not work here inside, you will need to do closure: 
+		//access a variable of the context of the class like below
+
+		el.attr2 = 7; //modifing a property
+	};
+
+	//here you can use the methods described before
+	this.became({
+		attr1: 4	
+	}, function(){
+		this.attr1 = 5	
+	});
+
+	//using the params passed in constructor
+	if (opts.attr2 > this.attr2) {
+		this.attr6 = opts.attr2;
+	}
+
+});
+
+//instantiating our class
+var el1 = CC.new("#Element Class1", {
+	attr2: 9
+});
+
+//using methods
+el1.method1();
+
+
+
+//TODO: tell about: addDrawShape, removeDrawShape, addCustomDrawer, unbind, clear
 
 ```
