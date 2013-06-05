@@ -764,6 +764,9 @@
 
         };
 
+        /**
+        * search for an element on the collection with the attributes specified in the parameter
+        */
         this.search = function(atrs){
             
             var result = [];

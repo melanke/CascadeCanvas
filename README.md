@@ -99,9 +99,42 @@ CC("#ElementX").inherit("OutherClasse Classe1"); //#ElementX will inherit Outher
 
 
 /**
+* if we have an collection, it gets an element by the index
+*/
+var pokemonA = CC("Pokemon").eg(0);
+
+
+
+/**
+* invoke an action for all elements selected
+*/
+CC("Pokemon").each(function(){
+	//do something to each pokemon using 'this'
+});
+
+
+
+/**
+* returns a copy of the elements as array
+*/
+var pkms = CC("Pokemon").asArray();
+var first = pkms[0]; //but adding or removing from this array will cause nothing
+
+
+
+/**
 * returns true if this element matches the specification
 */
-var isBulbasaur = CC("Pokemon").matches({
+var isBulbasaur = pokemonA.matches({
+	pokemonId: 1
+});
+
+
+
+/**
+* search for an element on the collection with the attributes specified in the parameter
+*/
+var bulba = CC("Pokemon").search({
 	pokemonId: 1
 });
 
@@ -155,6 +188,6 @@ CC("Pokemon").became({
 	this.evolutionSequence = 2;
 });
 
-//TODO: tell about: addDrawShape, removeDrawShape, addCustomDrawer, each, eg, asArray
+//TODO: tell about: addDrawShape, removeDrawShape, addCustomDrawer
 
 ```
