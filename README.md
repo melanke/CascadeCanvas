@@ -215,7 +215,7 @@ CC.def("Class1", function(opts){
 		//warning: 'this' will not work here inside, you will need to do closure: 
 		//access a variable of the context of the class like below
 
-		el.attr2 = 7; //modifing a property
+		el.attr1 = 5; //modifing a property
 	};
 
 	//here you can use the methods described before
@@ -226,8 +226,8 @@ CC.def("Class1", function(opts){
 	});
 
 	//using the params passed in constructor
-	if (opts.attr2 > this.attr2) {
-		this.attr6 = opts.attr2;
+	if (opts.attr2 > attr2) {
+		attr2 = opts.attr2;
 	}
 
 });
