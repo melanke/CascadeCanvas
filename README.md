@@ -8,8 +8,9 @@ CascadeCanvas (CC) is an API to work with canvas rich applications (or games), d
 - [Methods of the Elements](#methods-of-the-elements)
 - [Building Classes](#building-classes)
 - [Drawing the element](#drawing-the-element)
-- [Other features to help](#other-features-to-help)
+- [Element default Attributes](#element-default-attributes)
 - [CC Attributes](cc-attributes)
+- [Other features to help](#other-features-to-help)
 - [CC Plugins](cc-plugins)
 - [Upcoming Features](upcoming-features)
 
@@ -303,10 +304,10 @@ CC.merge(this.drawings, {
 
 	theNameOfMyDrawing: {
 		zIndex: -3, //the less zIndex is the most visible it is (in the front of other drawings)
-		offsetX: 10, //drawing will be 10 to the right
-		offsetY: 10, //10 to the bottom
-		offsetW: 10, //10 wider, 5 to each side
-		offsetH: 10, //10 taller, 5 to each side
+		offsetX: 10, //X of the drawing will be at element.x + 10
+		offsetY: 10, //Y of the drawing will be at element.y + 10
+		offsetW: 10, //Width of the drawing will be element.w + 10, 5 to each side
+		offsetH: 10, //Height of the drawing will be element.h + 10, 5 to each side
 		angle: 30, //rotated 30 degrees
 		anchor: { //point where the rotation will anchor
 			x: 10, //x and y from element x and y
@@ -341,12 +342,36 @@ CC.merge(this.drawings, {
 
 ```
 
+##Element default Attributes
+
+- x - element X position
+- y - element Y position
+- w - element width
+- h - element height
+- angle - element rotation degrees
+- anchor - point where the rotation is fixed (object with attrs x and y)
+- zIndex - element order to be draw (the less zIndex is the more visible the element will be - in front of others)
+- drawings - an map of drawings
+- classes - the classes it inherits
+
+##CC Attributes
+
+```javascript
+
+CC.classes; //defined classes
+
+CC.context; //2d context of the 'CascadeCanvas' html element
+
+CC.screen; //the area of the screen
+
+```
+
 ##Other features to help
 
 ```javascript
 
 /**
-* erase all information in CascadeCanvas
+* erase all information in CascadeCanvas, good to jump to the next level
 */
 CC.clear();
 
@@ -417,18 +442,6 @@ CC.play();
 * the action you want to remove
 */
 CC.unbind(eventsStr, action);
-
-```
-
-##CC Attributes
-
-```javascript
-
-CC.classes; //defined classes
-
-CC.context; //2d context of the 'CascadeCanvas' html element
-
-CC.screen; //the area of the screen
 
 ```
 
