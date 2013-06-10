@@ -22,7 +22,12 @@
     var CC = function(selector){
 
         if (selector.indexOf("*") != -1) {
-            return new ElementList(elementMap);
+            var asArray = [];
+            for (var e in elementMap) {
+                asArray.push(elementMap[e]);
+            }
+
+            return new ElementList(asArray);
         }
 
         var id;
@@ -85,7 +90,7 @@
     var running = true;
     var canvas = document.getElementById('CascadeCanvas');
     CC.context = canvas.getContext('2d');
-    CC.screen = {};
+    CC.screen = {}; //the area of the screen
 
 
     /**
@@ -150,6 +155,117 @@
         }
 
     };
+
+    /**
+    * check if param is a function
+    */
+    CC.isFunction = function(functionToCheck){
+        return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
+    }
+
+    /**
+    * check if param is a string
+    */
+    CC.isString = function(stringToCheck){
+        return typeof stringToCheck == 'string' || stringToCheck instanceof String;
+    };
+
+    /**
+    * check if param is an array
+    */
+    CC.isArray = function(arrayToCheck){
+        return arrayToCheck && {}.toString.call(arrayToCheck) === '[object Array]';
+    };
+
+    /**
+    * rotate a point
+    * @param p the point to be rotated
+    * @param anchor the anchor point
+    * @param angle the angle of the rotation
+    */
+    CC.rotatePoint = function(p, anchor, angle){
+
+        var px = p.x;
+        if (px == undefined) {
+            px = p[0];
+        }
+
+        var py = p.y;
+        if (py == undefined) {
+            py = p[1];
+        }
+
+        var ax = anchor.x;
+        if (ax == undefined) {
+            ax = anchor[0];
+        }
+
+        var ay = anchor.y;
+        if (ay == undefined) {
+            ay = anchor[1];
+        }
+
+        var teta = angle * Math.PI / 180.0;
+        var diffX = px - ax;
+        var diffY = py - ay;
+        var cos = Math.cos(teta);
+        var sin = Math.sin(teta);
+
+        return {
+            x: Math.round(cos * diffX - sin * diffY + ax),
+            y: Math.round(sin * diffX + cos * diffY + ay)
+        };
+
+    };
+
+    /**
+    * sort the items of an array by property
+    * @param elements array to be sorted
+    * @param prop the property to compare
+    * @param invert if you want the reverse order
+    */
+    CC.sort = function(elements, prop, invert){
+
+        if (!CC.isArray(elements)) {
+            var asArray = [];
+            for (var e in elements) {
+                asArray.push(elements[e]);
+            }
+            elements = asArray;
+        }
+
+        return elements.sort(function(a, b){
+            if (a[prop] > b[prop]) {
+                return invert ? -1 : 1;
+            }
+
+            if (a[prop] < b[prop]) {
+                return invert ? 1 : -1;
+            }
+
+            if (a[prop] == undefined) {
+                if (b[prop] < 0) {
+                    return invert ? -1 : 1;
+                }
+
+                if (b[prop] > 0) {
+                    return invert ? 1 : -1;
+                }
+            }
+
+            if (b[prop] == undefined) {
+                if (a[prop] < 0) {
+                    return invert ? 1 : -1;
+                }
+
+                if (a[prop] > 0) {
+                    return invert ? -1 : 1;
+                }
+            }
+
+            return 0;
+        });
+    }
 
     /**
     * register an action to a global event
@@ -369,7 +485,7 @@
 
         CC.context.clearRect(0, 0 , CC.screen.w, CC.screen.h);
 
-        CC("*").each(function(){
+        CC("*").sort("zIndex", true).each(function(){
 
             this.draw();
 
@@ -396,11 +512,10 @@
 
         var el = this,
             thisevents = {}, //events attached to this
-            removed = false, //an extra protection to ignore removed elements
-            drawShapes = {}, //a Map of shapes by name to be draw
-            drawList = []; //a list of methods to customize the element draw
+            removed = false; //an extra protection to ignore removed elements
 
         this.classes = {}; //classes this inherits
+        this.drawings = {}; //a Map of shapes or functions by name to be draw
 
         /**
         * routine for initialization:
@@ -661,43 +776,174 @@
 
         };
 
-        this.addDrawShape = function(name, shape){
-            drawShapes[name] = shape;
-        };
-
-        this.removeDrawShape = function(name){
-            delete drawShapes[name];
-        }
-
-        /**
-        * add a new drawer to the queue of drawers
-        * @param drawer function to be invoked after other functions already registered
-        */
-        this.addCustomDrawer = function(drawer){
-            drawList.push(drawer);
-        };
-
         /**
         * draw in the default way and draw the customizations in the queue
         */
         this.draw = function(){
 
-            for (var s in drawShapes) {
-                drawShape(drawShapes[s]);
-            }
+            var drawings = CC.sort(this.drawings, "zIndex", true);
 
-            for (var d in drawList) {
-                drawList[d].call(this);
+            for (var s in drawings) {
+                var draw = drawings[s];
+                if (CC.isFunction(draw)) {
+                    draw.call(this);
+                } else {
+                    drawShape(draw);
+                }
             }
 
         };
 
-        var drawShape = function(shape){
+        /**
+        * {
+        *       zIndex: 3, //the less zIndex is most visible it is (in the front of other drawings)
+        *       offsetX: 10, //drawing will be 10 to the right
+        *       offsetY: 10, //10 to the bottom
+        *       offsetW: 10, //10 wider, 5 to each side
+        *       offsetH: 10, //10 taller, 5 to each side
+        *       angle: 30, //rotated 30 degrees
+        *       anchor: { //point where the rotation will anchor
+        *           x: 10, //x and y from element x and y
+        *           y: 10
+        *       },
+        *       stroke: {
+        *           color: "#330099",
+        *           thickness: 5,
+        *           cap: "butt", //style of the ends of the line
+        *           join: "bevel" //style of the curves of the line
+        *       },
+        *       fill: {
+        *           linearGradient: {
+        *               start: [0, 0],
+        *               end: [100, 100],
+        *               "0": "rgba(200, 100, 100, 0.8)",
+        *               "0.5": "#f00",
+        *               "1": "#0000dd"
+        *           }
+        *       }
+        * }
+        */
+        var drawShape = function(drawing){
+            //TODO: medidas com porcentagem e soma de pixels ex.: "80% + 10" (porcentagem é baseada na width/height do drawing/elemento)
+            //TODO: gradientRadial; images; animation; shape; effects (transparency, blur, others)
 
-            if (el.w && el.y && shape && shape.stroke && shape.stroke.color) {
-                CC.context.strokeStyle = shape.stroke.color;
-                CC.context.strokeRect(el.x, el.y, el.w, el.h);
+            if (!drawing) {
+                return;
             }
+
+            var offsetX = drawing.offsetX || 0,
+                offsetY = drawing.offsetY || 0,
+                offsetW = drawing.offsetW || 0,
+                offsetH = drawing.offsetH || 0;
+
+            CC.context.save();
+
+            CC.context.translate(el.x, el.y);
+
+            if (el.angle) { //element rotation
+
+                if (!el.anchor) {
+                    el.anchor = {
+                        x: el.w / 2,
+                        y: el.h / 2
+                    };
+                }
+ 
+                CC.context.translate(el.anchor.x, el.anchor.y);
+                CC.context.rotate(-el.angle * Math.PI/180);
+                CC.context.translate(-el.anchor.x, -el.anchor.y);
+            }
+
+            if (drawing.angle) { //drawing rotation
+
+                if (!drawing.anchor) {
+                    drawing.anchor = el.anchor || {
+                        x: el.w / 2,
+                        y: el.h / 2
+                    };
+                }
+ 
+                CC.context.translate(drawing.anchor.x, drawing.anchor.y);
+                CC.context.rotate(-drawing.angle * Math.PI/180);
+                CC.context.translate(-drawing.anchor.x, -drawing.anchor.y);
+            }
+
+            if (drawing.stroke) {
+
+                if (drawing.stroke.color && CC.isString(drawing.stroke.color)) { //stroke color
+
+                    CC.context.strokeStyle = drawing.stroke.color;
+
+                } else if (drawing.stroke.linearGradient) { //stroke linear gradient
+
+                    CC.context.strokeStyle = createLinearGradient(drawing.stroke.linearGradient, drawing);
+                    
+                }
+
+                if (drawing.stroke.thickness) { //stroke thickness
+                    CC.context.lineWidth = drawing.stroke.thickness;
+                }
+
+                if (drawing.stroke.cap) { //stroke end style - 'butt','round' OR 'square'
+                    CC.context.lineCap = drawing.stroke.cap;
+                }
+
+                if (drawing.stroke.join) { //stroke curve style - 'round','bevel' OR 'miter'
+                    CC.context.lineJoin = drawing.stroke.join;
+                }
+
+                CC.context.strokeRect(offsetX - (offsetW/2), offsetY - (offsetH/2), el.w + offsetW, el.h + offsetH);
+            }
+
+            if (drawing.fill) {
+
+                if (drawing.fill.color && CC.isString(drawing.fill.color)) { //fill color
+
+                    CC.context.fillStyle = drawing.fill.color;
+
+                } else if (drawing.fill.linearGradient) { //fill linear gradient
+
+                    CC.context.fillStyle = createLinearGradient(drawing.fill.linearGradient, drawing);
+                    
+                }
+
+                CC.context.fillRect(offsetX - (offsetW/2), offsetY - (offsetH/2), el.w + offsetW, el.h + offsetH);
+            }
+
+            
+            CC.context.restore();
+
+        };
+
+        var createLinearGradient = function(linearGradient, drawing){
+            var offsetX = drawing.offsetX || 0,
+                offsetY = drawing.offsetY || 0,
+                offsetW = drawing.offsetW || 0,
+                offsetH = drawing.offsetH || 0;
+
+            if (!linearGradient.start) {
+                linearGradient.start = [0, 0];
+            }
+
+            if (!linearGradient.end) {
+                linearGradient.end = [100, 0];
+            }
+
+            var x1 = offsetX - (offsetW/2) + (linearGradient.start[0] / 100 * (el.w + offsetW));
+            var y1 = offsetY - (offsetH/2) + (linearGradient.start[1] / 100 * (el.h + offsetH));
+            var x2 = offsetX - (offsetW/2) + (linearGradient.end[0] / 100 * (el.w + offsetW));
+            var y2 = offsetY - (offsetH/2) + (linearGradient.end[1] / 100 * (el.h + offsetH));
+
+            var gradient = CC.context.createLinearGradient(x1, y1, x2, y2);
+
+            for (var s in linearGradient) {
+                var stop = parseFloat(s);
+                if (!isNaN(stop) && isFinite(stop)) {
+                    gradient.addColorStop(stop, linearGradient[s]);
+                }
+            }
+
+            return gradient;
 
         };
 
@@ -759,6 +1005,17 @@
             this.each(function(){
                 this.inherit(classesStr, opts);
             });
+
+            return this;
+
+        };
+
+        /**
+        * autosort the collection by the attribute
+        */
+        this.sort = function(prop, invert){
+
+            elements = CC.sort(elements, prop, invert);
 
             return this;
 
@@ -849,16 +1106,6 @@
                     }
                 });
             });
-
-        };
-
-        this.addCustomDrawer = function(drawer){
-
-            this.each(function(){
-                this.addCustomDrawer(drawer);
-            });
-
-            return this;
 
         };
 
