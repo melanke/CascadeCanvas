@@ -105,6 +105,19 @@ var a = CC.merge(b, c, d); //so, a will be equal to b and will have all attribut
 
 
 
+
+/**
+* pre-load the image resources used in game
+* @param srcs an array of strings with the path of file
+* @param callback function called when all resources are loaded
+*/
+CC.loadResources(["res/player.png", "res/background.png"], function(){
+	//callback when all resources have been loaded
+});
+
+
+
+
 /**
 * start the routine of the gameloop, for each loop it triggers 'enterframe' event and render the elements
 */
@@ -303,11 +316,19 @@ CC.def("Class1", function(opts){
 CC.merge(this.drawings, {
 
 	theNameOfMyDrawing: {
+		 hidden: true, //make the drawing invisible
 		zIndex: -3, //the less zIndex is the most visible it is (in the front of other drawings)
 		offsetX: 10, //X of the drawing will be at element.x + 10
 		offsetY: 10, //Y of the drawing will be at element.y + 10
 		offsetW: 10, //Width of the drawing will be element.w + 10, 5 to each side
 		offsetH: 10, //Height of the drawing will be element.h + 10, 5 to each side
+		shape: "rect", //could be 'circle' or an array of points to form a polygon [ [0,0], [50, 50], [0, 50] ]
+        angle: 30, //rotated 30 degrees
+        flip: "xy", //flip drawing horizontally and vertically
+        scale: {
+            x: 2, //will strech horizontaly
+            y: 0.5 //will squeeze vertically
+        },
 		angle: 30, //rotated 30 degrees
 		anchor: { //point where the rotation will anchor
 			x: 10, //x and y from element x and y
@@ -321,13 +342,20 @@ CC.merge(this.drawings, {
 		},
 		fill: {
 			linearGradient: { //you may choose by "color" or "linearGradient"
-				start: [0, 0],
-				end: [100, 100],
-				"0": "rgba(200, 100, 100, 0.8)",
-				"0.5": "#f00",
-				"1": "#0000dd"
+				start: [0, 0], //percentage of start point
+				end: [100, 100], //percentage of the end point
+				"0": "rgba(200, 100, 100, 0.8)", //color stops (beginning)
+				"0.5": "#f00", //(middle)
+				"1": "#0000dd" //(end)
 			}
-		}
+		},
+        sprite: {
+           url: "res/player.png", //image url
+            x: 160, //x position of the sprite in the image
+            y: 48, //y position of the sprite in the image
+            w: 16, //width of consideration
+            h: 24 //height of consideration
+        }
 	},
 
 	theNameOfMyOtherDrawing: function(){
@@ -453,8 +481,16 @@ The Idea of CascadeCanvas is to re-use code, I would like to see the javascript 
 
 ##Upcoming features
 
-- A lot of drawing options like gradientRadial; images as sprites; animation; shape (circle, polygon maybe vectors); effects (transparency, blur, others)
+- A lot of drawing options like:
+-- image repeat and animation
+-- gradientRadial
+-- drawing animation (sprite sequences and other options)
+-- effects (transparency, blur, others)
+-- round borders using quadranticCurveTo (for rect shapes and maybe for polygons)
+-- methods: showDrawing, hideDrawing, toggleDrawings, tweenDrawings
 
 - In metrics of drawings, like offsetX, you will can specify an simple calculation using percentage and pixels, eg.: "80% + 10px"
+
+- Mouse and Keyboard events
 
 - More [CC Plugins](#cc-plugins)
