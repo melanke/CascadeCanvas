@@ -323,7 +323,6 @@ CC.merge(this.drawings, {
 		offsetW: 10, //Width of the drawing will be element.w + 10, 5 to each side
 		offsetH: 10, //Height of the drawing will be element.h + 10, 5 to each side
 		shape: "rect", //could be 'circle' or an array of points to form a polygon [ [0,0], [50, 50], [0, 50] ]
-        angle: 30, //rotated 30 degrees
         flip: "xy", //flip drawing horizontally and vertically
         scale: {
             x: 2, //will strech horizontaly
@@ -379,6 +378,8 @@ CC.merge(this.drawings, {
 - angle - element rotation degrees
 - anchor - point where the rotation is fixed (object with attrs x and y)
 - zIndex - element order to be draw (the less zIndex is the more visible the element will be - in front of others)
+- hidden - if you dont want to show the element
+- flip - if you wnat to flip the entire element ("x", "y", "xy")
 - drawings - an map of drawings
 - classes - the classes it inherits
 
@@ -487,9 +488,10 @@ The Idea of CascadeCanvas is to re-use code, I would like to see the javascript 
 -- drawing animation (sprite sequences and other options)
 -- effects (transparency, blur, others)
 -- round borders using quadranticCurveTo (for rect shapes and maybe for polygons)
--- methods: showDrawing, hideDrawing, toggleDrawings, tweenDrawings
 
-- In metrics of drawings, like offsetX, you will can specify an simple calculation using percentage and pixels, eg.: "80% + 10px"
+- methods to switch drawings: toggleDrawings, tweenDrawings
+
+- In metrics of drawings, like offsetX, you will be able to specify an simple calculation using percentage and pixels, eg.: "80% + 10px"
 
 - Mouse and Keyboard events
 
