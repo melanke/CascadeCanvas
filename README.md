@@ -1,5 +1,5 @@
-CascadeCanvas
-=============
+CascadeCanvas Beta
+==================
 
 CascadeCanvas (CC) is an API to work with canvas rich applications (or games), drawing and organizing classes that works with mult-inheritance and will help to encapsulate behaviours to be reused to a lot of subclasses and instances. You should create classes, inherit this classes by other classes or "elements" and manipulate this classes or elements in the easiest way. It was made with the inspiration of jQuery and Crafty.
 
@@ -8,6 +8,7 @@ CascadeCanvas (CC) is an API to work with canvas rich applications (or games), d
 - [Methods of the Elements](#methods-of-the-elements)
 - [Building Classes](#building-classes)
 - [Drawing the element](#drawing-the-element)
+- [Mouse and Keyboard](#mouse-and-keyboard)
 - [Element default Attributes](#element-default-attributes)
 - [CC Attributes](cc-attributes)
 - [Other features to help](#other-features-to-help)
@@ -83,7 +84,7 @@ var marioB = CC("#mario");
 * example: 'eventName.namespace1'
 * @param action a function to be invoked when the event is triggered
 */
-CC.bind("eventName", function(){
+CC.bind("eventName", function(param1, param2){
 	//do something
 });
 
@@ -94,7 +95,7 @@ CC.bind("eventName", function(){
 * use this capability to narrow the scope of our unbinding actions,
 * example: 'eventName.namespace1'
 */
-CC.trigger("eventName");
+CC.trigger("eventName", param1, param2);
 
 
 
@@ -231,6 +232,17 @@ CC("Pokemon").became({
 	this.evolutionSequence = 2;
 });
 
+
+
+
+
+/**
+* trigger the action when the element is clicked
+*/
+CC("Button").onClick(function(event){
+	
+});
+
 ```
 
 ##Building Classes
@@ -353,7 +365,10 @@ CC.merge(this.drawings, {
             x: 160, //x position of the sprite in the image
             y: 48, //y position of the sprite in the image
             w: 16, //width of consideration
-            h: 24 //height of consideration
+            h: 24, //height of consideration
+            repeat: "xy", //if the string contain x - repeat horizontaly; if the string contain y - repeat verticaly
+            frames: 5, //how many frames of the animation,
+            delay: 10 //how many loops until the next frame
         }
 	},
 
@@ -365,6 +380,111 @@ CC.merge(this.drawings, {
 	}
 
 });
+
+```
+
+##Mouse and Keyboard
+
+```javascript
+
+/**
+* return true if no key is pressed
+*/
+CC.isNoKeyPressed();
+
+
+
+/**
+* detect if all keys in param are pressed
+* @param keys which keys you want to check if are pressed as string separeted by '+'
+*/
+
+var hardCombo = CC.isKeysPressed("Ctrl + Alt + Up + A"); //return true if all this keys are pressed
+
+
+
+/*
+
+This are the keys supported:
+
+ENTER, SHIFT, CTRL, ALT, 
+BACKSPACE, CAPSLOCK, ESC, PGUP, PGDOWN, END, HOME, PRINTSCREEN, INSERT, DEL, 
+LEFT, UP, RIGHT, DOWN,  
+0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 
+A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, 
+WIN, 
+F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12
+
+*/
+
+
+/**
+* detect if all and only keys in param are pressed
+* @param keys which keys you want to check if are pressed as string separeted by '+'
+*/
+var upRight = CC.isKeysPressedOnly("W + D"); 
+//if I press W, D and A it will return false, but if i press only W and D it will return true
+
+
+
+/**
+* if all keys are down, trigger the action
+* @param keys which keys you want to check if are pressed as string separeted by '+'
+* @param action a function to be invoked when the event is triggered
+*/
+
+CC.onKeysDown("Win + Up", function(event){
+
+	//when Windows key and Up are pressed this will be executed
+	
+});
+
+
+
+/**
+* if all and only keys are down, trigger the action
+* @param keys which keys you want to check if are pressed as string separeted by '+'
+* @param action a function to be invoked when the event is triggered
+*/
+CC.onKeysDownOnly("ESC + p", function(event){
+
+	//when the only keys pressed is Esc and P this will be executed
+
+});
+
+
+
+/**
+* if all keys was down, no more keys was down and now one of them is released, trigger the action
+* @param keys which keys you want to check if are pressed as string separeted by '+'
+* @param action a function to be invoked when the event is triggered
+*/
+CC.onKeysComboEnd("ESC + p", function(event){
+
+	//when the only keys that was pressed is Esc and P and one of them are released this will be executed
+
+});
+
+
+
+//---------MOUSE
+
+/**
+* simple events for mouse
+*/
+
+CC.bind("click", function(event){
+	//when click on canvas
+});
+
+CC.bind("rightclick", function(event){
+	//when click with right button on canvas
+});
+
+CC("#elementId").onClick(function(event){
+	//when click on element (inside the rectangle of X, Y, W and H)
+});
+
 
 
 ```
@@ -448,6 +568,13 @@ CC.sort(elements, prop, invert);
 
 
 /**
+* set the center position to focus the drawing
+*/
+CC.setScreenCenter(230, 548); //the screen will focus on point x: 230, y: 548
+
+
+
+/**
 * make the triggers and the gameloop to be ignored
 */
 CC.pause();
@@ -483,16 +610,14 @@ The Idea of CascadeCanvas is to re-use code, I would like to see the javascript 
 ##Upcoming features
 
 - A lot of drawing options like:
--- image repeat and animation
 -- gradientRadial
--- drawing animation (sprite sequences and other options)
 -- effects (transparency, blur, others)
--- round borders using quadranticCurveTo (for rect shapes and maybe for polygons)
+-- round borders using quadranticCurveTo for rect shapes
 
 - methods to switch drawings: toggleDrawings, tweenDrawings
 
 - In metrics of drawings, like offsetX, you will be able to specify an simple calculation using percentage and pixels, eg.: "80% + 10px"
 
-- Mouse and Keyboard events
+- More Mouse events and better accuracy for click on element
 
 - More [CC Plugins](#cc-plugins)

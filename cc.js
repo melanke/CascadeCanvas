@@ -83,15 +83,107 @@
 
 
 
-    CC.classes = {}; //defined classes expecting to be instantiated
     var elementMap = {}; //elements stored by id
     var elementsSize = 0;
     var events = {}; //events stored by name
     var running = true;
     var sprites = {}; //sprites loaded stored by url
     var canvas = document.getElementById('CascadeCanvas');
+    var keyPressed = {}; //keys pressed
+    var keyMapping = {
+        8:  "BACKSPACE",
+
+        13: "ENTER",
+        16: "SHIFT",
+        17: "CTRL",
+        18: "ALT",
+
+        20: "CAPSLOCK",
+
+        27: "ESC",
+
+        33: "PGUP",
+        34: "PGDOWN",
+        35: "END",
+        36: "HOME",
+        37: "LEFT",
+        38: "UP",
+        39: "RIGHT",
+        40: "DOWN",
+
+        44: "PRINTSCREEN",
+        45: "INSERT",
+
+        46: "DEL",
+
+        48: "0",
+        49: "1",
+        50: "2",
+        51: "3",
+        52: "4",
+        53: "5",
+        54: "6",
+        55: "7",
+        56: "8",
+        57: "9",
+
+        65: "A",
+        66: "B",
+        67: "C",
+        68: "D",
+        69: "E",
+        70: "F",
+        71: "G",
+        72: "H",
+        73: "I",
+        74: "J",
+        75: "K",
+        76: "L",
+        77: "M",
+        78: "N",
+        79: "O",
+        80: "P",
+        81: "Q",
+        82: "R",
+        83: "S",
+        84: "T",
+        85: "U",
+        86: "V",
+        87: "W",
+        88: "X",
+        89: "Y",
+        90: "Z",
+
+        91: "WIN",
+
+        112: "F1",
+        113: "F2",
+        114: "F3",
+        115: "F4",
+        116: "F5",
+        117: "F6",
+        118: "F7",
+        119: "F8",
+        120: "F9",
+        121: "F10",
+        122: "F11",
+        123: "F12"
+    };
+
+    CC.screen = { x:0, y:0 }; //the area of the screen
+    CC.classes = {}; //defined classes expecting to be instantiated
     CC.context = canvas.getContext('2d');
-    CC.screen = {}; //the area of the screen
+    CC.step = 0; //each loop increments the step, it is used for animation proposes
+
+
+
+
+
+    canvas.onselectstart = function() { return false; }; //prevent canvas selection
+    
+
+
+
 
 
     /**
@@ -147,10 +239,12 @@
     /**
     * forget about this, you should not use it
     */
-    CC.___remove = function(obj){
+    CC.___remove = function(el){
+
+        el.trigger("remove");
 
         for (var i in elementMap) {
-            if (elementMap[i] == this) {
+            if (elementMap[i] == el) {
                 delete elementMap[i];
             }
         }
@@ -176,96 +270,6 @@
     */
     CC.isArray = function(arrayToCheck){
         return arrayToCheck && {}.toString.call(arrayToCheck) === '[object Array]';
-    };
-
-    /**
-    * rotate a point
-    * @param p the point to be rotated
-    * @param anchor the anchor point
-    * @param angle the angle of the rotation
-    */
-    CC.rotatePoint = function(p, anchor, angle){
-
-        var px = p.x;
-        if (px == undefined) {
-            px = p[0];
-        }
-
-        var py = p.y;
-        if (py == undefined) {
-            py = p[1];
-        }
-
-        var ax = anchor.x;
-        if (ax == undefined) {
-            ax = anchor[0];
-        }
-
-        var ay = anchor.y;
-        if (ay == undefined) {
-            ay = anchor[1];
-        }
-
-        var teta = angle * Math.PI / 180.0;
-        var diffX = px - ax;
-        var diffY = py - ay;
-        var cos = Math.cos(teta);
-        var sin = Math.sin(teta);
-
-        return {
-            x: Math.round(cos * diffX - sin * diffY + ax),
-            y: Math.round(sin * diffX + cos * diffY + ay)
-        };
-
-    };
-
-    /**
-    * sort the items of an array by property
-    * @param elements array to be sorted
-    * @param prop the property to compare
-    * @param invert if you want the reverse order
-    */
-    CC.sort = function(elements, prop, invert){
-
-        if (!CC.isArray(elements)) {
-            var asArray = [];
-            for (var e in elements) {
-                asArray.push(elements[e]);
-            }
-            elements = asArray;
-        }
-
-        return elements.sort(function(a, b){
-            if (a[prop] > b[prop]) {
-                return invert ? -1 : 1;
-            }
-
-            if (a[prop] < b[prop]) {
-                return invert ? 1 : -1;
-            }
-
-            if (a[prop] == undefined) {
-                if (b[prop] < 0) {
-                    return invert ? -1 : 1;
-                }
-
-                if (b[prop] > 0) {
-                    return invert ? 1 : -1;
-                }
-            }
-
-            if (b[prop] == undefined) {
-                if (a[prop] < 0) {
-                    return invert ? 1 : -1;
-                }
-
-                if (a[prop] > 0) {
-                    return invert ? -1 : 1;
-                }
-            }
-
-            return 0;
-        });
     };
 
     /**
@@ -376,10 +380,11 @@
         var evtAndDomain = eventsStr.split(".");
         var evt = evtAndDomain[0];
         var domain = evtAndDomain[1] || "root";
+        var args = [].splice.call(arguments, 1); //all arguments except the first (eventsStr)
 
         var callDomain = function(d){
             for (var i in events[evt][d]) {
-                events[evt][domain][i]();
+                events[evt][domain][i].apply(this, args);
             }
         };
 
@@ -396,6 +401,147 @@
             }
         }
 
+    };
+
+    window.addEventListener('keyup', function(event) {
+        delete keyPressed[keyMapping[event.keyCode]];
+        CC.trigger("keyup", event);
+    }, false);
+
+    window.addEventListener('keydown', function(event) {
+        keyPressed[keyMapping[event.keyCode]] = true; 
+        CC.trigger("keydown", event);
+    }, false);
+
+    /**
+    * return true if no key is pressed
+    */
+    CC.isNoKeyPressed = function(){
+
+        for (var j in keyPressed) {
+            return false;   
+        }
+
+        return true;
+
+    };
+
+    /**
+    * detect if all keys in param are pressed
+    * @param keys which keys you want to check if are pressed as string separeted by '+'
+    * eg.: "Ctrl + Up + A"
+    */
+    CC.isKeysPressed = function(keys) {
+        var keysArr = keys.toUpperCase().replace(/ /g, "").split("+");
+
+        for (var i in keysArr) {
+            if (!keyPressed[keysArr[i]]) {
+                return false;
+            }
+        }
+
+        return true;
+    };
+
+    /**
+    * detect if all and only keys in param are pressed
+    * @param keys which keys you want to check if are pressed as string separeted by '+'
+    * eg.: "Ctrl + Up + A"
+    */
+    CC.isKeysPressedOnly = function(keys) {
+        var keysArr = keys.toUpperCase().replace(/ /g, "").split("+");
+        var map = {};
+
+        for (var i in keysArr) {
+            var key = keysArr[i];
+            if (!keyPressed[key]) {
+                return false;
+            }
+            map[key] = true;
+        }
+
+        for (var j in keyPressed) {
+            if (!map[j]) {
+                return false;
+            }
+        }
+
+        return true;
+    };
+
+    /**
+    * if all keys are down, trigger the action
+    * @param keys which keys you want to check if are pressed as string separeted by '+'
+    * @param action a function to be invoked when the event is triggered
+    */
+    CC.onKeysDown = function(keys, action) {
+        CC.bind("keydown", function(event){
+            if (CC.isKeysPressed(keys)) {
+                action(event);
+            }
+        });
+    };
+
+    /**
+    * if all and only keys are down, trigger the action
+    * @param keys which keys you want to check if are pressed as string separeted by '+'
+    * @param action a function to be invoked when the event is triggered
+    */
+    CC.onKeysDownOnly = function(keys, action) {
+        CC.bind("keydown", function(event){
+            if (CC.isKeysPressedOnly(keys)) {
+                action(event);
+            }
+        });
+    };
+
+    /**
+    * if all keys was down, no more keys was down and now one of them is released, trigger the action
+    * @param keys which keys you want to check if are pressed as string separeted by '+'
+    * @param action a function to be invoked when the event is triggered
+    */
+    CC.onKeysComboEnd = function(keys, action) {
+        CC.bind("keyup", function(event){
+            var wantedArr = keys.toUpperCase().replace(/ /g, "").split("+");
+            var wantedMap = {};
+
+            for (var i in wantedArr) {
+                var wanted = wantedArr[i];
+                if (!keyPressed[wanted] && wanted != keyMapping[event.keyCode]) {
+                    return;
+                }
+                wantedMap[wanted] = true;
+            }
+
+            if (!wantedMap[keyMapping[event.keyCode]]) {
+                return;
+            }
+
+            for (var j in keyPressed) {
+                if (!wantedMap[j]) {
+                    return;
+                }
+            }
+
+            action(event);
+        });
+    };
+
+    canvas.onclick = function(event){
+        CC.trigger("click", event);
+    };
+
+    canvas.oncontextmenu = function (event) { 
+        CC.trigger("rightclick", event);
+        return false; 
+    };
+
+    /**
+    * set the center position to focus the drawing
+    */
+    CC.setScreenCenter = function(x, y) {
+        CC.screen.x = (CC.screen.w / 2) - x;
+        CC.screen.y = (CC.screen.h / 2) - y;
     };
 
     /**
@@ -456,6 +602,7 @@
 
             CC.trigger("enterframe");
             draw();
+            CC.step++;
         }
 
         var animFrame = window.requestAnimationFrame ||
@@ -522,6 +669,96 @@
             this.draw();
 
         });
+
+    };
+
+    /**
+    * sort the items of an array by property
+    * @param elements array to be sorted
+    * @param prop the property to compare
+    * @param invert if you want the reverse order
+    */
+    CC.sort = function(elements, prop, invert){
+
+        if (!CC.isArray(elements)) {
+            var asArray = [];
+            for (var e in elements) {
+                asArray.push(elements[e]);
+            }
+            elements = asArray;
+        }
+
+        return elements.sort(function(a, b){
+            if (a[prop] > b[prop]) {
+                return invert ? -1 : 1;
+            }
+
+            if (a[prop] < b[prop]) {
+                return invert ? 1 : -1;
+            }
+
+            if (a[prop] == undefined) {
+                if (b[prop] < 0) {
+                    return invert ? -1 : 1;
+                }
+
+                if (b[prop] > 0) {
+                    return invert ? 1 : -1;
+                }
+            }
+
+            if (b[prop] == undefined) {
+                if (a[prop] < 0) {
+                    return invert ? 1 : -1;
+                }
+
+                if (a[prop] > 0) {
+                    return invert ? -1 : 1;
+                }
+            }
+
+            return 0;
+        });
+    };
+
+    /**
+    * rotate a point
+    * @param p the point to be rotated
+    * @param anchor the anchor point
+    * @param angle the angle of the rotation
+    */
+    CC.rotatePoint = function(p, anchor, angle){
+
+        var px = p.x;
+        if (px == undefined) {
+            px = p[0];
+        }
+
+        var py = p.y;
+        if (py == undefined) {
+            py = p[1];
+        }
+
+        var ax = anchor.x;
+        if (ax == undefined) {
+            ax = anchor[0];
+        }
+
+        var ay = anchor.y;
+        if (ay == undefined) {
+            ay = anchor[1];
+        }
+
+        var teta = angle * Math.PI / 180.0;
+        var diffX = px - ax;
+        var diffY = py - ay;
+        var cos = Math.cos(teta);
+        var sin = Math.sin(teta);
+
+        return {
+            x: Math.round(cos * diffX - sin * diffY + ax),
+            y: Math.round(sin * diffX + cos * diffY + ay)
+        };
 
     };
 
@@ -764,17 +1001,18 @@
         */
         this.trigger = function(eventsStr){
 
-            if (removed) {
+            if (removed && eventsStr !== "remove") {
                 return this;
             }
 
             var evtAndDomain = eventsStr.split(".");
             var evt = evtAndDomain[0];
             var domain = evtAndDomain[1] || "root";
+            var args = [].splice.call(arguments, 1); //all arguments except the first (eventsStr)
 
             var callDomain = function(d){
                 for (var i in thisevents[evt][d]) {
-                    thisevents[evt][domain][i].call(el);
+                    thisevents[evt][domain][i].apply(el, args);
                 }
             };
 
@@ -802,6 +1040,24 @@
 
             return CC.bind("enterframe", function(){
                 if (el.matches(specs)) {
+                    action.call(el);
+                }
+            });
+
+        };
+
+        /**
+        * trigger the action when the element is clicked
+        */
+        this.onClick = function(action){
+
+            CC.bind("click", function(event){
+                var x = event.offsetX;
+                var y = event.offsetY;
+                if (x >= el.x 
+                 && x <= el.x + el.w
+                 && y >= el.y
+                 && y <= el.y + el.h) {
                     action.call(el);
                 }
             });
@@ -869,30 +1125,56 @@
         *           x: 160, //x position of the sprite in the image
         *           y: 48, //y position of the sprite in the image
         *           w: 16, //width of consideration
-        *           h: 24 //height of consideration
+        *           h: 24, //height of consideration
+        *           repeat: "xy", //if the string contain x - repeat horizontaly; if the string contain y - repeat verticaly
+        *           frames: 5, //how many frames of the animation,
+        *           delay: 10 //how many loops until the next frame
         *       }
         * }
         */
         var drawShape = function(drawing){
-            //TODO: image repeat and animation
             //TODO: gradientRadial
-            //TODO: animation (transitions, tweens, sequences)
             //TODO: mensuration with percentage and sum of pixels eg.: "80% + 10" (percentage is based on width/height of drawing/elemento)
             //TODO: effects (transparency, blur, others)
-            //TODO: round borders using quadranticCurveTo (for rect shapes and maybe for polygons)
+            //TODO: round borders using quadranticCurveTo for rect shapes
             //   http://stackoverflow.com/questions/1255512/how-to-draw-a-rounded-rectangle-on-html-canvas
-            //TODO: showDrawing, hideDrawing, toggleDrawings, tweenDrawings
-            //TODO: mouse and keyboard events
+            //TODO: toggleDrawings, tweenDrawings
+            //TODO: more mouse events and better accuracy for click on element
 
             if (!drawing || drawing.hidden === true) {
                 return;
             }
 
+            //defining a Width and Height of an element without width and height based on the shape polygon points
+            var W = el.w;
+            var H = el.h;
+            if (CC.isArray(drawing.shape) && (!el.w || !el.h)) {
+                W = el.w || 0;
+                H = el.h || 0;
+                for (var i in drawing.shape) {
+                    W = Math.max(W, drawing.shape[i][0]);
+                    H = Math.max(H, drawing.shape[i][1]);
+                }
+            }
+
             var offsetW = drawing.offsetW || 0,
-                offsetH = drawing.offsetH || 0;
+                offsetH = drawing.offsetH || 0,
+                offsetX = drawing.offsetX || 0,
+                offsetY = drawing.offsetY || 0;
+
+            //dont draw if it isn't in screen range
+            if (el.x + offsetX + offsetW + W < CC.screen.x
+            || el.x - offsetX - offsetW - W > CC.screen.x + CC.screen.w
+            || el.y + offsetY + offsetH + H < CC.screen.y
+            || el.y - offsetY - offsetH - H > CC.screen.y + CC.screen.h) {
+                return;
+            }
 
             //save context to be able to restore to this state
             CC.context.save();
+
+            //draw the drawing relative to screen x and y (to offset the camera position)
+            CC.context.translate(CC.screen.x, CC.screen.y);
 
             //translate the canvas to the x, y of the element to draw it from 0, 0
             CC.context.translate(el.x, el.y);
@@ -903,8 +1185,8 @@
                 //element anchor point - default will be the center of element
                 if (!el.anchor) {
                     el.anchor = {
-                        x: el.w / 2,
-                        y: el.h / 2
+                        x: W / 2,
+                        y: H / 2
                     };
                 }
 
@@ -922,8 +1204,8 @@
                 //'drawing' anchor point - default will be the center of element
                 if (!drawing.anchor) {
                     drawing.anchor = el.anchor || {
-                        x: el.w / 2,
-                        y: el.h / 2
+                        x: W / 2,
+                        y: H / 2
                     };
                 }
  
@@ -937,8 +1219,8 @@
 
             //translate to the chosen offset
             CC.context.translate(
-                (drawing.offsetX || 0) - (offsetW / 2), 
-                (drawing.offsetY || 0) - (offsetH / 2)
+                offsetX - (offsetW / 2), 
+                offsetY - (offsetH / 2)
             );
 
             //flipping the element
@@ -947,11 +1229,11 @@
                 var scaleVer = el.flip.indexOf("y") != -1 ? -1 : 1;
 
                 //translate to the center
-                CC.context.translate((el.w + offsetW)/2, (el.h + offsetH)/2);
+                CC.context.translate((W + offsetW)/2, (H + offsetH)/2);
                 //scale
                 CC.context.scale(scaleHor, scaleVer);
                 //translate back to 0, 0
-                CC.context.translate(-(el.w + offsetW)/2, -(el.h + offsetH)/2);
+                CC.context.translate(-(W + offsetW)/2, -(H + offsetH)/2);
             }
 
             //flipping the drawing
@@ -960,22 +1242,22 @@
                 var scaleVer = drawing.flip.indexOf("y") != -1 ? -1 : 1;
 
                 //translate to the center
-                CC.context.translate((el.w + offsetW)/2, (el.h + offsetH)/2);
+                CC.context.translate((W + offsetW)/2, (H + offsetH)/2);
                 //scale
                 CC.context.scale(scaleHor, scaleVer);
                 //translate back to 0, 0
-                CC.context.translate(-(el.w + offsetW)/2, -(el.h + offsetH)/2);
+                CC.context.translate(-(W + offsetW)/2, -(H + offsetH)/2);
             }
 
             //scale - if want to stretch or squeeze the drawing
             if (drawing.scale && (drawing.scale.x || drawing.scale.y)) {
 
                 //translate to the center
-                CC.context.translate((el.w + offsetW)/2, (el.h + offsetH)/2);
+                CC.context.translate((W + offsetW)/2, (H + offsetH)/2);
                 //scale
                 CC.context.scale(drawing.scale.x || 1, drawing.scale.y || 1);
                 //translate back to 0, 0
-                CC.context.translate(-(el.w + offsetW)/2, -(el.h + offsetH)/2);
+                CC.context.translate(-(W + offsetW)/2, -(H + offsetH)/2);
             }
 
             //fill
@@ -989,14 +1271,14 @@
                 //by linear gradient
                 } else if (drawing.fill.linearGradient) {
 
-                    CC.context.fillStyle = createLinearGradient(drawing.fill.linearGradient, drawing);
+                    CC.context.fillStyle = createLinearGradient(drawing.fill.linearGradient, drawing, W, H);
                     
                 }
 
                 //draw a rectangle
                 if (drawing.shape === "rect") {
 
-                    CC.context.fillRect(0, 0, el.w + offsetW, el.h + offsetH);
+                    CC.context.fillRect(0, 0, W + offsetW, H + offsetH);
 
                 //draw a circle
                 } else if (drawing.shape === "circle") {
@@ -1004,15 +1286,16 @@
                     CC.context.beginPath();
                     
                     CC.context.arc(
-                        (el.w + offsetW) / 2, 
-                        (el.w + offsetW) / 2, 
-                        (el.w + offsetW) / 2,
+                        (W + offsetW) / 2, 
+                        (W + offsetW) / 2, 
+                        (W + offsetW) / 2,
                         0, 2 * Math.PI);
 
                     CC.context.closePath();
 
                     CC.context.fill();
 
+                //draw a polygon
                 } else if (CC.isArray(drawing.shape)) {
 
                     CC.context.beginPath();
@@ -1029,48 +1312,57 @@
                 }
             }
 
+            //stroke
             if (drawing.stroke) {
 
-                if (drawing.stroke.color && CC.isString(drawing.stroke.color)) { //stroke color
+                //by color
+                if (drawing.stroke.color && CC.isString(drawing.stroke.color)) {
 
                     CC.context.strokeStyle = drawing.stroke.color;
 
-                } else if (drawing.stroke.linearGradient) { //stroke linear gradient
+                //by linearGradient
+                } else if (drawing.stroke.linearGradient) {
 
-                    CC.context.strokeStyle = createLinearGradient(drawing.stroke.linearGradient, drawing);
+                    CC.context.strokeStyle = createLinearGradient(drawing.stroke.linearGradient, drawing, W, H);
                     
                 }
 
-                if (drawing.stroke.thickness) { //stroke thickness
+                //stroke thickness
+                if (drawing.stroke.thickness) { 
                     CC.context.lineWidth = drawing.stroke.thickness;
                 }
 
-                if (drawing.stroke.cap) { //stroke end style - 'butt','round' OR 'square'
+                //stroke end style - 'butt','round' OR 'square'
+                if (drawing.stroke.cap) { 
                     CC.context.lineCap = drawing.stroke.cap;
                 }
 
-                if (drawing.stroke.join) { //stroke curve style - 'round','bevel' OR 'miter'
+                //stroke curve style - 'round','bevel' OR 'miter'
+                if (drawing.stroke.join) { 
                     CC.context.lineJoin = drawing.stroke.join;
                 }
 
+                //draw a rectangle
                 if (drawing.shape === "rect") {
 
-                    CC.context.strokeRect(0, 0, el.w + offsetW, el.h + offsetH);
+                    CC.context.strokeRect(0, 0, W + offsetW, H + offsetH);
 
+                //draw a circle
                 } else if (drawing.shape === "circle") {
 
                     CC.context.beginPath();
 
                     CC.context.arc(
-                        (el.w + offsetW) / 2, 
-                        (el.w + offsetW) / 2, 
-                        (el.w + offsetW) / 2,
+                        (W + offsetW) / 2, 
+                        (W + offsetW) / 2, 
+                        (W + offsetW) / 2,
                         0, 2 * Math.PI);
 
                     CC.context.closePath();
 
                     CC.context.stroke();
 
+                //draw a polygon
                 } else if (CC.isArray(drawing.shape)) {
 
                     CC.context.beginPath();
@@ -1087,22 +1379,37 @@
                 }
             }
 
+            //sprite
             if (drawing.sprite && drawing.sprite.url) {
 
-                if (drawing.shape === "circle") {
+                //limit the sprite with a rectangle
+                if (drawing.shape === "rect") {
+
+                    CC.context.beginPath();
+                    CC.context.moveTo(0, 0);
+                    CC.context.lineTo(W + offsetW, 0);
+                    CC.context.lineTo(W + offsetW, H + offsetH);
+                    CC.context.lineTo(0, H + offsetH);
+                    CC.context.closePath();
+
+                    CC.context.clip();
+
+                //limit the sprite with a circle
+                } else if (drawing.shape === "circle") {
 
                     CC.context.beginPath();
 
                     CC.context.arc(
-                        (el.w + offsetW) / 2, 
-                        (el.w + offsetW) / 2, 
-                        (el.w + offsetW) / 2,
+                        (W + offsetW) / 2, 
+                        (W + offsetW) / 2, 
+                        (W + offsetW) / 2,
                         0, 2 * Math.PI);
 
                     CC.context.closePath();
 
                     CC.context.clip();
 
+                //limit the sprite with a polygon
                 } else if (CC.isArray(drawing.shape)) {
 
                     CC.context.beginPath();
@@ -1119,12 +1426,43 @@
 
                 }
 
+                //draw the sprites
                 var res = CC.useResource(drawing.sprite.url);
                 var spriteX = drawing.sprite.x || 0;
                 var spriteY = drawing.sprite.y || 0;
-                var spriteW = drawing.sprite.w || Math.min(el.w + offsetW, res.width);
-                var spriteH = drawing.sprite.h || Math.min(el.h + offsetH, res.height);
-                CC.context.drawImage(res, spriteY, spriteY, spriteW, spriteH, 0, 0, spriteW, spriteH);
+                var spriteW = drawing.sprite.w || Math.min(W + offsetW, res.width);
+                var spriteH = drawing.sprite.h || Math.min(H + offsetH, res.height);
+                var startX = 0;
+                var startY = 0;
+                var repeatX = drawing.sprite.repeat && drawing.sprite.repeat.indexOf("x") != -1;
+                var repeatY = drawing.sprite.repeat && drawing.sprite.repeat.indexOf("y") != -1;
+                var delay = drawing.sprite.delay || 0;
+
+                if (drawing.sprite.frames) {
+                    if (drawing.sprite.vertical) {
+                        spriteY += (parseInt(CC.step / delay) % drawing.sprite.frames) * spriteH;
+                    } else {
+                        spriteX += (parseInt(CC.step / delay) % drawing.sprite.frames) * spriteW;
+                    }
+                }
+
+                //repeat like a pattern if repeatX or repeatY is true
+                do {
+                    startY = 0;
+                    do {
+
+                        CC.context.drawImage(res, spriteX, spriteY, spriteW, spriteH, startX, startY, spriteW, spriteH);
+                        
+                        if (repeatY) {
+                            startY += spriteH;
+                        }
+                    } while (startY < H && repeatY);
+
+                    if (repeatX) {
+                        startX += spriteW;
+                    }
+
+                } while (startX < W && repeatX);
             }
 
             
@@ -1132,7 +1470,7 @@
 
         };
 
-        var createLinearGradient = function(linearGradient, drawing){
+        var createLinearGradient = function(linearGradient, drawing, W, H){
             var offsetW = drawing.offsetW || 0,
                 offsetH = drawing.offsetH || 0;
 
@@ -1144,10 +1482,10 @@
                 linearGradient.end = [100, 0];
             }
 
-            var x1 = linearGradient.start[0] / 100 * (el.w + offsetW);
-            var y1 = linearGradient.start[1] / 100 * (el.h + offsetH);
-            var x2 = linearGradient.end[0] / 100 * (el.w + offsetW);
-            var y2 = linearGradient.end[1] / 100 * (el.h + offsetH);
+            var x1 = linearGradient.start[0] / 100 * (W + offsetW);
+            var y1 = linearGradient.start[1] / 100 * (H + offsetH);
+            var x2 = linearGradient.end[0] / 100 * (W + offsetW);
+            var y2 = linearGradient.end[1] / 100 * (H + offsetH);
 
             var gradient = CC.context.createLinearGradient(x1, y1, x2, y2);
 
@@ -1295,10 +1633,10 @@
 
         };
 
-        this.trigger = function(eventsStr){
+        this.trigger = function(){
 
             this.each(function(){
-                this.trigger(eventsStr);
+                this.trigger.apply(this, arguments);
             });
 
             return this;
