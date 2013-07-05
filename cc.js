@@ -273,6 +273,13 @@
     };
 
     /**
+    * check if param is an object
+    */
+    CC.isObject = function(objectToCheck){
+        return objectToCheck && objectToCheck.constructor == Object;
+    };
+
+    /**
     * pre-load the image resources used in game
     * @param srcs an array of strings with the path of file
     * @param callback function called when all resources are loaded
@@ -558,7 +565,7 @@
             for (var p in obj) {
 
                 // Property in destination object set; update its value.
-                if (obj[p] && obj[p].constructor == Object) {
+                if (CC.isObject(obj[p])) {
 
                     if (!merged[p]) {
                         merged[p] = {};
@@ -613,27 +620,15 @@
             null;
 
         if ( animFrame !== null ) {
-
-            if (navigator.userAgent.indexOf("Firefox") != -1) {
-                var recursiveAnim = function() {
-                    mainloop();
-                    animFrame();
-                };
-
-                // setup for multiple calls
-                window.addEventListener("MozBeforePaint", recursiveAnim, false);
-
-                // start the mainloop
-                animFrame();
-            } else {
-                var recursiveAnim = function() {
-                    mainloop();
-                    animFrame(recursiveAnim);
-                };
-
-                // start the mainloop
+            
+            var recursiveAnim = function() {
+                mainloop();
                 animFrame(recursiveAnim);
-            }
+            };
+
+            // start the mainloop
+            animFrame(recursiveAnim);
+
         } else {
             var ONE_FRAME_TIME = 1000.0 / 60.0 ;
             setInterval( mainloop, ONE_FRAME_TIME );
@@ -805,6 +800,10 @@
                 el.w = opts.w;
                 el.h = opts.h;
                 el.angle = opts.angle;
+                el.anchor = opts.anchor;
+                el.flip = opts.flip;
+                el.hidden = opts.hidden;
+                el.zIndex = opts.zIndex;
             }
 
             el.inherit(specs.replace(/#[a-zA-Z0-9]*/g, ""), opts);           
@@ -836,7 +835,7 @@
                         for (var j in CC.classes[s].constructors) {
                             var c = CC.classes[s].constructors[j];
 
-                            c.apply(this, [opts]);
+                            c.call(this, opts);
                         }
 
                     } else {
@@ -856,20 +855,51 @@
 
         /**
         * returns true if this element matches the specification
+        * the spec could be the value you want or an expression
+        * eg.: "<= 3" to check if the attribute is <= 3, the operator should be at the start
+        * available operators: <, >, <=, >=, !=
         */
         this.matches = function(specs){
 
             var matchesRecursively = function(a, b){
 
+                if (!a || !b) {
+                    return false;
+                }
+
                 for (var i in b) {
 
-                    if (!a[i]) {
+                    if (a[i] === undefined) {
 
                         return false;
 
-                    } else if (b[i] && b[i].constructor == Object) {
+                    } else if (CC.isObject(b[i])) {
 
                         if (matchesRecursively(a[i], b[i]) === false) {
+                            return false;
+                        }
+
+                    //if it is an expression we will evaluate it
+                    } else if ((CC.isString(b[i]))
+                        && (b[i].indexOf("<") == 0 || b[i].indexOf(">") == 0 || b[i].indexOf("!=") == 0)) {
+
+                        if (b[i].indexOf("<=") == 0 && a[i] > b[i].replace("<=", "")) {
+                            return false;
+                        }
+
+                        if (b[i].indexOf("<") == 0 && a[i] >= b[i].replace("<", "")) {
+                            return false;
+                        }
+
+                        if (b[i].indexOf(">=") == 0 && a[i] < b[i].replace(">=", "")) {
+                            return false;
+                        }
+
+                        if (b[i].indexOf(">") == 0 && a[i] <= b[i].replace(">", "")) {
+                            return false;
+                        }
+
+                        if (b[i].indexOf("!=") == 0 && a[i] == b[i].replace("!=", "")) {
                             return false;
                         }
 
@@ -1034,14 +1064,36 @@
         };
 
         /**
-        * trigger the action when the elements match the specs
+        * trigger the action when the element match the specs
         */
         this.became = function(specs, action){
 
+            var matched = false;
+
             return CC.bind("enterframe", function(){
+
+                var newmatched = el.matches(specs);
+
+                if (!matched && newmatched) {
+                    action.call(el);
+                }
+
+                matched = newmatched;
+            });
+
+        };
+
+        /**
+        * trigger the action while the element match the specs
+        */
+        this.while = function(specs, action){
+
+            return CC.bind("enterframe", function(){
+
                 if (el.matches(specs)) {
                     action.call(el);
                 }
+
             });
 
         };
@@ -1062,6 +1114,17 @@
                 }
             });
 
+        };
+
+        this.hideAllDrawings = function() {
+            for (var i in this.drawings) {
+                this.drawings[i].hidden = true;
+            }
+        };
+
+        this.toggleDrawings = function(toHide, toShow) {
+            this.drawings[toHide].hidden = true;
+            this.drawings[toShow].hidden = false;
         };
 
         /**
@@ -1133,42 +1196,36 @@
         * }
         */
         var drawShape = function(drawing){
-            //TODO: gradientRadial
-            //TODO: mensuration with percentage and sum of pixels eg.: "80% + 10" (percentage is based on width/height of drawing/elemento)
-            //TODO: effects (transparency, blur, others)
-            //TODO: round borders using quadranticCurveTo for rect shapes
-            //   http://stackoverflow.com/questions/1255512/how-to-draw-a-rounded-rectangle-on-html-canvas
-            //TODO: toggleDrawings, tweenDrawings
-            //TODO: more mouse events and better accuracy for click on element
 
             if (!drawing || drawing.hidden === true) {
                 return;
             }
 
             //defining a Width and Height of an element without width and height based on the shape polygon points
-            var W = el.w;
-            var H = el.h;
+            var EW = el.w,
+                EH = el.h;
             if (CC.isArray(drawing.shape) && (!el.w || !el.h)) {
-                W = el.w || 0;
-                H = el.h || 0;
+                EW = el.w || 0;
+                EH = el.h || 0;
                 for (var i in drawing.shape) {
-                    W = Math.max(W, drawing.shape[i][0]);
-                    H = Math.max(H, drawing.shape[i][1]);
+                    EW = Math.max(EW, drawing.shape[i][0]);
+                    EH = Math.max(EH, drawing.shape[i][1]);
                 }
             }
 
-            var offsetW = drawing.offsetW || 0,
-                offsetH = drawing.offsetH || 0,
-                offsetX = drawing.offsetX || 0,
-                offsetY = drawing.offsetY || 0;
+
+            var offsetX = drawing.offsetX || 0,
+                offsetY = drawing.offsetY || 0,
+                FW = drawing.w || EW, //final W
+                FH = drawing.h || EH; //final H
 
             //dont draw if it isn't in screen range
-            if (el.x + offsetX + offsetW + W < CC.screen.x
-            || el.x - offsetX - offsetW - W > CC.screen.x + CC.screen.w
-            || el.y + offsetY + offsetH + H < CC.screen.y
-            || el.y - offsetY - offsetH - H > CC.screen.y + CC.screen.h) {
-                return;
-            }
+            // if (el.x + offsetX + FW < CC.screen.x
+            // || el.x - offsetX - FW > CC.screen.x + CC.screen.w
+            // || el.y + offsetY + FH < CC.screen.y
+            // || el.y - offsetY - FH > CC.screen.y + CC.screen.h) {
+            //     return;
+            // }
 
             //save context to be able to restore to this state
             CC.context.save();
@@ -1185,8 +1242,8 @@
                 //element anchor point - default will be the center of element
                 if (!el.anchor) {
                     el.anchor = {
-                        x: W / 2,
-                        y: H / 2
+                        x: EW / 2,
+                        y: EH / 2
                     };
                 }
 
@@ -1204,8 +1261,8 @@
                 //'drawing' anchor point - default will be the center of element
                 if (!drawing.anchor) {
                     drawing.anchor = el.anchor || {
-                        x: W / 2,
-                        y: H / 2
+                        x: EW / 2,
+                        y: EH / 2
                     };
                 }
  
@@ -1219,8 +1276,8 @@
 
             //translate to the chosen offset
             CC.context.translate(
-                offsetX - (offsetW / 2), 
-                offsetY - (offsetH / 2)
+                offsetX - ((FW - EW) / 2), 
+                offsetY - ((FH - EH) / 2)
             );
 
             //flipping the element
@@ -1229,11 +1286,11 @@
                 var scaleVer = el.flip.indexOf("y") != -1 ? -1 : 1;
 
                 //translate to the center
-                CC.context.translate((W + offsetW)/2, (H + offsetH)/2);
+                CC.context.translate(FW/2, FH/2);
                 //scale
                 CC.context.scale(scaleHor, scaleVer);
                 //translate back to 0, 0
-                CC.context.translate(-(W + offsetW)/2, -(H + offsetH)/2);
+                CC.context.translate(-FW/2, -FH/2);
             }
 
             //flipping the drawing
@@ -1242,22 +1299,22 @@
                 var scaleVer = drawing.flip.indexOf("y") != -1 ? -1 : 1;
 
                 //translate to the center
-                CC.context.translate((W + offsetW)/2, (H + offsetH)/2);
+                CC.context.translate(FW/2, FH/2);
                 //scale
                 CC.context.scale(scaleHor, scaleVer);
                 //translate back to 0, 0
-                CC.context.translate(-(W + offsetW)/2, -(H + offsetH)/2);
+                CC.context.translate(-FW/2, -FH/2);
             }
 
             //scale - if want to stretch or squeeze the drawing
             if (drawing.scale && (drawing.scale.x || drawing.scale.y)) {
 
                 //translate to the center
-                CC.context.translate((W + offsetW)/2, (H + offsetH)/2);
+                CC.context.translate(FW/2, FH/2);
                 //scale
                 CC.context.scale(drawing.scale.x || 1, drawing.scale.y || 1);
                 //translate back to 0, 0
-                CC.context.translate(-(W + offsetW)/2, -(H + offsetH)/2);
+                CC.context.translate(-FW/2, -FH/2);
             }
 
             //fill
@@ -1271,14 +1328,14 @@
                 //by linear gradient
                 } else if (drawing.fill.linearGradient) {
 
-                    CC.context.fillStyle = createLinearGradient(drawing.fill.linearGradient, drawing, W, H);
+                    CC.context.fillStyle = createLinearGradient(drawing.fill.linearGradient, FW, FH);
                     
                 }
 
                 //draw a rectangle
                 if (drawing.shape === "rect") {
 
-                    CC.context.fillRect(0, 0, W + offsetW, H + offsetH);
+                    CC.context.fillRect(0, 0, FW, FH);
 
                 //draw a circle
                 } else if (drawing.shape === "circle") {
@@ -1323,7 +1380,7 @@
                 //by linearGradient
                 } else if (drawing.stroke.linearGradient) {
 
-                    CC.context.strokeStyle = createLinearGradient(drawing.stroke.linearGradient, drawing, W, H);
+                    CC.context.strokeStyle = createLinearGradient(drawing.stroke.linearGradient, FW, FH);
                     
                 }
 
@@ -1345,7 +1402,7 @@
                 //draw a rectangle
                 if (drawing.shape === "rect") {
 
-                    CC.context.strokeRect(0, 0, W + offsetW, H + offsetH);
+                    CC.context.strokeRect(0, 0,FW, FH);
 
                 //draw a circle
                 } else if (drawing.shape === "circle") {
@@ -1353,9 +1410,9 @@
                     CC.context.beginPath();
 
                     CC.context.arc(
-                        (W + offsetW) / 2, 
-                        (W + offsetW) / 2, 
-                        (W + offsetW) / 2,
+                        FW / 2, 
+                        FW / 2, 
+                        FW / 2,
                         0, 2 * Math.PI);
 
                     CC.context.closePath();
@@ -1387,9 +1444,9 @@
 
                     CC.context.beginPath();
                     CC.context.moveTo(0, 0);
-                    CC.context.lineTo(W + offsetW, 0);
-                    CC.context.lineTo(W + offsetW, H + offsetH);
-                    CC.context.lineTo(0, H + offsetH);
+                    CC.context.lineTo(FW, 0);
+                    CC.context.lineTo(FW, FH);
+                    CC.context.lineTo(0, FH);
                     CC.context.closePath();
 
                     CC.context.clip();
@@ -1400,9 +1457,9 @@
                     CC.context.beginPath();
 
                     CC.context.arc(
-                        (W + offsetW) / 2, 
-                        (W + offsetW) / 2, 
-                        (W + offsetW) / 2,
+                        FW / 2, 
+                        FW / 2, 
+                        FW / 2,
                         0, 2 * Math.PI);
 
                     CC.context.closePath();
@@ -1430,8 +1487,8 @@
                 var res = CC.useResource(drawing.sprite.url);
                 var spriteX = drawing.sprite.x || 0;
                 var spriteY = drawing.sprite.y || 0;
-                var spriteW = drawing.sprite.w || Math.min(W + offsetW, res.width);
-                var spriteH = drawing.sprite.h || Math.min(H + offsetH, res.height);
+                var spriteW = drawing.sprite.w || Math.min(FW, res.width);
+                var spriteH = drawing.sprite.h || Math.min(FH, res.height);
                 var startX = 0;
                 var startY = 0;
                 var repeatX = drawing.sprite.repeat && drawing.sprite.repeat.indexOf("x") != -1;
@@ -1456,13 +1513,13 @@
                         if (repeatY) {
                             startY += spriteH;
                         }
-                    } while (startY < H && repeatY);
+                    } while (startY < EH && repeatY);
 
                     if (repeatX) {
                         startX += spriteW;
                     }
 
-                } while (startX < W && repeatX);
+                } while (startX < EW && repeatX);
             }
 
             
@@ -1470,9 +1527,7 @@
 
         };
 
-        var createLinearGradient = function(linearGradient, drawing, W, H){
-            var offsetW = drawing.offsetW || 0,
-                offsetH = drawing.offsetH || 0;
+        var createLinearGradient = function(linearGradient, FW, FH){
 
             if (!linearGradient.start) {
                 linearGradient.start = [0, 0];
@@ -1482,10 +1537,10 @@
                 linearGradient.end = [100, 0];
             }
 
-            var x1 = linearGradient.start[0] / 100 * (W + offsetW);
-            var y1 = linearGradient.start[1] / 100 * (H + offsetH);
-            var x2 = linearGradient.end[0] / 100 * (W + offsetW);
-            var y2 = linearGradient.end[1] / 100 * (H + offsetH);
+            var x1 = linearGradient.start[0] / 100 * FW;
+            var y1 = linearGradient.start[1] / 100 * FH;
+            var x2 = linearGradient.end[0] / 100 * FW;
+            var y2 = linearGradient.end[1] / 100 * FH;
 
             var gradient = CC.context.createLinearGradient(x1, y1, x2, y2);
 
@@ -1553,6 +1608,11 @@
             return elements.slice(0);
         };
 
+        /**
+        * invoke the constructors for this element
+        * @param classesStr a string with the name of the classes to this element inherit, example:
+        * 'Class1 Class2' - this element will inherit both
+        */
         this.inherit = function(classesStr, opts){
 
             this.each(function(){
@@ -1643,22 +1703,33 @@
 
         };
 
-        this.became = function(specs, action){
+        this.became = function(){
 
-            var el = this;
-
-            return CC.bind("enterframe", function(){
-
-                el.each(function(){
-                    var thisSearch = this.matches(atrs);
-
-                    if (thisSearch) {
-
-                        action.call(this);
-
-                    }
-                });
+            this.each(function(){
+                this.became.apply(this, arguments);
             });
+
+            return this;
+
+        };
+
+        this.while = function(){
+
+            this.each(function(){
+                this.while.apply(this, arguments);
+            });
+
+            return this;
+
+        };
+
+        this.onClick = function(){
+
+            this.each(function(){
+                this.onClick.apply(this, arguments);
+            });
+
+            return this;
 
         };
 
@@ -1667,3 +1738,16 @@
     return CC;
 
 }));
+
+
+//TODO: gradientRadial
+//TODO: mensuration with percentage and sum of pixels eg.: "80% + 10" (percentage is based on width/height of drawing/elemento)
+//TODO: effects (transparency, blur, others)
+//TODO: round borders using quadranticCurveTo for rect shapes
+//   http://stackoverflow.com/questions/1255512/how-to-draw-a-rounded-rectangle-on-html-canvas
+//TODO: tweenDrawings
+//TODO: more mouse events and better accuracy for click on element
+//TODO: create the methods of element in the elementlist
+//TODO: offsetW and offsetH may be a little confusing, maybe we should just override W and H
+//TODO: removeClass and remove class event
+//TODO: unbind listeners

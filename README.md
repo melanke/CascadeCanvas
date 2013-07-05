@@ -1,4 +1,4 @@
-CascadeCanvas Beta
+CascadeCanvas 1.0.2 Beta
 ==================
 
 CascadeCanvas (CC) is an API to work with canvas rich applications (or games), drawing and organizing classes that works with mult-inheritance and will help to encapsulate behaviours to be reused to a lot of subclasses and instances. You should create classes, inherit this classes by other classes or "elements" and manipulate this classes or elements in the easiest way. It was made with the inspiration of jQuery and Crafty.
@@ -168,9 +168,13 @@ var first = pkms[0]; //but adding or removing from this array will cause nothing
 
 /**
 * returns true if this element matches the specification
+* the spec could be the value you want or an expression
+* eg.: "<= 3" to check if the attribute is <= 3, the operator should be at the start
+* available operators: <, >, <=, >=, !=
 */
 var isBulbasaur = pokemonA.matches({
-	pokemonId: 1
+	pokemonId: 1,
+	level: "< 16"
 });
 
 
@@ -225,11 +229,23 @@ CC("#ElementX").trigger("eventName");
 
 /**
 * trigger the action when the elements match the specs
+* the protocol of match is the same fo method "matches"
 */
 CC("Pokemon").became({
 	level: 16
 }, function(){
 	this.evolutionSequence = 2;
+});
+
+
+
+/**
+* trigger the action while the element match the specs
+*/
+CC("Megaman").became({
+	charging: true
+}, function(){
+	this.chargeLevel++;
 });
 
 
@@ -332,8 +348,8 @@ CC.merge(this.drawings, {
 		zIndex: -3, //the less zIndex is the most visible it is (in the front of other drawings)
 		offsetX: 10, //X of the drawing will be at element.x + 10
 		offsetY: 10, //Y of the drawing will be at element.y + 10
-		offsetW: 10, //Width of the drawing will be element.w + 10, 5 to each side
-		offsetH: 10, //Height of the drawing will be element.h + 10, 5 to each side
+		w: 10, //Width of the drawing this will override the element Width and will be centered at elements boundary
+		h: 10, //Height of the drawing this will override the element Height and will be centered at elements boundary
 		shape: "rect", //could be 'circle' or an array of points to form a polygon [ [0,0], [50, 50], [0, 50] ]
         flip: "xy", //flip drawing horizontally and vertically
         scale: {
@@ -380,6 +396,20 @@ CC.merge(this.drawings, {
 	}
 
 });
+
+
+
+/**
+* hide the drawing with the name of the first param and show the drawing with the name of the second param
+*/
+CC("Player").toggleDrawings("stand", "walking");
+
+
+
+/**
+* hide all drawings of this element
+*/
+CC("Player").hideAllDrawings();
 
 ```
 
@@ -527,6 +557,13 @@ CC.clear();
 
 
 /**
+* check if param is an object
+*/
+CC.isObject(param);
+
+
+
+/**
 * check if param is a function
 */
 CC.isFunction(param);
@@ -614,10 +651,16 @@ The Idea of CascadeCanvas is to re-use code, I would like to see the javascript 
 -- effects (transparency, blur, others)
 -- round borders using quadranticCurveTo for rect shapes
 
-- methods to switch drawings: toggleDrawings, tweenDrawings
+- A method to do an animation switching drawings: tweenDrawings
 
 - In metrics of drawings, like offsetX, you will be able to specify an simple calculation using percentage and pixels, eg.: "80% + 10px"
 
 - More Mouse events and better accuracy for click on element
+
+- ElementList will have element's custom methods (maybe)
+
+- Method removeClass that will remove the class of the element and invoke an event to unbild that class
+
+- Unbind Listeners like became, onClick and others
 
 - More [CC Plugins](#cc-plugins)
