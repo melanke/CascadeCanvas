@@ -1,3 +1,8 @@
+/***** ELEMENTLIST *****/
+
+//depends on element, objectTools
+//is not a internal dependency
+
 /**
 * a collection of elements
 */

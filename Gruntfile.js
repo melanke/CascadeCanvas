@@ -3,9 +3,28 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         concat: {
+        	options: {
+		        separator: '\n\n\n\n\n',
+		    },
 		    dist: {
 		        // the files to concatenate
-		        src: ['src/intro.js', 'src/core.js', 'src/element.js', 'src/elementlist.js', 'src/footer.js'],
+		        src: [
+			        'src/intro.js', 
+
+			        'src/core.js',
+			        'src/event.js', 
+			        'src/typeChecker.js', 
+			        'src/objectTools.js',
+			        'src/mouse.js',
+			        'src/keyboard.js', 
+			        'src/resource.js',
+			        'src/loop.js',
+			        'src/screen.js', 
+			        'src/element.js', 
+			        'src/elementlist.js', 
+
+			        'src/footer.js'
+		        ],
 		        // the location of the resulting JS file
 		        dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.js'
 		    }
