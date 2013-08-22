@@ -1,4 +1,4 @@
-CascadeCanvas 1.0.2 Beta
+CascadeCanvas 1.0.4 Beta
 ==================
 
 CascadeCanvas (CC) is an API to work with canvas rich applications (or games), drawing and organizing classes that works with mult-inheritance and will help to encapsulate behaviours to be reused to a lot of subclasses and instances. You should create classes, inherit this classes by other classes or "elements" and manipulate this classes or elements in the easiest way. It was made with the inspiration of jQuery and Crafty.
