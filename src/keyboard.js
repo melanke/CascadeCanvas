@@ -158,7 +158,7 @@ CC.isKeysPressedOnly = function(keys) {
 * @param action a function to be invoked when the event is triggered
 */
 CC.onKeysDown = function(keys, action) {
-    CC.bind("keydown", function(event){
+    return CC.bind("keydown", function(event){
         if (CC.isKeysPressed(keys)) {
             action(event);
         }
@@ -171,7 +171,7 @@ CC.onKeysDown = function(keys, action) {
 * @param action a function to be invoked when the event is triggered
 */
 CC.onKeysDownOnly = function(keys, action) {
-    CC.bind("keydown", function(event){
+    return CC.bind("keydown", function(event){
         if (CC.isKeysPressedOnly(keys)) {
             action(event);
         }
@@ -184,7 +184,7 @@ CC.onKeysDownOnly = function(keys, action) {
 * @param action a function to be invoked when the event is triggered
 */
 CC.onKeysComboEnd = function(keys, action) {
-    CC.bind("keyup", function(event){
+    return CC.bind("keyup", function(event){
         var wantedArr = keys.toUpperCase().replace(/ /g, "").split("+");
         var wantedMap = {};
 

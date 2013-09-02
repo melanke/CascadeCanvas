@@ -1,9 +1,9 @@
-CascadeCanvas 1.0.4 Beta
+CascadeCanvas 1.0.5 Beta
 ==================
 
 CascadeCanvas (CC) is an API to work with canvas rich applications (or games), drawing and organizing classes that works with mult-inheritance and will help to encapsulate behaviours to be reused to a lot of subclasses and instances. You should create classes, inherit this classes by other classes or "elements" and manipulate this classes or elements in the easiest way. It was made with the inspiration of jQuery and Crafty.
 
-- [Start](#start)
+- [Start Using](#start-using)
 - [Some features](#some-features)
 - [Methods of the Elements](#methods-of-the-elements)
 - [Building Classes](#building-classes)
@@ -15,7 +15,7 @@ CascadeCanvas (CC) is an API to work with canvas rich applications (or games), d
 - [CC Plugins](cc-plugins)
 - [Upcoming Features](upcoming-features)
 
-##Start
+##Start Using
 
 to start, you should put the canvas element in your Html with the "CascadeCanvas" id
 
@@ -643,24 +643,3 @@ CC.unbind(eventsStr, action);
 The Idea of CascadeCanvas is to re-use code, I would like to see the javascript open-source community using plugins of each others to build games. If you want to publish your plugin in this list please send a issue at this repository
 
 - [CC.Box2d](http://github.com/melanke/CC.Box2D) - An adaptor of Box2dWeb to CascadeCanvas, do things with physics or a simple collision detection
-
-##Upcoming features
-
-- A lot of drawing options like:
--- gradientRadial
--- effects (transparency, blur, others)
--- round borders using quadranticCurveTo for rect shapes
-
-- A method to do an animation switching drawings: tweenDrawings
-
-- In metrics of drawings, like offsetX, you will be able to specify an simple calculation using percentage and pixels, eg.: "80% + 10px"
-
-- More Mouse events and better accuracy for click on element
-
-- ElementList will have element's custom methods (maybe)
-
-- Method removeClass that will remove the class of the element and invoke an event to unbild that class
-
-- Unbind Listeners like became, onClick and others
-
-- More [CC Plugins](#cc-plugins)

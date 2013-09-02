@@ -40,7 +40,9 @@ var Element = function(specs, opts){
             el.zIndex = opts.zIndex;
         }
 
-        el.inherit(specs.replace(/#[a-zA-Z0-9]*/g, ""), opts);           
+        eventEnvironmentBuilder(el);
+
+        el.inherit(specs.replace(/#[a-zA-Z0-9]*/g, ""), opts);
 
     };
 
@@ -183,121 +185,6 @@ var Element = function(specs, opts){
     };
 
     /**
-    * register an action to an attached event to this element
-    * @param eventsStr a string with the event name and optinally a namespace
-    * the namespace is used to trigger, bind or unbind a section of the event
-    * use this capability to narrow the scope of our unbinding actions,
-    * example: 'eventName.namespace1'
-    * @param action a function to be invoked when the event is triggered
-    */
-    this.bind = function(eventsStr, action){
-
-        if (removed) {
-            return this;
-        }
-
-        var evtAndDomain = eventsStr.split(".");
-        var evt = evtAndDomain[0];
-        var domain = evtAndDomain[1] || "root";
-
-        if (!thisevents[evt]) {
-            thisevents[evt] = {};
-        }
-
-        if (!thisevents[evt][domain]) {
-            thisevents[evt][domain] = [];
-        }
-
-        thisevents[evt][domain].push(action);
-
-        return this;
-
-    };
-
-    /**
-    * remove an action attached to this element
-    * @param eventsStr a string with the event name and optinally a namespace
-    * the namespace is used to trigger, bind or unbind a section of the event
-    * use this capability to narrow the scope of our unbinding actions,
-    * example: 'eventName.namespace1'
-    * @param action (optional) if you dont specify the domain you can specify
-    * the action you want to remove
-    */
-    this.unbind = function(eventsStr, action){
-
-        if (removed) {
-            return this;
-        }
-
-        var evtAndDomain = eventsStr.split(".");
-        var evt = evtAndDomain[0];
-        var domain = evtAndDomain[1] || "root";
-
-        if (!thisevents[evt]) {
-            return this;
-        }
-
-        if (domain) {
-            delete thisevents[evt][domain];
-        } else if (action) {
-            for (var d in thisevents[evt]) {
-                for (var i in thisevents[evt][d]) {
-                    if (thisevents[evt][d][i] == action) {
-                        thisevents[evt][d].splice(i, 1);
-                    }
-                }
-            }
-        } else {
-            delete thisevents[evt];
-        }
-
-        return this;
-
-    };
-
-
-    /**
-    * invoke all actions of the event attached to this element
-    * @param eventsStr a string with the event name and optinally a namespace
-    * the namespace is used to trigger, bind or unbind a section of the event
-    * use this capability to narrow the scope of our unbinding actions,
-    * example: 'eventName.namespace1'
-    */
-    this.trigger = function(eventsStr){
-
-        if (removed && eventsStr !== "remove") {
-            return this;
-        }
-
-        var evtAndDomain = eventsStr.split(".");
-        var evt = evtAndDomain[0];
-        var domain = evtAndDomain[1] || "root";
-        var args = [].splice.call(arguments, 1); //all arguments except the first (eventsStr)
-
-        var callDomain = function(d){
-            for (var i in thisevents[evt][d]) {
-                thisevents[evt][domain][i].apply(el, args);
-            }
-        };
-
-        if (thisevents[evt] && thisevents[evt][domain]) {
-
-            if (domain != "root") {
-                callDomain(domain);
-            } else {
-                
-                for (var d in thisevents[evt]) {
-                    callDomain(d);
-                }
-
-            }
-        }
-
-        return this;
-
-    };
-
-    /**
     * trigger the action when the element match the specs
     */
     this.became = function(specs, action){
@@ -337,7 +224,7 @@ var Element = function(specs, opts){
     */
     this.onClick = function(action){
 
-        CC.bind("click", function(event){
+        return CC.bind("click", function(event){
             var x = event.offsetX;
             var y = event.offsetY;
             if (x >= el.x 

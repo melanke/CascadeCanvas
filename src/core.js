@@ -5,7 +5,6 @@
 
 var elementMap = {} //elements stored by id
 ,   elementsSize = 0
-,   events = {} //events stored by name
 ,   canvas = document.getElementById('CascadeCanvas');
 
 
@@ -133,7 +132,7 @@ CC.clear = function() {
     CC.classes = {};
     elementMap = {};
     elementsSize = 0;
-    events = {};
+    CC.clearEvents();
 
 };
 

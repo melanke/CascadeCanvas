@@ -24,7 +24,6 @@
 
 var elementMap = {} //elements stored by id
 ,   elementsSize = 0
-,   events = {} //events stored by name
 ,   canvas = document.getElementById('CascadeCanvas');
 
 
@@ -152,7 +151,7 @@ CC.clear = function() {
     CC.classes = {};
     elementMap = {};
     elementsSize = 0;
-    events = {};
+    CC.clearEvents();
 
 };
 
@@ -182,107 +181,137 @@ canvas.onselectstart = function() { return false; }; //prevent canvas selection
 /***** EVENT *****/
 
 //have no dependency
-//is dependency of element, loop, keyboard, mouse
+//is dependency of element, loop, keyboard, mouse, promise
 
-/**
-* register an action to a global event
-* @param eventsStr a string with the event name and optinally a namespace
-* the namespace is used to trigger, bind or unbind a section of the event
-* use this capability to narrow the scope of our unbinding actions,
-* example: 'eventName.namespace1'
-* @param action a function to be invoked when the event is triggered
-*/
-CC.bind = function(eventsStr, action){
+var eventEnvironmentBuilder = function(owner){
 
-    var evtAndNamespace = eventsStr.split(".");
-    var evtName = evtAndNamespace[0];
-    var namespace = evtAndNamespace[1] || "root";
+    var events = [];
 
-    if (!events[evtName]) {
-        events[evtName] = {};
-    }
+    /**
+    * register an action to a global event
+    * @param eventsStr a string with the event name and optinally a namespace
+    * the namespace is used to trigger, bind or unbind a section of the event
+    * use this capability to narrow the scope of our unbinding actions,
+    * example: 'eventName.namespace1'
+    * @param action a function to be invoked when the event is triggered
+    */
+    owner.bind = function(eventsStr, action){
 
-    if (!events[evtName][namespace]) {
-        events[evtName][namespace] = [];
-    }
+        var evtAndNamespace = eventsStr.split(".");
+        var evtName = evtAndNamespace[0];
+        var namespace = evtAndNamespace[1] || "root";
 
-    events[evtName][namespace].push(action);
+        if (!events[evtName]) {
+            events[evtName] = {};
+        }
 
-};
+        if (!events[evtName][namespace]) {
+            events[evtName][namespace] = [];
+        }
 
-/**
-* remove an action to a global event
-* @param eventsStr a string with the event name and optinally a namespace
-* the namespace is used to trigger, bind or unbind a section of the event
-* use this capability to narrow the scope of our unbinding actions,
-* example: 'eventName.namespace1'
-* @param action (optional) if you dont specify the domain you can specify
-* the action you want to remove
-*/
-CC.unbind = function(eventsStr, action){
+        if (action) {
+            events[evtName][namespace].push(action);
+        }
 
-    var evtAndDomain = eventsStr.split(".");
-    var evt = evtAndDomain[0];
-    var domain = evtAndDomain[1] || "root";
-
-    if (!events[evt]) {
-        return;
-    }
-
-    if (domain) {
-        delete events[evt][domain];
-    } else if (action) {
-        for (var d in events[evt]) {
-            for (var i in events[evt][d]) {
-                if (events[evt][d][i] === action) {
-                    events[evt][d].splice(i, 1);
-                }
+        return {
+            unbind: function(){
+                owner.unbind(eventsStr, action);
             }
-        }
-    } else {
-        delete events[evt];
-    }
+        };
 
-};
-
-/**
-* invoke all actions of a global event
-* @param eventsStr a string with the event name and optinally a namespace
-* the namespace is used to trigger, bind or unbind a section of the event
-* use this capability to narrow the scope of our unbinding actions,
-* example: 'eventName.namespace1'
-*/
-CC.trigger = function(eventsStr){
-
-    if (!running) {
-        return;
-    }
-
-    var evtAndDomain = eventsStr.split(".");
-    var evt = evtAndDomain[0];
-    var domain = evtAndDomain[1] || "root";
-    var args = [].splice.call(arguments, 1); //all arguments except the first (eventsStr)
-
-    var callDomain = function(d){
-        for (var i in events[evt][d]) {
-            events[evt][domain][i].apply(this, args);
-        }
     };
 
-    if (events[evt] && events[evt][domain]) {
+    /**
+    * remove an action to a global event
+    * @param eventsStr a string with the event name and optinally a namespace
+    * the namespace is used to trigger, bind or unbind a section of the event
+    * use this capability to narrow the scope of our unbinding actions,
+    * example: 'eventName.namespace1'
+    * @param action (optional) if you dont specify the domain you can specify
+    * the action you want to remove
+    */
+    owner.unbind = function(eventsStr, action){
 
-        if (domain != "root") {
-            callDomain(domain);
-        } else {
-            
-            for (var d in events[evt]) {
-                callDomain(d);
-            }
+        var evtAndNamespace = eventsStr.split(".");
+        var evtName = evtAndNamespace[0];
+        var namespace = evtAndNamespace[1] || "root";
 
+        if (!events[evtName]) {
+            return;
         }
-    }
+
+        if (namespace) {
+            delete events[evtName][namespace];
+        } else if (action) {
+
+            for (var n in events[evtName]) {
+                
+                for (var i in events[evtName][n]) {
+                    if (events[evtName][n][i] === action) {
+                        events[evtName][n].splice(i, 1);
+                    }
+                }
+                
+            }
+        } else {
+            delete events[evtName];
+        } 
+
+    };
+
+    /**
+    * invoke all actions of a global event
+    * @param eventsStr a string with the event name and optinally a namespace
+    * the namespace is used to trigger, bind or unbind a section of the event
+    * use this capability to narrow the scope of our unbinding actions,
+    * example: 'eventName.namespace1'
+    */
+    owner.trigger = function(eventsStr){
+
+        if (!running) {
+            return;
+        }
+
+        var evtAndNamespace = eventsStr.split(".");
+        var evtName = evtAndNamespace[0];
+        var namespace = evtAndNamespace[1] || "root";
+
+        var args = [].splice.call(arguments, 1); //all arguments except the first (eventsStr)
+
+        var callNamespace = function(n){
+            var e = events[evtName][n];
+
+            for (var i in e) {
+                e[i].apply(owner, args);
+            }
+        };
+
+        if (events[evtName] && events[evtName][namespace]) {
+
+            if (namespace != "root") {
+                callNamespace(namespace);
+            } else {
+                
+                for (var d in events[evtName]) {
+                    callNamespace(d);
+                }
+
+            }
+        }
+
+    };
+
+    owner.clearEvents = function(){
+        events = [];
+    };
+
+    owner.destroyEvents = function(){
+        //delete events;
+    };
 
 };
+
+eventEnvironmentBuilder(CC);
 
 
 
@@ -459,6 +488,115 @@ CC.rotatePoint = function(p, anchor, angle){
     };
 
 };
+
+
+
+
+/***** PROMISE *****/
+
+//depends on event
+//is dependency of ajax
+
+CC.Promise = function() {
+    this._callbacks = [];
+};
+
+CC.Promise.prototype.then = function(func, context) {
+    
+    var p;
+
+    if (this._isdone) {
+        p = func.apply(context, this.result);
+    } else {
+
+        p = new CC.Promise();
+
+        this._callbacks.push(function () {
+            
+            var res = func.apply(context, arguments);
+            
+            if (res && typeof res.then === 'function') {
+                res.then(p.done, p);
+            }
+            
+        });
+    }
+
+    return p;
+};
+
+CC.Promise.prototype.done = function() {
+    
+    this.result = arguments;
+    this._isdone = true;
+
+    for (var i = 0; i < this._callbacks.length; i++) {
+        this._callbacks[i].call(null, arguments);
+    }
+
+    this._callbacks = [];
+};
+
+CC.when = function(eventsStr){
+
+    var p = new CC.Promise();
+
+    var cb = function(){
+        p.done.apply(p, arguments);
+        CC.unbind(eventsStr, cb);
+    };
+
+    CC.bind(eventsStr, cb);
+
+    return p;
+
+};
+
+CC.promiseJoin = function(promises) {
+
+    var p = new CC.Promise();
+    var total = promises.length;
+    var numdone = 0;
+    var results = [];
+
+    var notifier = function(i) {
+        return function() {
+            numdone += 1;
+            results[i] = Array.prototype.slice.call(arguments);
+            
+            if (numdone === total) {
+                p.done(results);
+            }
+        };
+    }
+
+    for (var i = 0; i < total; i++) {
+        promises[i].then(notifier(i));
+    }
+
+    return p;
+};
+
+CC.promiseChain = function(funcs, args) {
+    
+    var p = new CC.Promise();
+    
+    if (funcs.length === 0) {
+        p.done.apply(p, args);
+    } else {
+
+        funcs[0].apply(null, args).then(function() {
+            
+            funcs.splice(0, 1);
+            
+            CC.promiseChain(funcs, arguments).then(function() {
+                p.done.apply(p, arguments);
+            });
+        });
+    }
+    return p;
+};
+
 
 
 
@@ -640,7 +778,7 @@ CC.isKeysPressedOnly = function(keys) {
 * @param action a function to be invoked when the event is triggered
 */
 CC.onKeysDown = function(keys, action) {
-    CC.bind("keydown", function(event){
+    return CC.bind("keydown", function(event){
         if (CC.isKeysPressed(keys)) {
             action(event);
         }
@@ -653,7 +791,7 @@ CC.onKeysDown = function(keys, action) {
 * @param action a function to be invoked when the event is triggered
 */
 CC.onKeysDownOnly = function(keys, action) {
-    CC.bind("keydown", function(event){
+    return CC.bind("keydown", function(event){
         if (CC.isKeysPressedOnly(keys)) {
             action(event);
         }
@@ -666,7 +804,7 @@ CC.onKeysDownOnly = function(keys, action) {
 * @param action a function to be invoked when the event is triggered
 */
 CC.onKeysComboEnd = function(keys, action) {
-    CC.bind("keyup", function(event){
+    return CC.bind("keyup", function(event){
         var wantedArr = keys.toUpperCase().replace(/ /g, "").split("+");
         var wantedMap = {};
 
@@ -690,6 +828,126 @@ CC.onKeysComboEnd = function(keys, action) {
 
         action(event);
     });
+};
+
+
+
+
+/***** AJAX *****/
+
+//depends on promise
+//is not a internal dependency
+
+/*
+* modified by Gil Lopes Bueno a.k.a melanke for CascadeCanvas
+*
+*  Copyright 2012-2013 (c) Pierre Duquesne <stackp@online.fr>
+*  Licensed under the New BSD License.
+*  https://github.com/stackp/promisejs
+*/
+
+/**
+* Configuration parameter: time in milliseconds after which a
+* pending AJAX request is considered unresponsive and is
+* aborted. Useful to deal with bad connectivity (e.g. on a
+* mobile network). A 0 value disables AJAX timeouts.
+*
+* Aborted requests resolve the promise with a ETIMEOUT error
+* code.
+*/
+CC.ajaxTimeout = 0;
+
+var ENOXHR = 1;
+var ETIMEOUT = 2;
+
+var _encode = function(data) {
+    var result = "";
+    
+    if (typeof data === "string") {
+        result = data;
+    } else {
+        var e = encodeURIComponent;
+
+        for (var k in data) {
+            if (data.hasOwnProperty(k)) {
+                result += '&' + e(k) + '=' + e(data[k]);
+            }
+        }
+    }
+    return result;
+};
+
+var new_xhr = function() {
+    var xhr;
+    
+    if (window.XMLHttpRequest) {
+        xhr = new XMLHttpRequest();
+    } else if (window.ActiveXObject) {
+        
+        try {
+            xhr = new ActiveXObject("Msxml2.XMLHTTP");
+        } catch (e) {
+            xhr = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+    }
+
+    return xhr;
+};
+
+CC.ajax = function(method, url, data, headers) {
+
+    var p = new CC.Promise();
+    var xhr, payload;
+    data = data || {};
+    headers = headers || {};
+
+    try {
+        xhr = new_xhr();
+    } catch (e) {
+        p.done(ENOXHR, "");
+    	return p;
+    }
+
+    payload = _encode(data);
+
+    if (method === 'GET' && payload) {
+        url += '?' + payload;
+        payload = null;
+    }
+
+    xhr.open(method, url);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    
+    for (var h in headers) {
+        if (headers.hasOwnProperty(h)) {
+            xhr.setRequestHeader(h, headers[h]);
+        }
+    }
+
+    var onTimeout = function() {
+        xhr.abort();
+        p.done(ETIMEOUT, "", xhr);
+    }
+
+    var timeout = ajaxTimeout;
+    
+    if (timeout) {
+        var tid = setTimeout(onTimeout, timeout);
+    }
+
+    xhr.onreadystatechange = function() {
+        if (timeout) {
+            clearTimeout(tid);
+        }
+        if (xhr.readyState === 4) {
+            var err = (!xhr.status || (xhr.status < 200 || xhr.status >= 300) && xhr.status !== 304);
+            p.done(err, xhr.responseText, xhr);
+        }
+    };
+
+    xhr.send(payload);
+
+    return p;
 };
 
 
@@ -878,7 +1136,9 @@ var Element = function(specs, opts){
             el.zIndex = opts.zIndex;
         }
 
-        el.inherit(specs.replace(/#[a-zA-Z0-9]*/g, ""), opts);           
+        eventEnvironmentBuilder(el);
+
+        el.inherit(specs.replace(/#[a-zA-Z0-9]*/g, ""), opts);
 
     };
 
@@ -1021,121 +1281,6 @@ var Element = function(specs, opts){
     };
 
     /**
-    * register an action to an attached event to this element
-    * @param eventsStr a string with the event name and optinally a namespace
-    * the namespace is used to trigger, bind or unbind a section of the event
-    * use this capability to narrow the scope of our unbinding actions,
-    * example: 'eventName.namespace1'
-    * @param action a function to be invoked when the event is triggered
-    */
-    this.bind = function(eventsStr, action){
-
-        if (removed) {
-            return this;
-        }
-
-        var evtAndDomain = eventsStr.split(".");
-        var evt = evtAndDomain[0];
-        var domain = evtAndDomain[1] || "root";
-
-        if (!thisevents[evt]) {
-            thisevents[evt] = {};
-        }
-
-        if (!thisevents[evt][domain]) {
-            thisevents[evt][domain] = [];
-        }
-
-        thisevents[evt][domain].push(action);
-
-        return this;
-
-    };
-
-    /**
-    * remove an action attached to this element
-    * @param eventsStr a string with the event name and optinally a namespace
-    * the namespace is used to trigger, bind or unbind a section of the event
-    * use this capability to narrow the scope of our unbinding actions,
-    * example: 'eventName.namespace1'
-    * @param action (optional) if you dont specify the domain you can specify
-    * the action you want to remove
-    */
-    this.unbind = function(eventsStr, action){
-
-        if (removed) {
-            return this;
-        }
-
-        var evtAndDomain = eventsStr.split(".");
-        var evt = evtAndDomain[0];
-        var domain = evtAndDomain[1] || "root";
-
-        if (!thisevents[evt]) {
-            return this;
-        }
-
-        if (domain) {
-            delete thisevents[evt][domain];
-        } else if (action) {
-            for (var d in thisevents[evt]) {
-                for (var i in thisevents[evt][d]) {
-                    if (thisevents[evt][d][i] == action) {
-                        thisevents[evt][d].splice(i, 1);
-                    }
-                }
-            }
-        } else {
-            delete thisevents[evt];
-        }
-
-        return this;
-
-    };
-
-
-    /**
-    * invoke all actions of the event attached to this element
-    * @param eventsStr a string with the event name and optinally a namespace
-    * the namespace is used to trigger, bind or unbind a section of the event
-    * use this capability to narrow the scope of our unbinding actions,
-    * example: 'eventName.namespace1'
-    */
-    this.trigger = function(eventsStr){
-
-        if (removed && eventsStr !== "remove") {
-            return this;
-        }
-
-        var evtAndDomain = eventsStr.split(".");
-        var evt = evtAndDomain[0];
-        var domain = evtAndDomain[1] || "root";
-        var args = [].splice.call(arguments, 1); //all arguments except the first (eventsStr)
-
-        var callDomain = function(d){
-            for (var i in thisevents[evt][d]) {
-                thisevents[evt][domain][i].apply(el, args);
-            }
-        };
-
-        if (thisevents[evt] && thisevents[evt][domain]) {
-
-            if (domain != "root") {
-                callDomain(domain);
-            } else {
-                
-                for (var d in thisevents[evt]) {
-                    callDomain(d);
-                }
-
-            }
-        }
-
-        return this;
-
-    };
-
-    /**
     * trigger the action when the element match the specs
     */
     this.became = function(specs, action){
@@ -1175,7 +1320,7 @@ var Element = function(specs, opts){
     */
     this.onClick = function(action){
 
-        CC.bind("click", function(event){
+        return CC.bind("click", function(event){
             var x = event.offsetX;
             var y = event.offsetY;
             if (x >= el.x 
@@ -1742,11 +1887,21 @@ var ElementList = function(elements, selection){
 
     this.bind = function(eventsStr, action){
 
+        var listOfEvents = [];
+
         this.each(function(){
-            this.bind(eventsStr, action);
+            listOfEvents.push(
+                this.bind(eventsStr, action)
+            );
         });
 
-        return this;
+        return {
+            unbind: function() {
+                for (var i in listOfEvents) {
+                    listOfEvents[i].unbind();
+                }
+            }
+        };
 
     };
 
@@ -1772,31 +1927,61 @@ var ElementList = function(elements, selection){
 
     this.became = function(){
 
+        var listOfEvents = [];
+
         this.each(function(){
-            this.became.apply(this, arguments);
+            listOfEvents.push(
+                this.became.apply(this, arguments)
+            );
         });
 
-        return this;
+        return {
+            unbind: function() {
+                for (var i in listOfEvents) {
+                    listOfEvents[i].unbind();
+                }
+            }
+        };
 
     };
 
     this.while = function(){
 
+        var listOfEvents = [];
+
         this.each(function(){
-            this.while.apply(this, arguments);
+            listOfEvents.push(
+                this.while.apply(this, arguments)
+            );
         });
 
-        return this;
+        return {
+            unbind: function() {
+                for (var i in listOfEvents) {
+                    listOfEvents[i].unbind();
+                }
+            }
+        };
 
     };
 
     this.onClick = function(){
 
+        var listOfEvents = [];
+
         this.each(function(){
-            this.onClick.apply(this, arguments);
+            listOfEvents.push(
+                this.onClick.apply(this, arguments)
+            );
         });
 
-        return this;
+        return {
+            unbind: function() {
+                for (var i in listOfEvents) {
+                    listOfEvents[i].unbind();
+                }
+            }
+        };
 
     };
 

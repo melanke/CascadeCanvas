@@ -106,11 +106,21 @@ var ElementList = function(elements, selection){
 
     this.bind = function(eventsStr, action){
 
+        var listOfEvents = [];
+
         this.each(function(){
-            this.bind(eventsStr, action);
+            listOfEvents.push(
+                this.bind(eventsStr, action)
+            );
         });
 
-        return this;
+        return {
+            unbind: function() {
+                for (var i in listOfEvents) {
+                    listOfEvents[i].unbind();
+                }
+            }
+        };
 
     };
 
@@ -136,31 +146,61 @@ var ElementList = function(elements, selection){
 
     this.became = function(){
 
+        var listOfEvents = [];
+
         this.each(function(){
-            this.became.apply(this, arguments);
+            listOfEvents.push(
+                this.became.apply(this, arguments)
+            );
         });
 
-        return this;
+        return {
+            unbind: function() {
+                for (var i in listOfEvents) {
+                    listOfEvents[i].unbind();
+                }
+            }
+        };
 
     };
 
     this.while = function(){
 
+        var listOfEvents = [];
+
         this.each(function(){
-            this.while.apply(this, arguments);
+            listOfEvents.push(
+                this.while.apply(this, arguments)
+            );
         });
 
-        return this;
+        return {
+            unbind: function() {
+                for (var i in listOfEvents) {
+                    listOfEvents[i].unbind();
+                }
+            }
+        };
 
     };
 
     this.onClick = function(){
 
+        var listOfEvents = [];
+
         this.each(function(){
-            this.onClick.apply(this, arguments);
+            listOfEvents.push(
+                this.onClick.apply(this, arguments)
+            );
         });
 
-        return this;
+        return {
+            unbind: function() {
+                for (var i in listOfEvents) {
+                    listOfEvents[i].unbind();
+                }
+            }
+        };
 
     };
 
