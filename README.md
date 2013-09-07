@@ -5,6 +5,8 @@ CascadeCanvas (CC) is an API to work with canvas rich applications (or games), d
 
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=H84XN5VYTBVYQ&lc=BR&item_name=Cascade%20Canvas&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted)
 
+[![Build Status](https://travis-ci.org/CascadeCanvas/CascadeCanvas.png)](https://travis-ci.org/CascadeCanvas/CascadeCanvas)
+
 - [Start Using](#start-using)
 - [Some features](#some-features)
 - [Methods of the Elements](#methods-of-the-elements)
