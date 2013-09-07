@@ -1,0 +1,29 @@
+{
+  "name": "CascadeCanvas",
+  "version": "1.0.6",
+  "homepage": "https://github.com/CascadeCanvas/CascadeCanvas",
+  "authors": [
+    "Gil Lopes Bueno <melanke.hc@gmail.com>"
+  ],
+  "description": "CascadeCanvas (CC) is an API to work with canvas rich applications (or games), drawing and organizing classes that works with mult-inheritance and will help to encapsulate behaviours to be reused",
+  "keywords": [
+    "canvas",
+    "rich",
+    "applications",
+    "games",
+    "drawing",
+    "organizing",
+    "classes",
+    "multi-inheritance",
+    "subclass",
+    "jquery"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
