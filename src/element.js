@@ -14,6 +14,7 @@ var Element = function(specs, opts){
 
     this.classes = {}; //classes this inherits
     this.drawings = {}; //a Map of shapes or functions by name to be draw
+    this.length = 1; //just to let the user know it is not an array
 
     /**
     * routine for initialization:

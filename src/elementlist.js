@@ -9,6 +9,7 @@
 var ElementList = function(elements, selection){
 
     this.selection = selection;
+    this.length = elements.length;
 
     /**
     * invoke an action for all elements selected

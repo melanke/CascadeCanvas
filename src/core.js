@@ -5,7 +5,7 @@
 
 var elementMap = {} //elements stored by id
 ,   elementsSize = 0
-,   canvas = document.getElementById('CascadeCanvas');
+,   canvas = document.getElementById('CascadeCanvas') || {};
 
 
 
@@ -23,7 +23,7 @@ var CC = function(selector){
             asArray.push(elementMap[e]);
         }
 
-        return new ElementList(asArray);
+        return new ElementList(asArray, selector);
     }
 
     var id;
@@ -71,7 +71,7 @@ var CC = function(selector){
     }
 
     //else: return all items as a Collection
-    return new ElementList(selecteds);
+    return new ElementList(selecteds, selector);
 
 };
 
@@ -80,7 +80,7 @@ var CC = function(selector){
 
 CC.screen = { x:0, y:0 }; //the area of the screen
 CC.classes = {}; //defined classes expecting to be instantiated
-CC.context = canvas.getContext('2d');
+CC.context = canvas.getContext && canvas.getContext('2d');
 CC.step = 0; //each loop increments the step, it is used for animation proposes
 
 

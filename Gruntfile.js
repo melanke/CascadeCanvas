@@ -30,11 +30,21 @@ module.exports = function(grunt) {
 		        // the location of the resulting JS file
 		        dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.js'
 		    }
-		}
+		},
+	    jasmine : {
+	        src : 'dist/<%= pkg.name %>-<%= pkg.version %>.js',
+	        options : {
+	            specs : 'specs/**/*.js'
+	        }
+	    }
     });
 
     grunt.loadNpmTasks('grunt-contrib-concat');
+    
+  	grunt.loadNpmTasks('grunt-contrib-jasmine');
 
-    grunt.registerTask('default', ['concat']);
+    grunt.registerTask('default', ['concat', 'jasmine']);
+
+    grunt.registerTask('travis', ['concat', 'jasmine']);
 
 };
