@@ -303,6 +303,21 @@ var Element = function(specs, opts){
     *               "0": "rgba(200, 100, 100, 0.8)", //color stops (beginning)
     *               "0.5": "#f00", //(middle)
     *               "1": "#0000dd" //(end)
+    *           },
+    *           radialGradient: {
+    *               innerCircle: {
+    *                   centerX: 25, //percentage of the position of the inner circle
+    *                   centerY: 25, //percentage of the position of the inner circle
+    *                   radius: 20 //percentage of the radius of the inner circle
+    *               },
+    *               outerCircle: {
+    *                   centerX: 75, //percentage of the position of the inner circle
+    *                   centerY: 75, //percentage of the position of the inner circle
+    *                   radius: 50 //percentage of the radius of the inner circle
+    *               },
+    *               "0": "rgba(200, 100, 100, 0.8)", //color stops (beginning)
+    *               "0.5": "#f00", //(middle)
+    *               "1": "#0000dd" //(end)
     *           }
     *       },
     *       sprite: {
@@ -455,6 +470,10 @@ var Element = function(specs, opts){
 
                 CC.context.fillStyle = createLinearGradient(layr.fill.linearGradient, FW, FH);
                 
+            } else if (layr.fill.radialGradient) {
+
+                CC.context.fillStyle = createRadialGradient(layr.fill.radialGradient, FW, FH);
+
             }
 
             //draw a rectangle
@@ -673,6 +692,62 @@ var Element = function(specs, opts){
             var stop = parseFloat(s);
             if (!isNaN(stop) && isFinite(stop)) {
                 gradient.addColorStop(stop, linearGradient[s]);
+            }
+        }
+
+        return gradient;
+
+    };
+
+    var createRadialGradient = function(radialGradient, FW, FH){
+
+        if (!radialGradient.innerCircle) {
+            radialGradient.innerCircle = {};
+        }
+
+        if (radialGradient.innerCircle.centerX === undefined) {
+            radialGradient.innerCircle.centerX = 50;
+        }
+
+        if (radialGradient.innerCircle.centerY === undefined) {
+            radialGradient.innerCircle.centerY = 50;
+        }        
+
+        if (radialGradient.innerCircle.radius === undefined) {
+            radialGradient.innerCircle.radius = 0;
+        }
+
+        if (!radialGradient.outerCircle) {
+            radialGradient.outerCircle = {};
+        }
+
+        if (radialGradient.outerCircle.centerX === undefined) {
+            radialGradient.outerCircle.centerX = 50;
+        }
+
+        if (radialGradient.outerCircle.centerY === undefined) {
+            radialGradient.outerCircle.centerY = 50;
+        }        
+
+        if (radialGradient.outerCircle.radius === undefined) {
+            radialGradient.outerCircle.radius = 100;
+        }
+
+        var maxDim = Math.max(FW, FH);
+
+        var x1 = radialGradient.innerCircle.centerX / 100 * FW;
+        var y1 = radialGradient.innerCircle.centerY / 100 * FH;
+        var r1 = radialGradient.innerCircle.radius / 100 * maxDim;
+        var x2 = radialGradient.outerCircle.centerX / 100 * FW;
+        var y2 = radialGradient.outerCircle.centerY / 100 * FH;
+        var r2 = radialGradient.outerCircle.radius / 100 * maxDim;
+
+        var gradient = CC.context.createRadialGradient(x1, y1, r1, x2, y2, r2);
+
+        for (var s in radialGradient) {
+            var stop = parseFloat(s);
+            if (!isNaN(stop) && isFinite(stop)) {
+                gradient.addColorStop(stop, radialGradient[s]);
             }
         }
 

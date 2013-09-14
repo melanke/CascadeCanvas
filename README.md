@@ -1,4 +1,4 @@
-# CascadeCanvas 1.0.6 Beta [![Build Status](https://travis-ci.org/CascadeCanvas/CascadeCanvas.png)](https://travis-ci.org/CascadeCanvas/CascadeCanvas)
+# CascadeCanvas 1.0.7 Beta [![Build Status](https://travis-ci.org/CascadeCanvas/CascadeCanvas.png)](https://travis-ci.org/CascadeCanvas/CascadeCanvas)
 
 CascadeCanvas (CC) is an API to work with canvas rich applications (or games), drawing and organizing classes that works with mult-inheritance and will help to encapsulate behaviours to be reused to a lot of subclasses and instances. You should create classes, inherit this classes by other classes or "elements" and manipulate this classes or elements in the easiest way. It was made with the inspiration of jQuery and Crafty.
 
@@ -327,14 +327,14 @@ el1.method1();
 
 ```javascript
 
-//to draw an element you need to declare the "drawings" in the class or in the element like this
-CC("#selectedEl").drawings = {
-	//declaring the drawing of the element, but in this way you will override the drawings made before in classes
+//to draw an element you need to declare the "layers" in the class or in the element like this
+CC("#selectedEl").layers = {
+	//declaring the layer of the element, but in this way you will override the layers made before in classes
 };
 
 //you should always use 'merge'
 CC("#selectedEl").merge({
-	drawings: {
+	layers: {
 
 	}
 });
@@ -342,26 +342,26 @@ CC("#selectedEl").merge({
 //but would be better if you do it in the class to be reutilizated
 CC.def("Class1", function(opts){
 
-	CC.merge(this.drawings, {
+	CC.merge(this.layers, {
 		
 	});
 
 });
 
-//BUT WHAT OPTIONS TO DRAWINGS I HAVE?
-//give a name and the options of that drawing
+//BUT WHAT OPTIONS TO LAYERS I HAVE?
+//give a name and the options of that layer
 
-CC.merge(this.drawings, {
+CC.merge(this.layers, {
 
-	theNameOfMyDrawing: {
-		 hidden: true, //make the drawing invisible
-		zIndex: -3, //the less zIndex is the most visible it is (in the front of other drawings)
-		offsetX: 10, //X of the drawing will be at element.x + 10
-		offsetY: 10, //Y of the drawing will be at element.y + 10
-		w: 10, //Width of the drawing this will override the element Width and will be centered at elements boundary
-		h: 10, //Height of the drawing this will override the element Height and will be centered at elements boundary
+	theNameOfMyLayer: {
+		 hidden: true, //make the layer invisible
+		zIndex: -3, //the less zIndex is the most visible it is (in the front of other layers)
+		offsetX: 10, //X of the layer will be at element.x + 10
+		offsetY: 10, //Y of the layer will be at element.y + 10
+		w: 10, //Width of the layer this will override the element Width and will be centered at elements boundary
+		h: 10, //Height of the layer this will override the element Height and will be centered at elements boundary
 		shape: "rect", //could be 'circle' or an array of points to form a polygon [ [0,0], [50, 50], [0, 50] ]
-        flip: "xy", //flip drawing horizontally and vertically
+        flip: "xy", //flip layer horizontally and vertically
         scale: {
             x: 2, //will strech horizontaly
             y: 0.5 //will squeeze vertically
@@ -385,6 +385,21 @@ CC.merge(this.drawings, {
 				"0.5": "#f00", //(middle)
 				"1": "#0000dd" //(end)
 			}
+            radialGradient: {
+                innerCircle: {
+                    centerX: 25, //percentage of the position of the inner circle
+                    centerY: 25, //percentage of the position of the inner circle
+                    radius: 20 //percentage of the radius of the inner circle
+                },
+                outerCircle: {
+                    centerX: 75, //percentage of the position of the inner circle
+                    centerY: 75, //percentage of the position of the inner circle
+                    radius: 50 //percentage of the radius of the inner circle
+                },
+                "0": "rgba(200, 100, 100, 0.8)", //color stops (beginning)
+                "0.5": "#f00", //(middle)
+                "1": "#0000dd" //(end)
+            }
 		},
         sprite: {
            url: "res/player.png", //image url
@@ -398,7 +413,7 @@ CC.merge(this.drawings, {
         }
 	},
 
-	theNameOfMyOtherDrawing: function(){
+	theNameOfMyOtherLayer: function(){
 		//create a custom function to draw
 
 		CC.context.fillRect(this.x, this.y, this.x + this.w, this.y + this.h);
@@ -410,16 +425,16 @@ CC.merge(this.drawings, {
 
 
 /**
-* hide the drawing with the name of the first param and show the drawing with the name of the second param
+* hide the layer with the name of the first param and show the layer with the name of the second param
 */
-CC("Player").toggleDrawings("stand", "walking");
+CC("Player").toggleLayers("stand", "walking");
 
 
 
 /**
-* hide all drawings of this element
+* hide all layers of this element
 */
-CC("Player").hideAllDrawings();
+CC("Player").hideAllLayers();
 
 ```
 
@@ -540,7 +555,7 @@ CC("#elementId").onClick(function(event){
 - zIndex - element order to be draw (the less zIndex is the more visible the element will be - in front of others)
 - hidden - if you dont want to show the element
 - flip - if you wnat to flip the entire element ("x", "y", "xy")
-- drawings - an map of drawings
+- layers - an map of layers
 - classes - the classes it inherits
 
 ##CC Attributes
