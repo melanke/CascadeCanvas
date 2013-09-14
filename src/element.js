@@ -526,6 +526,10 @@ var Element = function(specs, opts){
 
                 CC.context.strokeStyle = createLinearGradient(layr.stroke.linearGradient, FW, FH);
                 
+            } else if (layr.fill.radialGradient) {
+
+                CC.context.strokeStyle = createRadialGradient(layr.stroke.radialGradient, FW, FH);
+
             }
 
             //stroke thickness
