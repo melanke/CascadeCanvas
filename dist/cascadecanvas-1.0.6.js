@@ -1098,7 +1098,7 @@ var Element = function(specs, opts){
         removed = false; //an extra protection to ignore removed elements
 
     this.classes = {}; //classes this inherits
-    this.drawings = {}; //a Map of shapes or functions by name to be draw
+    this.layers = {}; //a Map of layers or functions by name to be draw
     this.length = 1; //just to let the user know it is not an array
 
     /**
@@ -1323,15 +1323,15 @@ var Element = function(specs, opts){
 
     };
 
-    this.hideAllDrawings = function() {
-        for (var i in this.drawings) {
-            this.drawings[i].hidden = true;
+    this.hideAllLayers = function() {
+        for (var i in this.layers) {
+            this.layers[i].hidden = true;
         }
     };
 
-    this.toggleDrawings = function(toHide, toShow) {
-        this.drawings[toHide].hidden = true;
-        this.drawings[toShow].hidden = false;
+    this.toggleLayers = function(toHide, toShow) {
+        this.layers[toHide].hidden = true;
+        this.layers[toShow].hidden = false;
     };
 
     /**
@@ -1343,14 +1343,14 @@ var Element = function(specs, opts){
             return;
         }
 
-        var drawings = CC.sort(this.drawings, "zIndex", true);
+        var layers = CC.sort(this.layers, "zIndex", true);
 
-        for (var s in drawings) {
-            var draw = drawings[s];
-            if (CC.isFunction(draw)) {
-                draw.call(this);
+        for (var s in layers) {
+            var layr = layers[s];
+            if (CC.isFunction(layr)) {
+                layr.call(this);
             } else {
-                drawShape(draw);
+                drawLayer(layr);
             }
         }
 
@@ -1358,15 +1358,15 @@ var Element = function(specs, opts){
 
     /**
     * {
-    *       hidden: true, //make the drawing invisible
-    *       zIndex: 3, //the less zIndex is most visible it is (in the front of other drawings)
-    *       offsetX: 10, //drawing will be 10 to the right
+    *       hidden: true, //make the layer invisible
+    *       zIndex: 3, //the less zIndex is most visible it is (in in front of other layers)
+    *       offsetX: 10, //layer will be 10 to the right
     *       offsetY: 10, //10 to the bottom
     *       offsetW: 10, //10 wider, 5 to each side
     *       offsetH: 10, //10 taller, 5 to each side,
     *       shape: "rect", //could be 'circle' or an array of points to form a polygon [ [0,0], [50, 50], [0, 50] ]
     *       angle: 30, //rotated 30 degrees
-    *       flip: "xy", //flip drawing horizontally and vertically
+    *       flip: "xy", //flip layer horizontally and vertically
     *       scale: {
     *           x: 2, //will strech horizontaly
     *           y: 0.5 //will squeeze vertically
@@ -1402,42 +1402,45 @@ var Element = function(specs, opts){
     *       }
     * }
     */
-    var drawShape = function(drawing){
+    var drawLayer = function(layr){
 
-        if (!drawing || drawing.hidden === true) {
+        if (!layr || layr.hidden === true) {
             return;
         }
 
-        //defining a Width and Height of an element without width and height based on the shape polygon points
+        //defining a Width and Height of the element
         var EW = el.w,
             EH = el.h;
-        if (CC.isArray(drawing.shape) && (!el.w || !el.h)) {
+        //if it is a polygon and dont have W and H we discover it
+        if (CC.isArray(layr.shape) && (!el.w || !el.h)) {
             EW = el.w || 0;
             EH = el.h || 0;
-            for (var i in drawing.shape) {
-                EW = Math.max(EW, drawing.shape[i][0]);
-                EH = Math.max(EH, drawing.shape[i][1]);
+            for (var i in layr.shape) {
+                EW = Math.max(EW, layr.shape[i][0]);
+                EH = Math.max(EH, layr.shape[i][1]);
             }
         }
 
 
-        var offsetX = drawing.offsetX || 0,
-            offsetY = drawing.offsetY || 0,
-            FW = drawing.w || EW, //final W
-            FH = drawing.h || EH; //final H
+        var offsetX = layr.offsetX || 0,
+            offsetY = layr.offsetY || 0,
+            FW = layr.w || EW, //final W
+            FH = layr.h || EH; //final H
 
         //dont draw if it isn't in screen range
-        // if (el.x + offsetX + FW < CC.screen.x
-        // || el.x - offsetX - FW > CC.screen.x + CC.screen.w
-        // || el.y + offsetY + FH < CC.screen.y
-        // || el.y - offsetY - FH > CC.screen.y + CC.screen.h) {
-        //     return;
-        // }
+        var normalSX = CC.screen.x * -1;
+        var normalSY = CC.screen.y * -1;
+        if (el.x + offsetX + FW < normalSX
+        || el.x + offsetX - FW > normalSX + CC.screen.w
+        || el.y + offsetY + FH < normalSY
+        || el.y + offsetY - FH > normalSY + CC.screen.h) {
+            return;
+        }
 
         //save context to be able to restore to this state
         CC.context.save();
 
-        //draw the drawing relative to screen x and y (to offset the camera position)
+        //draw the layer relative to screen x and y (to offset the camera position)
         CC.context.translate(CC.screen.x, CC.screen.y);
 
         //translate the canvas to the x, y of the element to draw it from 0, 0
@@ -1462,23 +1465,23 @@ var Element = function(specs, opts){
             CC.context.translate(-el.anchor.x, -el.anchor.y);
         }
 
-        //'drawing' rotation
-        if (drawing.angle) {
+        //'layer' rotation
+        if (layr.angle) {
 
-            //'drawing' anchor point - default will be the center of element
-            if (!drawing.anchor) {
-                drawing.anchor = el.anchor || {
+            //'layer' anchor point - default will be the center of element
+            if (!layr.anchor) {
+                layr.anchor = el.anchor || {
                     x: EW / 2,
                     y: EH / 2
                 };
             }
 
             //translate to the anchor point
-            CC.context.translate(drawing.anchor.x, drawing.anchor.y);
+            CC.context.translate(layr.anchor.x, layr.anchor.y);
             //rotate
-            CC.context.rotate(drawing.angle * Math.PI/180);
+            CC.context.rotate(layr.angle * Math.PI/180);
             //get back to previous 0, 0
-            CC.context.translate(-drawing.anchor.x, -drawing.anchor.y);
+            CC.context.translate(-layr.anchor.x, -layr.anchor.y);
         }
 
         //translate to the chosen offset
@@ -1500,10 +1503,10 @@ var Element = function(specs, opts){
             CC.context.translate(-FW/2, -FH/2);
         }
 
-        //flipping the drawing
-        if (drawing.flip && drawing.flip.length) {
-            var scaleHor = drawing.flip.indexOf("x") != -1 ? -1 : 1;
-            var scaleVer = drawing.flip.indexOf("y") != -1 ? -1 : 1;
+        //flipping the layer
+        if (layr.flip && layr.flip.length) {
+            var scaleHor = layr.flip.indexOf("x") != -1 ? -1 : 1;
+            var scaleVer = layr.flip.indexOf("y") != -1 ? -1 : 1;
 
             //translate to the center
             CC.context.translate(FW/2, FH/2);
@@ -1513,39 +1516,39 @@ var Element = function(specs, opts){
             CC.context.translate(-FW/2, -FH/2);
         }
 
-        //scale - if want to stretch or squeeze the drawing
-        if (drawing.scale && (drawing.scale.x || drawing.scale.y)) {
+        //scale - if want to stretch or squeeze the layer
+        if (layr.scale && (layr.scale.x || layr.scale.y)) {
 
             //translate to the center
             CC.context.translate(FW/2, FH/2);
             //scale
-            CC.context.scale(drawing.scale.x || 1, drawing.scale.y || 1);
+            CC.context.scale(layr.scale.x || 1, layr.scale.y || 1);
             //translate back to 0, 0
             CC.context.translate(-FW/2, -FH/2);
         }
 
         //fill
-        if (drawing.fill) {
+        if (layr.fill) {
 
             //by color
-            if (drawing.fill.color && CC.isString(drawing.fill.color)) {
+            if (layr.fill.color && CC.isString(layr.fill.color)) {
 
-                CC.context.fillStyle = drawing.fill.color;
+                CC.context.fillStyle = layr.fill.color;
 
             //by linear gradient
-            } else if (drawing.fill.linearGradient) {
+            } else if (layr.fill.linearGradient) {
 
-                CC.context.fillStyle = createLinearGradient(drawing.fill.linearGradient, FW, FH);
+                CC.context.fillStyle = createLinearGradient(layr.fill.linearGradient, FW, FH);
                 
             }
 
             //draw a rectangle
-            if (drawing.shape === "rect") {
+            if (layr.shape === "rect") {
 
                 CC.context.fillRect(0, 0, FW, FH);
 
             //draw a circle
-            } else if (drawing.shape === "circle") {
+            } else if (layr.shape === "circle") {
 
                 CC.context.beginPath();
                 
@@ -1560,13 +1563,13 @@ var Element = function(specs, opts){
                 CC.context.fill();
 
             //draw a polygon
-            } else if (CC.isArray(drawing.shape)) {
+            } else if (CC.isArray(layr.shape)) {
 
                 CC.context.beginPath();
-                CC.context.moveTo(drawing.shape[0][0], drawing.shape[0][1]);
+                CC.context.moveTo(layr.shape[0][0], layr.shape[0][1]);
 
-                for (var p in drawing.shape) {
-                    var point = drawing.shape[p];
+                for (var p in layr.shape) {
+                    var point = layr.shape[p];
                     CC.context.lineTo(point[0], point[1]);
                 }
 
@@ -1577,42 +1580,42 @@ var Element = function(specs, opts){
         }
 
         //stroke
-        if (drawing.stroke) {
+        if (layr.stroke) {
 
             //by color
-            if (drawing.stroke.color && CC.isString(drawing.stroke.color)) {
+            if (layr.stroke.color && CC.isString(layr.stroke.color)) {
 
-                CC.context.strokeStyle = drawing.stroke.color;
+                CC.context.strokeStyle = layr.stroke.color;
 
             //by linearGradient
-            } else if (drawing.stroke.linearGradient) {
+            } else if (layr.stroke.linearGradient) {
 
-                CC.context.strokeStyle = createLinearGradient(drawing.stroke.linearGradient, FW, FH);
+                CC.context.strokeStyle = createLinearGradient(layr.stroke.linearGradient, FW, FH);
                 
             }
 
             //stroke thickness
-            if (drawing.stroke.thickness) { 
-                CC.context.lineWidth = drawing.stroke.thickness;
+            if (layr.stroke.thickness) { 
+                CC.context.lineWidth = layr.stroke.thickness;
             }
 
             //stroke end style - 'butt','round' OR 'square'
-            if (drawing.stroke.cap) { 
-                CC.context.lineCap = drawing.stroke.cap;
+            if (layr.stroke.cap) { 
+                CC.context.lineCap = layr.stroke.cap;
             }
 
             //stroke curve style - 'round','bevel' OR 'miter'
-            if (drawing.stroke.join) { 
-                CC.context.lineJoin = drawing.stroke.join;
+            if (layr.stroke.join) { 
+                CC.context.lineJoin = layr.stroke.join;
             }
 
             //draw a rectangle
-            if (drawing.shape === "rect") {
+            if (layr.shape === "rect") {
 
                 CC.context.strokeRect(0, 0,FW, FH);
 
             //draw a circle
-            } else if (drawing.shape === "circle") {
+            } else if (layr.shape === "circle") {
 
                 CC.context.beginPath();
 
@@ -1627,13 +1630,13 @@ var Element = function(specs, opts){
                 CC.context.stroke();
 
             //draw a polygon
-            } else if (CC.isArray(drawing.shape)) {
+            } else if (CC.isArray(layr.shape)) {
 
                 CC.context.beginPath();
-                CC.context.moveTo(drawing.shape[0][0], drawing.shape[0][1]);
+                CC.context.moveTo(layr.shape[0][0], layr.shape[0][1]);
 
-                for (var p in drawing.shape) {
-                    var point = drawing.shape[p];
+                for (var p in layr.shape) {
+                    var point = layr.shape[p];
                     CC.context.lineTo(point[0], point[1]);
                 }
                 
@@ -1644,10 +1647,10 @@ var Element = function(specs, opts){
         }
 
         //sprite
-        if (drawing.sprite && drawing.sprite.url) {
+        if (layr.sprite && layr.sprite.url) {
 
             //limit the sprite with a rectangle
-            if (drawing.shape === "rect") {
+            if (layr.shape === "rect") {
 
                 CC.context.beginPath();
                 CC.context.moveTo(0, 0);
@@ -1659,7 +1662,7 @@ var Element = function(specs, opts){
                 CC.context.clip();
 
             //limit the sprite with a circle
-            } else if (drawing.shape === "circle") {
+            } else if (layr.shape === "circle") {
 
                 CC.context.beginPath();
 
@@ -1674,13 +1677,13 @@ var Element = function(specs, opts){
                 CC.context.clip();
 
             //limit the sprite with a polygon
-            } else if (CC.isArray(drawing.shape)) {
+            } else if (CC.isArray(layr.shape)) {
 
                 CC.context.beginPath();
-                CC.context.moveTo(drawing.shape[0][0], drawing.shape[0][1]);
+                CC.context.moveTo(layr.shape[0][0], layr.shape[0][1]);
 
-                for (var p in drawing.shape) {
-                    var point = drawing.shape[p];
+                for (var p in layr.shape) {
+                    var point = layr.shape[p];
                     CC.context.lineTo(point[0], point[1]);
                 }
                 
@@ -1691,22 +1694,22 @@ var Element = function(specs, opts){
             }
 
             //draw the sprites
-            var res = CC.useResource(drawing.sprite.url);
-            var spriteX = drawing.sprite.x || 0;
-            var spriteY = drawing.sprite.y || 0;
-            var spriteW = drawing.sprite.w || Math.min(FW, res.width);
-            var spriteH = drawing.sprite.h || Math.min(FH, res.height);
+            var res = CC.useResource(layr.sprite.url);
+            var spriteX = layr.sprite.x || 0;
+            var spriteY = layr.sprite.y || 0;
+            var spriteW = layr.sprite.w || Math.min(FW, res.width);
+            var spriteH = layr.sprite.h || Math.min(FH, res.height);
             var startX = 0;
             var startY = 0;
-            var repeatX = drawing.sprite.repeat && drawing.sprite.repeat.indexOf("x") != -1;
-            var repeatY = drawing.sprite.repeat && drawing.sprite.repeat.indexOf("y") != -1;
-            var delay = drawing.sprite.delay || 0;
+            var repeatX = layr.sprite.repeat && layr.sprite.repeat.indexOf("x") != -1;
+            var repeatY = layr.sprite.repeat && layr.sprite.repeat.indexOf("y") != -1;
+            var delay = layr.sprite.delay || 0;
 
-            if (drawing.sprite.frames) {
-                if (drawing.sprite.vertical) {
-                    spriteY += (parseInt(CC.step / delay) % drawing.sprite.frames) * spriteH;
+            if (layr.sprite.frames) {
+                if (layr.sprite.vertical) {
+                    spriteY += (parseInt(CC.step / delay) % layr.sprite.frames) * spriteH;
                 } else {
-                    spriteX += (parseInt(CC.step / delay) % drawing.sprite.frames) * spriteW;
+                    spriteX += (parseInt(CC.step / delay) % layr.sprite.frames) * spriteW;
                 }
             }
 
