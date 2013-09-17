@@ -101,6 +101,7 @@ CC.screen = { x:0, y:0 }; //the area of the screen
 CC.classes = {}; //defined classes expecting to be instantiated
 CC.context = canvas.getContext && canvas.getContext('2d');
 CC.step = 0; //each loop increments the step, it is used for animation proposes
+CC.fn = {}; //functions that elementlist and element implement (global methods)
 
 
 
@@ -1130,6 +1131,20 @@ var Element = function(specs, opts){
 
         el.inherit(specs.replace(/#[a-zA-Z0-9]*/g, ""), opts);
 
+        implementGlobalMethods();
+
+    };
+
+    var implementGlobalMethods = function(){
+
+        for (var i in CC.fn) {
+            
+            if (CC.isFunction(CC.fn[i])) {
+                el[i] = CC.fn[i];
+            }
+
+        }
+
     };
 
     /**
@@ -1388,6 +1403,21 @@ var Element = function(specs, opts){
     *               "0": "rgba(200, 100, 100, 0.8)", //color stops (beginning)
     *               "0.5": "#f00", //(middle)
     *               "1": "#0000dd" //(end)
+    *           },
+    *           radialGradient: {
+    *               innerCircle: {
+    *                   centerX: 25, //percentage of the position of the inner circle
+    *                   centerY: 25, //percentage of the position of the inner circle
+    *                   radius: 20 //percentage of the radius of the inner circle
+    *               },
+    *               outerCircle: {
+    *                   centerX: 75, //percentage of the position of the inner circle
+    *                   centerY: 75, //percentage of the position of the inner circle
+    *                   radius: 50 //percentage of the radius of the inner circle
+    *               },
+    *               "0": "rgba(200, 100, 100, 0.8)", //color stops (beginning)
+    *               "0.5": "#f00", //(middle)
+    *               "1": "#0000dd" //(end)
     *           }
     *       },
     *       sprite: {
@@ -1596,6 +1626,10 @@ var Element = function(specs, opts){
 
                 CC.context.strokeStyle = createLinearGradient(layr.stroke.linearGradient, FW, FH);
                 
+            } else if (layr.fill.radialGradient) {
+
+                CC.context.strokeStyle = createRadialGradient(layr.stroke.radialGradient, FW, FH);
+
             }
 
             //stroke thickness
@@ -1844,6 +1878,29 @@ var ElementList = function(elements, selection){
 
     this.selection = selection;
     this.length = elements.length;
+    var el = this;
+
+    var init = function(){
+    	implementGlobalMethods();
+    };
+
+    var implementGlobalMethods = function(){
+
+    	for (var i in CC.fn) {
+            
+            if (!CC.isFunction(CC.fn[i])) {
+                continue;
+            }
+
+    		el[i] = function(){
+    			var args = arguments;
+    			el.each(function(){
+		            this[i].apply(this, args);
+		        });
+    		};
+    	}
+
+    };
 
     /**
     * invoke an action for all elements selected

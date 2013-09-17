@@ -45,6 +45,20 @@ var Element = function(specs, opts){
 
         el.inherit(specs.replace(/#[a-zA-Z0-9]*/g, ""), opts);
 
+        implementGlobalMethods();
+
+    };
+
+    var implementGlobalMethods = function(){
+
+        for (var i in CC.fn) {
+            
+            if (CC.isFunction(CC.fn[i])) {
+                el[i] = CC.fn[i];
+            }
+
+        }
+
     };
 
     /**

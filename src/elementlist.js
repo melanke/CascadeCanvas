@@ -10,6 +10,29 @@ var ElementList = function(elements, selection){
 
     this.selection = selection;
     this.length = elements.length;
+    var el = this;
+
+    var init = function(){
+    	implementGlobalMethods();
+    };
+
+    var implementGlobalMethods = function(){
+
+    	for (var i in CC.fn) {
+            
+            if (!CC.isFunction(CC.fn[i])) {
+                continue;
+            }
+
+    		el[i] = function(){
+    			var args = arguments;
+    			el.each(function(){
+		            this[i].apply(this, args);
+		        });
+    		};
+    	}
+
+    };
 
     /**
     * invoke an action for all elements selected
