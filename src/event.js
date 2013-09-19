@@ -61,7 +61,15 @@ var eventEnvironmentBuilder = function(owner){
         }
 
         if (namespace) {
-            delete events[evtName][namespace];
+            if (eventName) {
+                delete events[evtName][namespace];
+            } else {
+                //delete all events for this namespace
+                for (var i in events) {
+                    delete events[i][namespace];
+                }
+
+            }
         } else if (action) {
 
             for (var n in events[evtName]) {

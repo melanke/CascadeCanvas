@@ -30,7 +30,7 @@ var elementMap = {} //elements stored by id
 
 
 /**
-* returns a element or a collection of elements that match the string passed as argument
+* returns a collection of elements that match the string passed as argument
 * @param selector '*' to select all, '#elementId' to select the element by id 'elementId', 
 * 'Class1 Class2' to select elements that contain both classes 'Class1' and 'Class2'
 */
@@ -238,7 +238,15 @@ var eventEnvironmentBuilder = function(owner){
         }
 
         if (namespace) {
-            delete events[evtName][namespace];
+            if (eventName) {
+                delete events[evtName][namespace];
+            } else {
+                //delete all events for this namespace
+                for (var i in events) {
+                    delete events[i][namespace];
+                }
+
+            }
         } else if (action) {
 
             for (var n in events[evtName]) {
@@ -1271,7 +1279,8 @@ var Element = function(specs, opts){
     this.removeClass = function(classe){
 
         if (this.classes[classe] !== undefined) {
-            this.trigger("removeClass", classe);
+            this.trigger("removeClass."+classe);
+            this.unbind("."+classe);
             delete this.classes[classe];
         }
 

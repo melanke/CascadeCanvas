@@ -53,7 +53,8 @@ bower install CascadeCanvas
 
 /**
 * defines a class to be inherited
-* @param classesStr a string with the name of the classes that will have tis behaviour, example:
+* @param classesStr a string with the name of the classes that will have tis behaviour, 
+* example:
 * 'Class1 Class2' - those 2 classes will have this behaviour
 * @param constructor a function that will be used as constructor
 */
@@ -67,7 +68,8 @@ CC.def("Class1 Class2", function(opts){
 * creates an element and put it in the canvas
 * @param specs a string where you can specify the id and the classes it inherit, example:
 * '#elementId Class1 Class2' - it will have id: elementId and will inherit Class1 and Class2
-* @opts an object with params that can be used in the class constructor, will affect all inherited classes
+* @opts an object with params that can be used in the class constructor, will affect all 
+* inherited classes
 */
 CC.new("#elementId Class1 Class2", {
 	//opts to constructors of Class1 and Class2
@@ -112,7 +114,8 @@ CC.trigger("eventName", param1, param2);
 /**
 * merge all attributes of the arguments recursively into the first argument and returns it
 */
-var a = CC.merge(b, c, d); //so, a will be equal to b and will have all attributes of c and d
+var a = CC.merge(b, c, d); 
+//so, a will be equal to b and will have all attributes of c and d
 
 
 
@@ -130,7 +133,8 @@ CC.loadResources(["res/player.png", "res/background.png"], function(){
 
 
 /**
-* start the routine of the gameloop, for each loop it triggers 'enterframe' event and render the elements
+* start the routine of the gameloop, 
+* for each loop it triggers 'enterframe' event and render the elements
 */
 CC.startLoop(); //starts the fun!
 ```
@@ -148,7 +152,8 @@ those can be used inside or outside a class
 * @param classesStr a string with the name of the classes to this element inherit, example:
 * 'Class1 Class2' - this element will inherit both
 */
-CC("#ElementX").inherit("OutherClasse Classe1"); //#ElementX will inherit OutherClass and Class1
+CC("#ElementX").inherit("OutherClasse Classe1"); 
+//#ElementX will inherit OutherClass and Class1
 
 
 
@@ -323,15 +328,19 @@ CC.def("Class1", function(opts){
 		attr2 = opts.attr2;
 	}
 
-	//a good class implementation is removable and implement a way of undoing what you have done
-	this.bind("removeClass", function(class){
+	//a good class implementation is removable 
+	//and implement a way of undoing what you have done
+	this.bind("removeClass.Class1", function(){
 
-		if (class === "Class1") {
-			delete this.attr1;
-			delete this.method1;
-			attr1became4.unbind();
-		}
+		delete this.attr1;
+		delete this.method1;
+		attr1became4.unbind();
 
+	});
+
+	this.bind("eventName.Class1", function(){
+		//this event will be unbinded automatically when the class is removed 
+		//because the namespace is equal to classname
 	});
 
 });
@@ -352,7 +361,8 @@ el1.method1();
 
 //to draw an element you need to declare the "layers" in the class or in the element like this
 CC("#selectedEl").eg(0).layers = {
-	//declaring the layer of the element, but in this way you will override the layers made before in classes
+	//declaring the layer of the element, 
+	//but in this way you will override the layers made before in classes
 };
 
 //you should always use 'merge'
@@ -448,7 +458,8 @@ CC.merge(this.layers, {
 
 
 /**
-* hide the layer with the name of the first param and show the layer with the name of the second param
+* hide the layer with the name of the first param 
+* and show the layer with the name of the second param
 */
 CC("Player").toggleLayers("stand", "walking");
 
@@ -477,7 +488,8 @@ CC.isNoKeyPressed();
 * @param keys which keys you want to check if are pressed as string separeted by '+'
 */
 
-var hardCombo = CC.isKeysPressed("Ctrl + Alt + Up + A"); //return true if all this keys are pressed
+var hardCombo = CC.isKeysPressed("Ctrl + Alt + Up + A"); 
+//return true if all this keys are pressed
 
 
 
@@ -539,7 +551,8 @@ CC.onKeysDownOnly("ESC + p", function(event){
 */
 CC.onKeysComboEnd("ESC + p", function(event){
 
-	//when the only keys that was pressed is Esc and P and one of them are released this will be executed
+	//when the only keys that was pressed is Esc and P 
+	//and one of them are released this will be executed
 
 });
 

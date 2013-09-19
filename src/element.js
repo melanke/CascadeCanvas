@@ -190,7 +190,8 @@ var Element = function(specs, opts){
     this.removeClass = function(classe){
 
         if (this.classes[classe] !== undefined) {
-            this.trigger("removeClass", classe);
+            this.trigger("removeClass."+classe);
+            this.unbind("."+classe);
             delete this.classes[classe];
         }
 
