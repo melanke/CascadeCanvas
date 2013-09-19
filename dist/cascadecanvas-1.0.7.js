@@ -84,11 +84,6 @@ var CC = function(selector){
 
     }
 
-    if (selecteds.length == 1) {
-        //if the selection have only one item: return this item
-        return selecteds[0];
-    }
-
     //else: return all items as a Collection
     return new ElementList(selecteds, selector);
 
@@ -1100,7 +1095,6 @@ var Element = function(specs, opts){
 
     this.classes = {}; //classes this inherits
     this.layers = {}; //a Map of layers or functions by name to be draw
-    this.length = 1; //just to let the user know it is not an array
 
     /**
     * routine for initialization:
@@ -1130,20 +1124,6 @@ var Element = function(specs, opts){
         eventEnvironmentBuilder(el);
 
         el.inherit(specs.replace(/#[a-zA-Z0-9]*/g, ""), opts);
-
-        implementGlobalMethods();
-
-    };
-
-    var implementGlobalMethods = function(){
-
-        for (var i in CC.fn) {
-            
-            if (CC.isFunction(CC.fn[i])) {
-                el[i] = CC.fn[i];
-            }
-
-        }
 
     };
 
@@ -1282,6 +1262,18 @@ var Element = function(specs, opts){
         removed = true;
 
         CC.___remove(this);
+
+    };
+
+    /**
+    * if the class bind the event 'removeClass' the class is removed correctly
+    */
+    this.removeClass = function(classe){
+
+        if (this.classes[classe] !== undefined) {
+            this.trigger("removeClass", classe);
+            delete this.classes[classe];
+        }
 
     };
 
@@ -1577,7 +1569,7 @@ var Element = function(specs, opts){
             }
 
             //draw a rectangle
-            if (layr.shape === "rect") {
+            if (layr.shape === "rect" || layr.shape === undefined) {
 
                 CC.context.fillRect(0, 0, FW, FH);
 
@@ -1878,7 +1870,7 @@ var ElementList = function(elements, selection){
 
     this.selection = selection;
     this.length = elements.length;
-    var el = this;
+    var this_ = this;
 
     var init = function(){
     	implementGlobalMethods();
@@ -1886,19 +1878,13 @@ var ElementList = function(elements, selection){
 
     var implementGlobalMethods = function(){
 
-    	for (var i in CC.fn) {
+        for (var i in CC.fn) {
             
-            if (!CC.isFunction(CC.fn[i])) {
-                continue;
+            if (CC.isFunction(CC.fn[i])) {
+                this_[i] = CC.fn[i];
             }
 
-    		el[i] = function(){
-    			var args = arguments;
-    			el.each(function(){
-		            this[i].apply(this, args);
-		        });
-    		};
-    	}
+        }
 
     };
 
@@ -1992,6 +1978,14 @@ var ElementList = function(elements, selection){
 
         this.each(function(){
             this.remove();
+        });
+
+    };
+
+    this.removeClass = function(classe){
+
+        this.each(function(){
+            this.removeClass(classe);
         });
 
     };
@@ -2095,6 +2089,26 @@ var ElementList = function(elements, selection){
         };
 
     };
+
+
+    this.hideAllLayers = function(){
+
+        this.each(function(){
+            this.hideAllLayers();
+        });
+
+    };
+
+
+    this.toggleLayers = function(toHide, toShow){
+
+        this.each(function(){
+            this.toggleLayers(toHide, toShow);
+        });
+
+    };
+
+    init();
 
 };
 

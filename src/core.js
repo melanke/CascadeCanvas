@@ -65,11 +65,6 @@ var CC = function(selector){
 
     }
 
-    if (selecteds.length == 1) {
-        //if the selection have only one item: return this item
-        return selecteds[0];
-    }
-
     //else: return all items as a Collection
     return new ElementList(selecteds, selector);
 

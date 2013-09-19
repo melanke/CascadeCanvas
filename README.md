@@ -76,13 +76,13 @@ CC.new("#elementId Class1 Class2", {
 
 
 /**
-* returns a element or a collection of elements that match the string passed as argument
+* returns a collection of elements that match the string passed as argument
 * @param selector '*' to select all, '#elementId' to select the element by id 'elementId', 
 * 'Class1 Class2' to select elements that contain both classes 'Class1' and 'Class2'
 */
 var all = CC("*");
 var allClass1AndOtherClass = CC("Class1 OtherClass");
-var marioB = CC("#mario");
+var marioB = CC("#mario").eg(0); //get the first element of the selection
 
 
 
@@ -153,7 +153,7 @@ CC("#ElementX").inherit("OutherClasse Classe1"); //#ElementX will inherit Outher
 
 
 /**
-* if we have an collection, it gets an element by the index
+* it gets an element by the index
 */
 var pokemonA = CC("Pokemon").eg(0);
 
@@ -269,6 +269,18 @@ CC("Button").onClick(function(event){
 	
 });
 
+/*
+* create a function that all selections will implement
+*/
+CC.fn.alertClasses = function(){
+	
+	this.each(function(){
+		alert(JSON.stringify(this.classes));
+	});	
+};
+
+CC("Class1 Class2").alertClasses();
+
 ```
 
 ##Building Classes
@@ -300,7 +312,7 @@ CC.def("Class1", function(opts){
 	};
 
 	//here you can use the methods described before
-	this.became({
+	var attr1became4 = this.became({
 		attr1: 4	
 	}, function(){
 		this.attr1 = 5	
@@ -310,6 +322,17 @@ CC.def("Class1", function(opts){
 	if (opts.attr2 > attr2) {
 		attr2 = opts.attr2;
 	}
+
+	//a good class implementation is removable and implement a way of undoing what you have done
+	this.bind("removeClass", function(class){
+
+		if (class === "Class1") {
+			delete this.attr1;
+			delete this.method1;
+			attr1became4.unbind();
+		}
+
+	});
 
 });
 

@@ -10,7 +10,7 @@ var ElementList = function(elements, selection){
 
     this.selection = selection;
     this.length = elements.length;
-    var el = this;
+    var this_ = this;
 
     var init = function(){
     	implementGlobalMethods();
@@ -18,19 +18,13 @@ var ElementList = function(elements, selection){
 
     var implementGlobalMethods = function(){
 
-    	for (var i in CC.fn) {
+        for (var i in CC.fn) {
             
-            if (!CC.isFunction(CC.fn[i])) {
-                continue;
+            if (CC.isFunction(CC.fn[i])) {
+                this_[i] = CC.fn[i];
             }
 
-    		el[i] = function(){
-    			var args = arguments;
-    			el.each(function(){
-		            this[i].apply(this, args);
-		        });
-    		};
-    	}
+        }
 
     };
 
@@ -124,6 +118,14 @@ var ElementList = function(elements, selection){
 
         this.each(function(){
             this.remove();
+        });
+
+    };
+
+    this.removeClass = function(classe){
+
+        this.each(function(){
+            this.removeClass(classe);
         });
 
     };
@@ -227,5 +229,25 @@ var ElementList = function(elements, selection){
         };
 
     };
+
+
+    this.hideAllLayers = function(){
+
+        this.each(function(){
+            this.hideAllLayers();
+        });
+
+    };
+
+
+    this.toggleLayers = function(toHide, toShow){
+
+        this.each(function(){
+            this.toggleLayers(toHide, toShow);
+        });
+
+    };
+
+    init();
 
 };

@@ -14,7 +14,6 @@ var Element = function(specs, opts){
 
     this.classes = {}; //classes this inherits
     this.layers = {}; //a Map of layers or functions by name to be draw
-    this.length = 1; //just to let the user know it is not an array
 
     /**
     * routine for initialization:
@@ -44,20 +43,6 @@ var Element = function(specs, opts){
         eventEnvironmentBuilder(el);
 
         el.inherit(specs.replace(/#[a-zA-Z0-9]*/g, ""), opts);
-
-        implementGlobalMethods();
-
-    };
-
-    var implementGlobalMethods = function(){
-
-        for (var i in CC.fn) {
-            
-            if (CC.isFunction(CC.fn[i])) {
-                el[i] = CC.fn[i];
-            }
-
-        }
 
     };
 
@@ -196,6 +181,18 @@ var Element = function(specs, opts){
         removed = true;
 
         CC.___remove(this);
+
+    };
+
+    /**
+    * if the class bind the event 'removeClass' the class is removed correctly
+    */
+    this.removeClass = function(classe){
+
+        if (this.classes[classe] !== undefined) {
+            this.trigger("removeClass", classe);
+            delete this.classes[classe];
+        }
 
     };
 
@@ -491,7 +488,7 @@ var Element = function(specs, opts){
             }
 
             //draw a rectangle
-            if (layr.shape === "rect") {
+            if (layr.shape === "rect" || layr.shape === undefined) {
 
                 CC.context.fillRect(0, 0, FW, FH);
 
