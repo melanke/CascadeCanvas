@@ -351,12 +351,12 @@ el1.method1();
 ```javascript
 
 //to draw an element you need to declare the "layers" in the class or in the element like this
-CC("#selectedEl").layers = {
+CC("#selectedEl").eg(0).layers = {
 	//declaring the layer of the element, but in this way you will override the layers made before in classes
 };
 
 //you should always use 'merge'
-CC("#selectedEl").merge({
+CC("#selectedEl").eg(0).merge({
 	layers: {
 
 	}

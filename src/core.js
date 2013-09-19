@@ -11,7 +11,7 @@ var elementMap = {} //elements stored by id
 
 
 /**
-* returns a element or a collection of elements that match the string passed as argument
+* returns a collection of elements that match the string passed as argument
 * @param selector '*' to select all, '#elementId' to select the element by id 'elementId', 
 * 'Class1 Class2' to select elements that contain both classes 'Class1' and 'Class2'
 */
