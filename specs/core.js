@@ -1,6 +1,8 @@
 describe("core.js", function() {
 
 	describe("Selecting", function() {
+
+		CC.clear();
 		
 		CC.new("Class1");
 		CC.new("Class1 Class2");
@@ -196,7 +198,6 @@ describe("core.js", function() {
 
 				it("increment class constructor for new instances", function(){
 
-					expect(elId1.publicAtr).toBe("this is public");
 					expect(elId1.newAtr).not.toBeDefined();
 
 					CC.def("SubjectClass", function(){
@@ -205,16 +206,76 @@ describe("core.js", function() {
 
 					var elId2 = CC.new("#Id2 SubjectClass");
 
-					expect(elId1.publicAtr).toBe("this is public");
-					expect(elId1.newAtr).not.toBeDefined();
-
-					expect(elId2.publicAtr).toBe("this is public");
 					expect(elId2.newAtr).toBe("new attr");
-
 
 				});
 
 			});
+
+		});
+
+	});
+
+	describe("clear", function(){
+
+		var timesEventWasTriggeredWhenBinded;
+
+		beforeEach(function(){
+
+			CC.clear();
+			timesEventWasTriggeredWhenBinded = 0;
+			
+			CC.def("ClassA", function(){});
+			CC.def("ClassB", function(){});
+			CC.new("ClassA");
+			CC.new("ClassA ClassB");
+			CC.bind("Event1", function(){
+				timesEventWasTriggeredWhenBinded++;
+			});
+
+		});
+
+		var countObjAttrs = function(obj){
+					
+		    var size = 0, key;
+		    for (key in obj) {
+		        if (obj.hasOwnProperty(key)) size++;
+		    }
+		    return size;
+		};
+
+		it("removes the classes", function(){
+
+			expect(countObjAttrs(CC.classes)).toBe(2);
+
+			CC.clear();
+
+			expect(countObjAttrs(CC.classes)).toBe(0);
+
+		});
+
+		it("removes the elements", function(){
+
+			expect(CC("*").length).toBe(2);
+
+			CC.clear();
+
+			expect(CC("*").length).toBe(0);
+
+		});
+
+		it("unbind the events", function(){
+
+			expect(timesEventWasTriggeredWhenBinded).toBe(0);
+
+			CC.trigger("Event1");
+
+			expect(timesEventWasTriggeredWhenBinded).toBe(1);
+
+			CC.clear();
+			CC.trigger("Event1");
+
+			expect(timesEventWasTriggeredWhenBinded).toBe(1);
 
 		});
 

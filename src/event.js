@@ -133,10 +133,6 @@ var eventEnvironmentBuilder = function(owner){
         events = [];
     };
 
-    owner.destroyEvents = function(){
-        //delete events;
-    };
-
 };
 
 eventEnvironmentBuilder(CC);
