@@ -198,6 +198,10 @@ var eventEnvironmentBuilder = function(owner){
         var evtName = evtAndNamespace[0];
         var namespace = evtAndNamespace[1] || "root";
 
+        if (!evtName || !evtName.length) {
+            return;
+        }
+
         if (!events[evtName]) {
             events[evtName] = {};
         }
@@ -233,34 +237,59 @@ var eventEnvironmentBuilder = function(owner){
         var evtName = evtAndNamespace[0];
         var namespace = evtAndNamespace[1] || "root";
 
-        if (!events[evtName]) {
-            return;
-        }
+        if (evtName && evtName.length) {
+            if (namespace != "root") {
+                if (action) {
+                    //evtName, namespace, action
+                    if (events[evtName] && events[evtName][namespace]) {
+                        for (var i in events[evtName][namespace]) {
+                            if (events[evtName][namespace][i] === action) {
+                                events[evtName][namespace].splice(i, 1);
+                            }
+                        }
+                    }
 
-        if (namespace) {
-            if (eventName) {
-                delete events[evtName][namespace];
+                } else {
+                    //evtName, namespace, no action
+                    if (events[evtName]) {
+                        delete events[evtName][namespace];
+                    }
+                }
+            } else if (action) {
+                //evtName, no namespace, action
+                for (var i in events[evtName]) {
+                    
+                    for (var j in events[evtName][i]) {
+                        if (events[evtName][i][j] === action) {
+                            events[evtName][i].splice(j, 1);
+                        }
+                    }
+                    
+                }
             } else {
-                //delete all events for this namespace
+                //evtName, no namespace, no action
+                delete events[evtName];
+            }
+        } else if (namespace != "root") {
+            if (action) {
+                //no evtName, namespace, action
+                for (var i in events) {
+                
+                    for (var j in events[i][namespace]) {
+                        if (events[i][namespace][j] === action) {
+                            events[i][namespace].splice(j, 1);
+                        }
+                    }
+                    
+                }
+
+            } else {
+                //no evtName, namespace, no action
                 for (var i in events) {
                     delete events[i][namespace];
                 }
-
             }
-        } else if (action) {
-
-            for (var n in events[evtName]) {
-                
-                for (var i in events[evtName][n]) {
-                    if (events[evtName][n][i] === action) {
-                        events[evtName][n].splice(i, 1);
-                    }
-                }
-                
-            }
-        } else {
-            delete events[evtName];
-        } 
+        }
 
     };
 
@@ -291,18 +320,18 @@ var eventEnvironmentBuilder = function(owner){
             }
         };
 
-        if (events[evtName] && events[evtName][namespace]) {
+        if (events[evtName]) {
 
-            if (namespace != "root") {
-                callNamespace(namespace);
-            } else {
-                
+            if (namespace == "root") {
                 for (var d in events[evtName]) {
                     callNamespace(d);
                 }
-
-            }
+            } else if (events[evtName] && events[evtName][namespace]) {
+                callNamespace(namespace);
+            }   
+            
         }
+        
 
     };
 
@@ -2027,8 +2056,10 @@ var ElementList = function(elements, selection){
 
     this.trigger = function(){
 
+        var args = arguments;
+
         this.each(function(){
-            this.trigger.apply(this, arguments);
+            this.trigger.apply(this, args);
         });
 
         return this;
@@ -2037,11 +2068,13 @@ var ElementList = function(elements, selection){
 
     this.became = function(){
 
+
+        var args = arguments;
         var listOfEvents = [];
 
         this.each(function(){
             listOfEvents.push(
-                this.became.apply(this, arguments)
+                this.became.apply(this, args)
             );
         });
 
@@ -2057,11 +2090,13 @@ var ElementList = function(elements, selection){
 
     this.while = function(){
 
+
+        var args = arguments;
         var listOfEvents = [];
 
         this.each(function(){
             listOfEvents.push(
-                this.while.apply(this, arguments)
+                this.while.apply(this, args)
             );
         });
 
@@ -2077,11 +2112,13 @@ var ElementList = function(elements, selection){
 
     this.onClick = function(){
 
+
+        var args = arguments;
         var listOfEvents = [];
 
         this.each(function(){
             listOfEvents.push(
-                this.onClick.apply(this, arguments)
+                this.onClick.apply(this, args)
             );
         });
 

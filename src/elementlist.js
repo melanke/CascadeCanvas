@@ -162,8 +162,10 @@ var ElementList = function(elements, selection){
 
     this.trigger = function(){
 
+        var args = arguments;
+
         this.each(function(){
-            this.trigger.apply(this, arguments);
+            this.trigger.apply(this, args);
         });
 
         return this;
@@ -172,11 +174,13 @@ var ElementList = function(elements, selection){
 
     this.became = function(){
 
+
+        var args = arguments;
         var listOfEvents = [];
 
         this.each(function(){
             listOfEvents.push(
-                this.became.apply(this, arguments)
+                this.became.apply(this, args)
             );
         });
 
@@ -192,11 +196,13 @@ var ElementList = function(elements, selection){
 
     this.while = function(){
 
+
+        var args = arguments;
         var listOfEvents = [];
 
         this.each(function(){
             listOfEvents.push(
-                this.while.apply(this, arguments)
+                this.while.apply(this, args)
             );
         });
 
@@ -212,11 +218,13 @@ var ElementList = function(elements, selection){
 
     this.onClick = function(){
 
+
+        var args = arguments;
         var listOfEvents = [];
 
         this.each(function(){
             listOfEvents.push(
-                this.onClick.apply(this, arguments)
+                this.onClick.apply(this, args)
             );
         });
 

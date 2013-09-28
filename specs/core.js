@@ -61,13 +61,13 @@ describe("core.js", function() {
 
 		});
 
-		it("instantiating single class", function(){
+		it("instantiate single class", function(){
 			expect(CC.new("Class1").testValue).toBe(1);
 			expect(CC.new("Class2").testValue).toBe(2);
 			expect(CC.new("Class3").testValue).toBe(3);
 		});
 
-		it("instantiating many classes", function(){
+		it("instantiate many classes at once", function(){
 			var class1And2 = CC.new("Class1 Class2");
 			expect(class1And2.testValue).toBe(2);
 			expect(class1And2.testValue1).toBe(1);
@@ -150,7 +150,7 @@ describe("core.js", function() {
 
 			});
 
-			it("constructor params are working", function(){
+			it("works with constructor params", function(){
 
 				var elId2 = CC.new("#Id2 SubjectClass", {
 					param1: "foo",
@@ -162,7 +162,7 @@ describe("core.js", function() {
 
 			});
 
-			describe("element with constructor without params", function(){
+			describe("constructor without params", function(){
 
 				var elId1;
 
@@ -172,25 +172,25 @@ describe("core.js", function() {
 
 				});
 
-				it("acessing public atrs", function(){
+				it("is able to access public attrs", function(){
 
 					expect(elId1.publicAtr).toBe("this is public");
 
 				});
 
-				it("not acessing private atrs", function(){
+				it("is not able to access private attrs", function(){
 
 					expect(elId1.privateAtr).not.toBeDefined();
 
 				});
 
-				it("acessing public methods", function(){
+				it("is able to access public methods", function(){
 
 					expect(elId1.publicMethod()).toBe("this is private this is public");
 
 				});
 
-				it("not acessing private methods", function(){
+				it("is not able to access private methods", function(){
 
 					expect(elId1.privateMethod).not.toBeDefined();
 
