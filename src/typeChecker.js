@@ -7,7 +7,7 @@
 * check if param is a function
 */
 CC.isFunction = function(functionToCheck){
-    return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
+    return functionToCheck != null && {}.toString.call(functionToCheck) === '[object Function]';
 }
 
 /**
@@ -21,12 +21,16 @@ CC.isString = function(stringToCheck){
 * check if param is an array
 */
 CC.isArray = function(arrayToCheck){
-    return arrayToCheck && {}.toString.call(arrayToCheck) === '[object Array]';
+    return arrayToCheck != null && {}.toString.call(arrayToCheck) === '[object Array]';
 };
 
 /**
-* check if param is an object
+* check if param is an object and not a function, string or array
 */
 CC.isObject = function(objectToCheck){
-    return objectToCheck && objectToCheck.constructor == Object;
+    return objectToCheck != null 
+    && typeof objectToCheck === 'object' 
+    && !CC.isFunction(objectToCheck) 
+    && !CC.isString(objectToCheck)
+    && !CC.isArray(objectToCheck);
 };

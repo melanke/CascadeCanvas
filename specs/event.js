@@ -150,13 +150,16 @@ describe("event.js", function(){
 		var action = function(){
 			timesTriggeredWhenBinded++;
 		};
+		var event;
+		var otherevent;
 
 		beforeEach(function(){
 
 			CC.clear();
 			timesTriggeredWhenBinded = 0;
 
-			CC.bind("eventname", action);
+			event = CC.bind("eventname", action);
+			otherevent = CC.bind("othereventname", function(){});
 
 		});
 
@@ -218,6 +221,28 @@ describe("event.js", function(){
 
 		});
 
+		it("is able to unbind with the bind return object", function(){
+
+			expect(timesTriggeredWhenBinded).toBe(0);
+
+			event.unbind();
+			CC.trigger("eventname");
+
+			expect(timesTriggeredWhenBinded).toBe(0);
+
+		});
+
+		it("is not able to unbind with other bind return object", function(){
+
+			expect(timesTriggeredWhenBinded).toBe(0);
+
+			otherevent.unbind();
+			CC.trigger("eventname");
+
+			expect(timesTriggeredWhenBinded).toBe(1);
+
+		});
+
 	});
 
 	 describe("unbinding global event binded with eventname and namespace", function(){
@@ -226,13 +251,16 @@ describe("event.js", function(){
 		var action = function(){
 			timesTriggeredWhenBinded++;
 		};
+		var event;
+		var otherevent;
 
 	 	beforeEach(function(){
 
 			CC.clear();
 			timesTriggeredWhenBinded = 0;
 
-			CC.bind("eventname.namespace", action);
+			event = CC.bind("eventname.namespace", action);
+			otherevent = CC.bind("othereventname.othernamespace", function(){});
 
 		});
 
@@ -381,6 +409,28 @@ describe("event.js", function(){
 			CC.unbind(".namespace", function(){
 				timesTriggeredWhenBinded++;
 			});
+			CC.trigger("eventname.namespace");
+
+			expect(timesTriggeredWhenBinded).toBe(1);
+
+		});
+
+		it("is able to unbind with the bind return object", function(){
+
+			expect(timesTriggeredWhenBinded).toBe(0);
+
+			event.unbind();
+			CC.trigger("eventname.namespace");
+
+			expect(timesTriggeredWhenBinded).toBe(0);
+
+		});
+
+		it("is not able to unbind with other bind return object", function(){
+
+			expect(timesTriggeredWhenBinded).toBe(0);
+
+			otherevent.unbind();
 			CC.trigger("eventname.namespace");
 
 			expect(timesTriggeredWhenBinded).toBe(1);
@@ -559,13 +609,16 @@ describe("event.js", function(){
 		var action = function(){
 			timesTriggeredWhenBinded++;
 		};
+		var event;
+		var otherevent;
 
 		beforeEach(function(){
 
 			CC.clear();
 			timesTriggeredWhenBinded = 0;
 
-			CC.new("#element").bind("eventname", action);
+			event = CC.new("#element").bind("eventname", action);
+			otherevent = CC.new("#otherelement").bind("eventname", function(){});
 
 		});
 
@@ -580,7 +633,18 @@ describe("event.js", function(){
 
 		});
 
-		it("is not able to unbind  with eventname like a global event", function(){
+		it("is not able to unbind with other element", function(){
+
+			expect(timesTriggeredWhenBinded).toBe(0);
+
+			CC("#otherelement").unbind("eventname");
+			CC("#element").trigger("eventname");
+
+			expect(timesTriggeredWhenBinded).toBe(1);
+
+		});
+
+		it("is not able to unbind with eventname like a global event", function(){
 
 			expect(timesTriggeredWhenBinded).toBe(0);
 
@@ -649,6 +713,28 @@ describe("event.js", function(){
 
 		});
 
+		it("is able to unbind with the bind return object", function(){
+
+			expect(timesTriggeredWhenBinded).toBe(0);
+
+			event.unbind();
+			CC("#element").trigger("eventname");
+
+			expect(timesTriggeredWhenBinded).toBe(0);
+
+		});
+
+		it("is not able to unbind with other bind return object", function(){
+
+			expect(timesTriggeredWhenBinded).toBe(0);
+
+			otherevent.unbind();
+			CC("#element").trigger("eventname");
+
+			expect(timesTriggeredWhenBinded).toBe(1);
+
+		});
+
 	});
 
 	 describe("unbinding element event binded with eventname and namespace", function(){
@@ -657,13 +743,16 @@ describe("event.js", function(){
 		var action = function(){
 			timesTriggeredWhenBinded++;
 		};
+		var event;
+		var otherevent;
 
 	 	beforeEach(function(){
 
 			CC.clear();
 			timesTriggeredWhenBinded = 0;
 
-			CC.new("#element").bind("eventname.namespace", action);
+			event = CC.new("#element").bind("eventname.namespace", action);
+			otherevent = CC.new("#otherelement").bind("eventname.namespace", function(){});
 
 		});
 
@@ -675,6 +764,17 @@ describe("event.js", function(){
 			CC("#element").trigger("eventname.namespace");
 
 			expect(timesTriggeredWhenBinded).toBe(0);
+
+		});
+
+		it("is not able to unbind with other element", function(){
+
+			expect(timesTriggeredWhenBinded).toBe(0);
+
+			CC("#otherelement").unbind("eventname");
+			CC("#element").trigger("eventname.namespace");
+
+			expect(timesTriggeredWhenBinded).toBe(1);
 
 		});
 
@@ -878,6 +978,28 @@ describe("event.js", function(){
 			CC("#element").unbind(".namespace", function(){
 				timesTriggeredWhenBinded++;
 			});
+			CC("#element").trigger("eventname.namespace");
+
+			expect(timesTriggeredWhenBinded).toBe(1);
+
+		});
+
+		it("is able to unbind with bind return object", function(){
+
+			expect(timesTriggeredWhenBinded).toBe(0);
+
+			event.unbind();
+			CC("#element").trigger("eventname.namespace");
+
+			expect(timesTriggeredWhenBinded).toBe(0);
+
+		});
+
+		it("is not able to unbind with other bind return object", function(){
+
+			expect(timesTriggeredWhenBinded).toBe(0);
+
+			otherevent.unbind();
 			CC("#element").trigger("eventname.namespace");
 
 			expect(timesTriggeredWhenBinded).toBe(1);
