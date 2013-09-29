@@ -34,7 +34,22 @@ module.exports = function(grunt) {
 	    jasmine : {
 	        src : 'dist/<%= pkg.name %>-<%= pkg.version %>.js',
 	        options : {
-	            specs : 'specs/**/*.js'
+	            specs : 'specs/**/*.js',
+	            template: require('grunt-template-jasmine-istanbul'),
+				templateOptions: {
+					coverage: 'codecoverage/coverage.json',
+					report: [
+						{
+							type: 'html',
+							options: {
+								dir: 'codecoverage'
+							}
+						},
+						{
+							type: 'text-summary'
+						}
+					]
+				}
 	        }
 	    }
     });

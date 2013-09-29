@@ -10,7 +10,8 @@
     "grunt": "latest",
     "grunt-cli": "latest",
     "grunt-contrib-concat": "~0.3.0",
-    "grunt-contrib-jasmine": "~0.5.2"
+    "grunt-contrib-jasmine": "~0.5.2",
+    "grunt-template-jasmine-istanbul": "~0.2.5"
   },
   "scripts": {
     "test": "grunt travis"
