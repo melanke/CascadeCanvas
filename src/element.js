@@ -164,7 +164,10 @@ var Element = function(specs, opts){
             return;
         }
 
-        CC.merge(this, obj);
+        var args = arguments;
+        args.splice(0, 0, this); //insert in fist position
+
+        CC.merge.apply(CC, args);
 
         return this;
     };
@@ -402,7 +405,7 @@ var Element = function(specs, opts){
             //translate to the anchor point
             CC.context.translate(el.anchor.x, el.anchor.y);
             //rotate
-            CC.context.rotate(el.angle * Math.PI/180);
+            CC.context.rotate(el.angle * Math.PI/-180);
             //get back to previous 0, 0
             CC.context.translate(-el.anchor.x, -el.anchor.y);
         }
@@ -421,7 +424,7 @@ var Element = function(specs, opts){
             //translate to the anchor point
             CC.context.translate(layr.anchor.x, layr.anchor.y);
             //rotate
-            CC.context.rotate(layr.angle * Math.PI/180);
+            CC.context.rotate(layr.angle * Math.PI/-180);
             //get back to previous 0, 0
             CC.context.translate(-layr.anchor.x, -layr.anchor.y);
         }

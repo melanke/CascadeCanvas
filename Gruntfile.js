@@ -31,6 +31,12 @@ module.exports = function(grunt) {
 		        dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.js'
 		    }
 		},
+		copy: {
+			main: {
+				src: 'dist/<%= pkg.name %>-<%= pkg.version %>.js',
+				dest: 'cc.js'
+			}
+		},
 	    jasmine : {
 	        src : 'dist/<%= pkg.name %>-<%= pkg.version %>.js',
 	        options : {
@@ -55,10 +61,12 @@ module.exports = function(grunt) {
     });
 
     grunt.loadNpmTasks('grunt-contrib-concat');
+
+    grunt.loadNpmTasks('grunt-contrib-copy');
     
   	grunt.loadNpmTasks('grunt-contrib-jasmine');
 
-    grunt.registerTask('default', ['concat', 'jasmine']);
+    grunt.registerTask('default', ['concat', 'copy', 'jasmine']);
 
     grunt.registerTask('travis', ['concat', 'jasmine']);
 

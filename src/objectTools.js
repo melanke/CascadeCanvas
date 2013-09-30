@@ -19,7 +19,7 @@ CC.merge = function() {
             // Property in destination object set; update its value.
             if (CC.isObject(obj[p])) {
 
-                if (!merged[p]) {
+                if (!merged[p] || !CC.isObject(merged[p])) {
                     merged[p] = {};
                 }
 
@@ -103,26 +103,26 @@ CC.sort = function(elements, prop, invert){
 CC.rotatePoint = function(p, anchor, angle){
 
     var px = p.x;
-    if (px == undefined) {
+    if (px == undefined && p.length > 1) {
         px = p[0];
     }
 
     var py = p.y;
-    if (py == undefined) {
+    if (py == undefined && p.length > 1) {
         py = p[1];
     }
 
     var ax = anchor.x;
-    if (ax == undefined) {
+    if (ax == undefined && anchor.length > 1) {
         ax = anchor[0];
     }
 
     var ay = anchor.y;
-    if (ay == undefined) {
+    if (ay == undefined && anchor.length > 1) {
         ay = anchor[1];
     }
 
-    var teta = angle * Math.PI / 180.0;
+    var teta = angle * Math.PI / -180.0;
     var diffX = px - ax;
     var diffY = py - ay;
     var cos = Math.cos(teta);
