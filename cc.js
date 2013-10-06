@@ -1,5 +1,5 @@
-"use strict";
 (function (factory) {
+    "use strict";
     if (typeof exports === 'object') {
         // Node. Does not work with strict CommonJS, but
         // only CommonJS-like enviroments that support module.exports,
@@ -349,7 +349,7 @@ eventEnvironmentBuilder(CC);
 /***** TYPE CHECKER *****/
 
 //have no dependency
-//is dependency of objectTools, element
+//is dependency of objectTools, element, promise
 
 /**
 * check if param is a function
@@ -528,7 +528,7 @@ CC.rotatePoint = function(p, anchor, angle){
 
 /***** PROMISE *****/
 
-//depends on event
+//depends on event, typeChecker
 //is dependency of ajax
 
 CC.Promise = function() {
@@ -549,7 +549,7 @@ CC.Promise.prototype.then = function(func, context) {
             
             var res = func.apply(context, arguments);
             
-            if (res && typeof res.then === 'function') {
+            if (res && CC.isFunction(res.then)) {
                 res.then(p.done, p);
             }
             
@@ -565,7 +565,7 @@ CC.Promise.prototype.done = function() {
     this._isdone = true;
 
     for (var i = 0; i < this._callbacks.length; i++) {
-        this._callbacks[i].call(null, arguments);
+        this._callbacks[i].apply(null, arguments);
     }
 
     this._callbacks = [];
@@ -599,7 +599,7 @@ CC.promiseJoin = function(promises) {
             results[i] = Array.prototype.slice.call(arguments);
             
             if (numdone === total) {
-                p.done(results);
+                p.done.apply(p, results);
             }
         };
     }
@@ -619,14 +619,20 @@ CC.promiseChain = function(funcs, args) {
         p.done.apply(p, args);
     } else {
 
-        funcs[0].apply(null, args).then(function() {
-            
-            funcs.splice(0, 1);
-            
-            CC.promiseChain(funcs, arguments).then(function() {
-                p.done.apply(p, arguments);
+        var pi = funcs[0].apply(null, args);
+
+        if (pi && CC.isFunction(pi.then)) {
+
+            pi.then(function() {
+                
+                funcs.splice(0, 1);
+                
+                CC.promiseChain(funcs, arguments).then(function() {
+                    p.done.apply(p, arguments);
+                });
             });
-        });
+
+        }
     }
     return p;
 };
@@ -875,9 +881,6 @@ CC.onKeysComboEnd = function(keys, action) {
 //time in milliseconds after which a pending AJAX request is considered unresponsive
 CC.ajaxTimeout = 0;
 
-var ENOXHR = 1;
-var ETIMEOUT = 2;
-
 var _encode = function(data) {
     var result = "";
     
@@ -926,7 +929,7 @@ CC.ajax = function(method, url, data, headers) {
     try {
         xhr = new_xhr();
     } catch (e) {
-        p.done(ENOXHR, "");
+        p.done(false, "no xhr");
     	return p;
     }
 
@@ -948,10 +951,10 @@ CC.ajax = function(method, url, data, headers) {
 
     var onTimeout = function() {
         xhr.abort();
-        p.done(ETIMEOUT, "", xhr);
+        p.done(false, "timeout", xhr);
     }
 
-    var timeout = ajaxTimeout;
+    var timeout = CC.ajaxTimeout;
     
     if (timeout) {
         var tid = setTimeout(onTimeout, timeout);
@@ -962,8 +965,8 @@ CC.ajax = function(method, url, data, headers) {
             clearTimeout(tid);
         }
         if (xhr.readyState === 4) {
-            var err = (!xhr.status || (xhr.status < 200 || xhr.status >= 300) && xhr.status !== 304);
-            p.done(err, xhr.responseText, xhr);
+            var success = xhr.status && ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304);
+            p.done(success, xhr.responseText, xhr);
         }
     };
 
@@ -1282,7 +1285,7 @@ var Element = function(specs, opts){
             return;
         }
 
-        var args = arguments;
+        var args = [].splice.call(arguments, 0);
         args.splice(0, 0, this); //insert in fist position
 
         CC.merge.apply(CC, args);

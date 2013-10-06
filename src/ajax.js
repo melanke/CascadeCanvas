@@ -6,9 +6,6 @@
 //time in milliseconds after which a pending AJAX request is considered unresponsive
 CC.ajaxTimeout = 0;
 
-var ENOXHR = 1;
-var ETIMEOUT = 2;
-
 var _encode = function(data) {
     var result = "";
     
@@ -57,7 +54,7 @@ CC.ajax = function(method, url, data, headers) {
     try {
         xhr = new_xhr();
     } catch (e) {
-        p.done(ENOXHR, "");
+        p.done(false, "no xhr");
     	return p;
     }
 
@@ -79,10 +76,10 @@ CC.ajax = function(method, url, data, headers) {
 
     var onTimeout = function() {
         xhr.abort();
-        p.done(ETIMEOUT, "", xhr);
+        p.done(false, "timeout", xhr);
     }
 
-    var timeout = ajaxTimeout;
+    var timeout = CC.ajaxTimeout;
     
     if (timeout) {
         var tid = setTimeout(onTimeout, timeout);
@@ -93,8 +90,8 @@ CC.ajax = function(method, url, data, headers) {
             clearTimeout(tid);
         }
         if (xhr.readyState === 4) {
-            var err = (!xhr.status || (xhr.status < 200 || xhr.status >= 300) && xhr.status !== 304);
-            p.done(err, xhr.responseText, xhr);
+            var success = xhr.status && ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304);
+            p.done(success, xhr.responseText, xhr);
         }
     };
 

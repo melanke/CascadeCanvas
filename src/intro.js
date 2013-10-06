@@ -1,5 +1,5 @@
-"use strict";
 (function (factory) {
+    "use strict";
     if (typeof exports === 'object') {
         // Node. Does not work with strict CommonJS, but
         // only CommonJS-like enviroments that support module.exports,

@@ -172,6 +172,25 @@ describe("objectTools.js", function(){
 
 		});
 
+		it("replace attributes of element with the same name by the last param", function(){
+
+			var a = CC.new("#a");
+			a.iam = "the first";
+			a.ok = "i am replaceble";
+
+			var b = {
+				iwant: "be merged",
+				ok: "i will replace you"
+			};
+			
+			a.merge(b);
+
+			expect(a.iam).toBe("the first");
+			expect(a.ok).toBe("i will replace you");
+			expect(a.iwant).toBe("be merged");
+
+		});
+
 	});
 
 	describe("sort", function(){
@@ -179,7 +198,6 @@ describe("objectTools.js", function(){
 		it("sort array with number", function(){
 
 			var entry = [{
-				a: 5,
 				b: 8
 			},{
 				a: 3,
@@ -191,7 +209,7 @@ describe("objectTools.js", function(){
 				a: 9,
 				b: 2
 			},{
-				a: 6,
+				a: -2,
 				b: 9
 			},{
 				a: 3,
@@ -200,17 +218,16 @@ describe("objectTools.js", function(){
 
 			var result = CC.sort(entry, "a");
 			var expected = [{
+				a: -2,
+				b: 9
+			},{
+				b: 8
+			},{
 				a: 3,
 				b: 9
 			},{
 				a: 3,
 				b: 1
-			},{
-				a: 5,
-				b: 8
-			},{
-				a: 6,
-				b: 9
 			},{
 				a: 7,
 				b: 3

@@ -1,6 +1,6 @@
 /***** PROMISE *****/
 
-//depends on event
+//depends on event, typeChecker
 //is dependency of ajax
 
 CC.Promise = function() {
@@ -21,7 +21,7 @@ CC.Promise.prototype.then = function(func, context) {
             
             var res = func.apply(context, arguments);
             
-            if (res && typeof res.then === 'function') {
+            if (res && CC.isFunction(res.then)) {
                 res.then(p.done, p);
             }
             
@@ -37,7 +37,7 @@ CC.Promise.prototype.done = function() {
     this._isdone = true;
 
     for (var i = 0; i < this._callbacks.length; i++) {
-        this._callbacks[i].call(null, arguments);
+        this._callbacks[i].apply(null, arguments);
     }
 
     this._callbacks = [];
@@ -71,7 +71,7 @@ CC.promiseJoin = function(promises) {
             results[i] = Array.prototype.slice.call(arguments);
             
             if (numdone === total) {
-                p.done(results);
+                p.done.apply(p, results);
             }
         };
     }
@@ -91,14 +91,20 @@ CC.promiseChain = function(funcs, args) {
         p.done.apply(p, args);
     } else {
 
-        funcs[0].apply(null, args).then(function() {
-            
-            funcs.splice(0, 1);
-            
-            CC.promiseChain(funcs, arguments).then(function() {
-                p.done.apply(p, arguments);
+        var pi = funcs[0].apply(null, args);
+
+        if (pi && CC.isFunction(pi.then)) {
+
+            pi.then(function() {
+                
+                funcs.splice(0, 1);
+                
+                CC.promiseChain(funcs, arguments).then(function() {
+                    p.done.apply(p, arguments);
+                });
             });
-        });
+
+        }
     }
     return p;
 };

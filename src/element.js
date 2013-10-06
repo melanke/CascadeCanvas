@@ -164,7 +164,7 @@ var Element = function(specs, opts){
             return;
         }
 
-        var args = arguments;
+        var args = [].splice.call(arguments, 0);
         args.splice(0, 0, this); //insert in fist position
 
         CC.merge.apply(CC, args);

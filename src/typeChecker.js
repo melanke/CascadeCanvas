@@ -1,7 +1,7 @@
 /***** TYPE CHECKER *****/
 
 //have no dependency
-//is dependency of objectTools, element
+//is dependency of objectTools, element, promise
 
 /**
 * check if param is a function
