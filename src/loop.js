@@ -4,6 +4,8 @@
 //is not a internal dependency
 
 var running = true;
+var requestAnimId;
+var intervalAnimId;
 
 /**
 * start the routine of the gameloop, for each loop it triggers 'enterframe' event and render the elements
@@ -31,21 +33,45 @@ CC.startLoop = function(){
         window.msRequestAnimationFrame     ||
         null;
 
-    if ( animFrame !== null ) {
+    if (animFrame !== null) {
         
         var recursiveAnim = function() {
             mainloop();
-            animFrame(recursiveAnim);
+            requestAnimId = animFrame(recursiveAnim);
         };
 
         // start the mainloop
-        animFrame(recursiveAnim);
+        requestAnimId = animFrame(recursiveAnim);
 
     } else {
         var ONE_FRAME_TIME = 1000.0 / 60.0 ;
-        setInterval( mainloop, ONE_FRAME_TIME );
+        intervalAnimId = setInterval( mainloop, ONE_FRAME_TIME );
     }
 
+};
+
+/**
+* stop the gameloop
+*/
+CC.stopLoop = function(){
+    if (requestAnimId) {
+        var cancelFrame = window.cancelAnimationFrame ||
+            window.webkitCancelAnimationFrame ||
+            window.mozCancelAnimationFrame    ||
+            window.oCancelAnimationFrame      ||
+            window.msCancelAnimationFrame     ||
+            null;
+
+        if (cancelFrame !== null) {
+            cancelFrame(requestAnimId);
+            requestAnimId = null;
+        }
+    }
+
+    if (intervalAnimId) {
+        clearInterval(intervalAnimId);
+        intervalAnimId = null;
+    }
 };
 
 /**

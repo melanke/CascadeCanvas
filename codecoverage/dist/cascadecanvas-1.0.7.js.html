@@ -183,16 +183,16 @@
     <h1>Code coverage report for <span class="entity">dist/cascadecanvas-1.0.7.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">47.18% <small>(377 / 799)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">47.03% <small>(380 / 808)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Branches: <span class="metric">35.7% <small>(171 / 479)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">34.83% <small>(171 / 491)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">42.06% <small>(53 / 126)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">41.73% <small>(53 / 127)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">47.24% <small>(377 / 798)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">47.09% <small>(380 / 807)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
     </h2>
     <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">dist/</a> &#187; cascadecanvas-1.0.7.js</div>
@@ -2427,7 +2427,31 @@
 2226
 2227
 2228
-2229</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+2229
+2230
+2231
+2232
+2233
+2234
+2235
+2236
+2237
+2238
+2239
+2240
+2241
+2242
+2243
+2244
+2245
+2246
+2247
+2248
+2249
+2250
+2251
+2252
+2253</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3511,6 +3535,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3552,6 +3578,28 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -5739,6 +5787,8 @@ CC.useResource = <span class="fstat-no" title="function not covered" >function(s
 //is not a internal dependency
 &nbsp;
 var running = true;
+var requestAnimId;
+var intervalAnimId;
 &nbsp;
 /**
 * start the routine of the gameloop, for each loop it triggers 'enterframe' event and render the elements
@@ -5766,21 +5816,43 @@ CC.startLoop = <span class="fstat-no" title="function not covered" >function(){<
         window.msRequestAnimationFrame     ||
         null;
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    if ( animFrame !== null ) {</span>
+<span class="cstat-no" title="statement not covered" >    if (animFrame !== null) {</span>
         
 <span class="cstat-no" title="statement not covered" >        var recursiveAnim = <span class="fstat-no" title="function not covered" >function() {</span></span>
 <span class="cstat-no" title="statement not covered" >            mainloop();</span>
-<span class="cstat-no" title="statement not covered" >            animFrame(recursiveAnim);</span>
+<span class="cstat-no" title="statement not covered" >            requestAnimId = animFrame(recursiveAnim);</span>
         };
 &nbsp;
         // start the mainloop
-<span class="cstat-no" title="statement not covered" >        animFrame(recursiveAnim);</span>
+<span class="cstat-no" title="statement not covered" >        requestAnimId = animFrame(recursiveAnim);</span>
 &nbsp;
     } else {
 <span class="cstat-no" title="statement not covered" >        var ONE_FRAME_TIME = 1000.0 / 60.0 ;</span>
-<span class="cstat-no" title="statement not covered" >        setInterval( mainloop, ONE_FRAME_TIME );</span>
+<span class="cstat-no" title="statement not covered" >        intervalAnimId = setInterval( mainloop, ONE_FRAME_TIME );</span>
     }
 &nbsp;
+};
+&nbsp;
+/**
+* stop the gameloop
+*/
+CC.stopLoop = <span class="fstat-no" title="function not covered" >function(){</span>
+<span class="cstat-no" title="statement not covered" >    if (requestAnimId) {</span>
+<span class="cstat-no" title="statement not covered" >        var cancelFrame = window.cancelAnimationFrame ||</span>
+            window.webkitCancelAnimationFrame ||
+            window.mozCancelAnimationFrame    ||
+            window.oCancelAnimationFrame      ||
+            window.msCancelAnimationFrame     ||
+            null;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (cancelFrame !== null) {</span>
+<span class="cstat-no" title="statement not covered" >            cancelFrame(requestAnimId);</span>
+        }
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (intervalAnimId) {</span>
+<span class="cstat-no" title="statement not covered" >        clearInterval(intervalAnimId);</span>
+    }
 };
 &nbsp;
 /**
@@ -6888,7 +6960,7 @@ return CC;
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Oct 19 2013 10:06:51 GMT-0300 (BRT)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Oct 19 2013 11:18:26 GMT-0300 (BRT)</div>
 </div>
 
 <script src="../prettify.js"></script>
