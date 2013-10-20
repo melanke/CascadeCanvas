@@ -1142,11 +1142,13 @@ CC.stopLoop = function(){
 
         if (cancelFrame !== null) {
             cancelFrame(requestAnimId);
+            requestAnimId = null;
         }
     }
 
     if (intervalAnimId) {
         clearInterval(intervalAnimId);
+        intervalAnimId = null;
     }
 };
 
@@ -1696,7 +1698,12 @@ var Element = function(specs, opts){
             //draw a rectangle
             if (layr.shape === "rect" || layr.shape === undefined) {
 
-                CC.context.fillRect(0, 0, FW, FH);
+                if (!layr.roundedBorderRadius) {
+                    CC.context.fillRect(0, 0, FW, FH);
+                } else {
+                    createRoundedBorder(FW, FH, layr.roundedBorderRadius);
+                    CC.context.fill();
+                }
 
             //draw a circle
             } else if (layr.shape === "circle") {
@@ -1765,9 +1772,14 @@ var Element = function(specs, opts){
             }
 
             //draw a rectangle
-            if (layr.shape === "rect") {
+            if (layr.shape === "rect" || layr.shape === undefined) {
 
-                CC.context.strokeRect(0, 0,FW, FH);
+                if (!layr.roundedBorderRadius) {
+                    CC.context.strokeRect(0, 0, FW, FH);
+                } else {
+                    createRoundedBorder(FW, FH, layr.roundedBorderRadius);
+                    CC.context.stroke();
+                }
 
             //draw a circle
             } else if (layr.shape === "circle") {
@@ -1805,14 +1817,18 @@ var Element = function(specs, opts){
         if (layr.sprite && layr.sprite.url) {
 
             //limit the sprite with a rectangle
-            if (layr.shape === "rect") {
+            if (layr.shape === "rect" || layr.shape === undefined) {
 
-                CC.context.beginPath();
-                CC.context.moveTo(0, 0);
-                CC.context.lineTo(FW, 0);
-                CC.context.lineTo(FW, FH);
-                CC.context.lineTo(0, FH);
-                CC.context.closePath();
+                if (!layr.roundedBorderRadius) {
+                    CC.context.beginPath();
+                    CC.context.moveTo(0, 0);
+                    CC.context.lineTo(FW, 0);
+                    CC.context.lineTo(FW, FH);
+                    CC.context.lineTo(0, FH);
+                    CC.context.closePath();
+                } else {
+                    createRoundedBorder(FW, FH, layr.roundedBorderRadius);
+                }
 
                 CC.context.clip();
 
@@ -1974,6 +1990,20 @@ var Element = function(specs, opts){
 
         return gradient;
 
+    };
+
+    var createRoundedBorder = function(FW, FH, radius){
+        CC.context.beginPath();
+        CC.context.moveTo(radius, 0);
+        CC.context.lineTo(FW-radius, 0);
+        CC.context.quadraticCurveTo(FW, 0, FW, radius);
+        CC.context.lineTo(FW, FH-radius);
+        CC.context.quadraticCurveTo(FW, FH, FW-radius, FH);
+        CC.context.lineTo(radius, FH);
+        CC.context.quadraticCurveTo(0, FH, 0, FH-radius);
+        CC.context.lineTo(0, radius);
+        CC.context.quadraticCurveTo(0, 0, radius, 0);
+        CC.context.closePath();
     };
 
     init();
