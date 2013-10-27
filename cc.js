@@ -1676,6 +1676,12 @@ var Element = function(specs, opts){
             CC.context.translate(-FW/2, -FH/2);
         }
 
+        if (layr.alpha != undefined && layr.alpha < 1) {
+            CC.context.globalAlpha = layr.alpha;
+        } else {
+            CC.context.globalAlpha = 1;
+        }
+
         //fill
         if (layr.fill) {
 
