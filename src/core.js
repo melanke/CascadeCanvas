@@ -78,6 +78,7 @@ CC.classes = {}; //defined classes expecting to be instantiated
 CC.context = canvas.getContext && canvas.getContext('2d');
 CC.step = 0; //each loop increments the step, it is used for animation proposes
 CC.fn = {}; //functions that elementlist and element implement (global methods)
+CC.tiles = {};
 
 
 

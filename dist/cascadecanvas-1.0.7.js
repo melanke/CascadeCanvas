@@ -97,6 +97,7 @@ CC.classes = {}; //defined classes expecting to be instantiated
 CC.context = canvas.getContext && canvas.getContext('2d');
 CC.step = 0; //each loop increments the step, it is used for animation proposes
 CC.fn = {}; //functions that elementlist and element implement (global methods)
+CC.tiles = {};
 
 
 
@@ -1493,21 +1494,22 @@ var Element = function(specs, opts){
     /**
     * {
     *       hidden: true, //make the layer invisible
+    *       alpha: 0.5, //semi transparent by 50%
     *       zIndex: 3, //the less zIndex is most visible it is (in in front of other layers)
     *       offsetX: 10, //layer will be 10 to the right
     *       offsetY: 10, //10 to the bottom
-    *       offsetW: 10, //10 wider, 5 to each side
-    *       offsetH: 10, //10 taller, 5 to each side,
+    *       w: 10, 
+    *       h: 10, 
     *       shape: "rect", //could be 'circle' or an array of points to form a polygon [ [0,0], [50, 50], [0, 50] ]
-    *       angle: 30, //rotated 30 degrees
     *       flip: "xy", //flip layer horizontally and vertically
-    *       scale: {
-    *           x: 2, //will strech horizontaly
-    *           y: 0.5 //will squeeze vertically
-    *       },
+    *       angle: 30, //rotated 30 degrees
     *       anchor: { //point where the rotation will anchor
     *           x: 10, //x and y from element x and y
     *           y: 10
+    *       },
+    *       scale: {
+    *           x: 2, //will strech horizontaly
+    *           y: 0.5 //will squeeze vertically
     *       },
     *       stroke: {
     *           color: "#330099",
@@ -1822,91 +1824,64 @@ var Element = function(specs, opts){
         //sprite
         if (layr.sprite && layr.sprite.url) {
 
-            //limit the sprite with a rectangle
-            if (layr.shape === "rect" || layr.shape === undefined) {
+            limitSprite(layr, FW, FH);
+            var sprite = createSprite(layr.sprite, FW, FH);
 
-                if (!layr.roundedBorderRadius) {
-                    CC.context.beginPath();
-                    CC.context.moveTo(0, 0);
-                    CC.context.lineTo(FW, 0);
-                    CC.context.lineTo(FW, FH);
-                    CC.context.lineTo(0, FH);
-                    CC.context.closePath();
-                } else {
-                    createRoundedBorder(FW, FH, layr.roundedBorderRadius);
-                }
-
-                CC.context.clip();
-
-            //limit the sprite with a circle
-            } else if (layr.shape === "circle") {
-
-                CC.context.beginPath();
-
-                CC.context.arc(
-                    FW / 2, 
-                    FW / 2, 
-                    FW / 2,
-                    0, 2 * Math.PI);
-
-                CC.context.closePath();
-
-                CC.context.clip();
-
-            //limit the sprite with a polygon
-            } else if (CC.isArray(layr.shape)) {
-
-                CC.context.beginPath();
-                CC.context.moveTo(layr.shape[0][0], layr.shape[0][1]);
-
-                for (var p in layr.shape) {
-                    var point = layr.shape[p];
-                    CC.context.lineTo(point[0], point[1]);
-                }
-                
-                CC.context.closePath();
-
-                CC.context.clip();
-
-            }
-
-            //draw the sprites
-            var res = CC.useResource(layr.sprite.url);
-            var spriteX = layr.sprite.x || 0;
-            var spriteY = layr.sprite.y || 0;
-            var spriteW = layr.sprite.w || Math.min(FW, res.width);
-            var spriteH = layr.sprite.h || Math.min(FH, res.height);
             var startX = 0;
             var startY = 0;
             var repeatX = layr.sprite.repeat && layr.sprite.repeat.indexOf("x") != -1;
             var repeatY = layr.sprite.repeat && layr.sprite.repeat.indexOf("y") != -1;
-            var delay = layr.sprite.delay || 0;
-
-            if (layr.sprite.frames) {
-                if (layr.sprite.vertical) {
-                    spriteY += (parseInt(CC.step / delay) % layr.sprite.frames) * spriteH;
-                } else {
-                    spriteX += (parseInt(CC.step / delay) % layr.sprite.frames) * spriteW;
-                }
-            }
 
             //repeat like a pattern if repeatX or repeatY is true
             do {
                 startY = 0;
                 do {
 
-                    CC.context.drawImage(res, spriteX, spriteY, spriteW, spriteH, startX, startY, spriteW, spriteH);
+                    CC.context.drawImage(sprite.res, sprite.x, sprite.y, sprite.w, sprite.h, startX, startY, sprite.w, sprite.h);
                     
                     if (repeatY) {
-                        startY += spriteH;
+                        startY += sprite.h;
                     }
                 } while (startY < EH && repeatY);
 
                 if (repeatX) {
-                    startX += spriteW;
+                    startX += sprite.w;
                 }
 
             } while (startX < EW && repeatX);
+
+        } else if (layr.tiles) {
+
+            limitSprite(layr, FW, FH);
+
+            var tw, th;
+
+            if (layr.tileSize) {
+                tw = layr.tileSize.w;
+                th = layr.tileSize.h;
+            } else {
+                tw = 16;
+                th = 16;
+            }
+
+            var startY = 0;
+
+            for (var y in layr.tiles) {
+
+                var startX = 0;
+
+                for (var x in layr.tiles[y]) {
+                    var tile = CC.tiles[layr.tiles[y][x]];
+                    tile.w = tw;
+                    tile.h = th;
+
+                    var sprite = createSprite(tile, FW, FH);
+                    CC.context.drawImage(sprite.res, sprite.x, sprite.y, sprite.w, sprite.h, startX, startY, sprite.w, sprite.h);
+
+                    startX += tw;
+                }
+                startY += th;
+            }
         }
 
         
@@ -2010,6 +1985,82 @@ var Element = function(specs, opts){
         CC.context.lineTo(0, radius);
         CC.context.quadraticCurveTo(0, 0, radius, 0);
         CC.context.closePath();
+    };
+
+    var limitSprite = function(layr, FW, FH){
+        //limit the sprite with a rectangle
+        if (layr.shape === "rect" || layr.shape === undefined) {
+
+            if (!layr.roundedBorderRadius) {
+                CC.context.beginPath();
+                CC.context.moveTo(0, 0);
+                CC.context.lineTo(FW, 0);
+                CC.context.lineTo(FW, FH);
+                CC.context.lineTo(0, FH);
+                CC.context.closePath();
+            } else {
+                createRoundedBorder(FW, FH, layr.roundedBorderRadius);
+            }
+
+            CC.context.clip();
+
+        //limit the sprite with a circle
+        } else if (layr.shape === "circle") {
+
+            CC.context.beginPath();
+
+            CC.context.arc(
+                FW / 2, 
+                FW / 2, 
+                FW / 2,
+                0, 2 * Math.PI);
+
+            CC.context.closePath();
+
+            CC.context.clip();
+
+        //limit the sprite with a polygon
+        } else if (CC.isArray(layr.shape)) {
+
+            CC.context.beginPath();
+            CC.context.moveTo(layr.shape[0][0], layr.shape[0][1]);
+
+            for (var p in layr.shape) {
+                var point = layr.shape[p];
+                CC.context.lineTo(point[0], point[1]);
+            }
+            
+            CC.context.closePath();
+
+            CC.context.clip();
+
+        }
+    }
+
+    var createSprite = function(sprite, FW, FH){
+
+        //build the sprite config
+        var response = {
+            res: CC.useResource(sprite.url),
+            x: sprite.x || 0,
+            y: sprite.y || 0,
+        };
+
+        response.w = sprite.w || Math.min(FW, response.res.width);
+        response.h = sprite.h || Math.min(FH, response.res.height);
+
+        var delay = sprite.delay || 1;
+
+        if (sprite.frames && sprite.frames > 1) {
+            if (sprite.vertical) {
+                response.y += (parseInt(CC.step / delay) % sprite.frames) * response.h;
+            } else {
+                response.x += (parseInt(CC.step / delay) % sprite.frames) * response.w;
+            }
+        }
+
+        return response;
+
     };
 
     init();
