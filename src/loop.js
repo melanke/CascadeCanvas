@@ -1,6 +1,6 @@
 /***** LOOP *****/
 
-//depends on event
+//depends on event and drawer
 //is not a internal dependency
 
 var running = true;
@@ -22,9 +22,9 @@ CC.startLoop = function(){
         CC.screen.h = canvas.offsetHeight;
 
         CC.trigger("enterframe");
-        draw();
+        CC.drawer.draw();
         CC.step++;
-    }
+    };
 
     var animFrame = window.requestAnimationFrame ||
         window.webkitRequestAnimationFrame ||
@@ -87,20 +87,4 @@ CC.pause = function(){
 */
 CC.play = function(){
     running = true;
-};
-
-
-/**
-* draw all elements
-*/
-var draw = function(){
-
-    CC.context.clearRect(0, 0 , CC.screen.w, CC.screen.h);
-
-    CC("*").sort("zIndex", true).each(function(){
-
-        this.draw();
-
-    });
-
 };

@@ -12,6 +12,7 @@ module.exports = function(grunt) {
 	        'src/keyboard.js', 
 	        'src/ajax.js', 
 	        'src/resource.js',
+	        'src/drawer.js',
 	        'src/loop.js',
 	        'src/screen.js', 
 	        'src/element.js', 
