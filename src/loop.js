@@ -12,17 +12,16 @@ var intervalAnimId;
 */
 CC.startLoop = function(){
 
+    CC.loadScreens();
+
     var mainloop = function(){   
 
         if (!running) {
             return;
         }
 
-        CC.screen.w = canvas.offsetWidth;
-        CC.screen.h = canvas.offsetHeight;
-
         CC.trigger("enterframe");
-        CC.drawer.draw();
+        CC.draw();
         CC.step++;
     };
 

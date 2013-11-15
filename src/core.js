@@ -4,8 +4,7 @@
 //is dependency of all classes
 
 var elementMap = {} //elements stored by id
-,   elementsSize = 0
-,   canvas = document.getElementById('CascadeCanvas') || {};
+,   elementsSize = 0;
 
 
 
@@ -72,10 +71,7 @@ var CC = function(selector){
 
 
 
-
-CC.screen = { x:0, y:0 }; //the area of the screen
 CC.classes = {}; //defined classes expecting to be instantiated
-CC.context = canvas.getContext && canvas.getContext('2d');
 CC.step = 0; //each loop increments the step, it is used for animation proposes
 CC.fn = {}; //functions that elementlist and element implement (global methods)
 CC.tiles = {};
@@ -150,5 +146,3 @@ CC.___remove = function(el){
 
 
 
-
-canvas.onselectstart = function() { return false; }; //prevent canvas selection

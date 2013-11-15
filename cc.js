@@ -23,8 +23,7 @@
 //is dependency of all classes
 
 var elementMap = {} //elements stored by id
-,   elementsSize = 0
-,   canvas = document.getElementById('CascadeCanvas') || {};
+,   elementsSize = 0;
 
 
 
@@ -91,10 +90,7 @@ var CC = function(selector){
 
 
 
-
-CC.screen = { x:0, y:0 }; //the area of the screen
 CC.classes = {}; //defined classes expecting to be instantiated
-CC.context = canvas.getContext && canvas.getContext('2d');
 CC.step = 0; //each loop increments the step, it is used for animation proposes
 CC.fn = {}; //functions that elementlist and element implement (global methods)
 CC.tiles = {};
@@ -169,8 +165,6 @@ CC.___remove = function(el){
 
 
 
-
-canvas.onselectstart = function() { return false; }; //prevent canvas selection
 
 
 
@@ -644,17 +638,8 @@ CC.promiseChain = function(funcs, args) {
 
 /***** MOUSE *****/
 
-//depends on event
-//no one depends on it
+//TODO
 
-canvas.onclick = function(event){
-    CC.trigger("click", event);
-};
-
-canvas.oncontextmenu = function (event) { 
-    CC.trigger("rightclick", event);
-    return false; 
-};
 
 
 
@@ -1077,21 +1062,109 @@ CC.useResource = function(src){
 
 
 
+(function(){
 
+    CC.screens = [];
 
-CC.drawer = new (function(){
+	CC.draw = function(){
 
-	this.draw = function(){
-	    CC.context.clearRect(0, 0 , CC.screen.w, CC.screen.h);
+        for (var i in CC.screens) {
+            var scr = CC.screens[i];
 
-	    CC("*").sort("zIndex", true).each(function(){
+    	    scr.context.clearRect(0, 0 , scr.w, scr.h);
 
-	        drawElement(this);
+    	    CC("*").sort("zIndex", true).each(function(){
 
-	    });
+    	        drawElement(this, scr);
+
+    	    });
+
+        }
 	};
 
-	var drawElement = function(el) {
+    CC.loadScreens = function() {
+
+        if (!CC.screens || !CC.screens.length) {
+
+            var canvas = document.getElementById('CascadeCanvas');
+
+            if (canvas  && canvas.getContext) {
+                canvas.onselectstart = canvasOnSelectStart;
+                canvas.onclick = canvasOnClick;
+                canvas.oncontextmenu = canvasOnContextMenu;
+
+                CC.screens = [{
+                    htmlId: "CascadeCanvas",
+                    context: canvas.getContext("2d"),
+                    x: 0,
+                    y: 0,
+                    w: canvas.offsetWidth,
+                    h: canvas.offsetHeight,
+                    setCenter: setCenter
+                }];
+            }
+
+        } else {
+
+            for (var i in CC.screens) {
+                var s = CC.screens[i];
+
+                if (!s.htmlId) {
+                    CC.screens.splice(i, 1);
+                    continue;
+                }
+
+                var canvas = document.getElementById(s.htmlId);
+                canvas.onselectstart = canvasOnSelectStart;
+                canvas.onclick = canvasOnClick;
+                canvas.oncontextmenu = canvasOnContextMenu;
+
+                if (!s.context) {
+
+                    if (!canvas || !canvas.getContext) {
+                        CC.screens.splice(i, 1);
+                        continue;
+                    }
+
+                    s.context = canvas.getContext('2d');
+                }
+
+                if (!s.x) {
+                    s.x = 0;
+                }
+
+                if (!s.y) {
+                    s.y = 0;
+                }
+
+                if (!s.w) {
+                    s.w = canvas.offsetWidth;
+                }
+
+                if (!s.h) {
+                    s.h = canvas.offsetHeight;
+                }
+
+                if (!s.setCenter) {
+                    s.setCenter = setCenter;
+                }
+
+            };
+
+        }
+
+    };
+
+    var setCenter = function(x, y) {
+        this.x = (this.w / 2) - x;
+        this.y = (this.h / 2) - y;
+    };
+
+    var canvasOnSelectStart = function() { return false; };
+    var canvasOnClick = function(event){ CC.trigger("click", event); };
+    var canvasOnContextMenu = function (event) { CC.trigger("rightclick", event); return false; };
+
+	var drawElement = function(el, scr) {
 
 		if (el.hidden === true) {
             return;
@@ -1102,9 +1175,9 @@ CC.drawer = new (function(){
         for (var s in layers) {
             var layr = layers[s];
             if (CC.isFunction(layr)) {
-                layr.call(el);
+                layr.call(el, scr);
             } else {
-                drawLayer(el, layr);
+                drawLayer(el, layr, scr);
             }
         }
 
@@ -1172,7 +1245,7 @@ CC.drawer = new (function(){
     *       }
     * }
     */
-	var drawLayer = function(el, layr) {
+	var drawLayer = function(el, layr, scr) {
 
 		/** PRE VERIFICATIONS AND INICIALIZATION BEFORE DRAW **/
 
@@ -1184,37 +1257,37 @@ CC.drawer = new (function(){
         var config = configDrawing(el, layr);
 
         //dont draw if it isn't in screen range
-        var normalSX = CC.screen.x * -1;
-        var normalSY = CC.screen.y * -1;
+        var normalSX = scr.x * -1;
+        var normalSY = scr.y * -1;
         if (el.x + config.offsetX + config.FW < normalSX
-        || el.x + config.offsetX - config.FW > normalSX + CC.screen.w
+        || el.x + config.offsetX - config.FW > normalSX + scr.w
         || el.y + config.offsetY + config.FH < normalSY
-        || el.y + config.offsetY - config.FH > normalSY + CC.screen.h) {
+        || el.y + config.offsetY - config.FH > normalSY + scr.h) {
             return;
         }
 
         //save context to be able to restore to this state
-        CC.context.save();
+        scr.context.save();
 
         //draw the layer relative to screen x and y (to offset the camera position)
-        CC.context.translate(CC.screen.x, CC.screen.y);
+        scr.context.translate(scr.x, scr.y);
 
         //translate the canvas to the x, y of the element to draw it from 0, 0
-        CC.context.translate(el.x, el.y);
+        scr.context.translate(el.x, el.y);
 
         /** OK, NOW LETS DO THIS! **/
-        setElementRotation(el, config);
-        setLayerRotation(el, layr, config);
-        setLayerOffset(config);
-        setElementFlip(el, config);
-        setLayerFlip(layr, config);
-        setLayerScale(layr, config);
-        setLayerAlpha(layr);
-        setLayerFill(layr, config);
-        setLayerStroke(layr, config);
-        setLayerSpriteOrTile(layr, config);
+        setElementRotation(el, config, scr);
+        setLayerRotation(el, layr, config, scr);
+        setLayerOffset(config, scr);
+        setElementFlip(el, config, scr);
+        setLayerFlip(layr, config, scr);
+        setLayerScale(layr, config, scr);
+        setLayerAlpha(layr, scr);
+        setLayerFill(layr, config, scr);
+        setLayerStroke(layr, config, scr);
+        setLayerSpriteOrTile(layr, config, scr);
 
-        CC.context.restore();
+        scr.context.restore();
 
 	};
 
@@ -1245,7 +1318,7 @@ CC.drawer = new (function(){
 
 	};
 
-	var setElementRotation = function(el, config) {
+	var setElementRotation = function(el, config, scr) {
 		//element rotation
 		if (el.angle) {
 
@@ -1258,15 +1331,15 @@ CC.drawer = new (function(){
             }
 
             //translate to the anchor point
-            CC.context.translate(el.anchor.x, el.anchor.y);
+            scr.context.translate(el.anchor.x, el.anchor.y);
             //rotate
-            CC.context.rotate(el.angle * Math.PI/-180);
+            scr.context.rotate(el.angle * Math.PI/-180);
             //get back to previous 0, 0
-            CC.context.translate(-el.anchor.x, -el.anchor.y);
+            scr.context.translate(-el.anchor.x, -el.anchor.y);
         }
 	};
 
-	var setLayerRotation = function(el, layr, config) {
+	var setLayerRotation = function(el, layr, config, scr) {
 		//'layer' rotation
         if (layr.angle) {
 
@@ -1279,151 +1352,151 @@ CC.drawer = new (function(){
             }
 
             //translate to the anchor point
-            CC.context.translate(layr.anchor.x, layr.anchor.y);
+            scr.context.translate(layr.anchor.x, layr.anchor.y);
             //rotate
-            CC.context.rotate(layr.angle * Math.PI/-180);
+            scr.context.rotate(layr.angle * Math.PI/-180);
             //get back to previous 0, 0
-            CC.context.translate(-layr.anchor.x, -layr.anchor.y);
+            scr.context.translate(-layr.anchor.x, -layr.anchor.y);
         }
 	};
 
-	var setLayerOffset = function(config) {
+	var setLayerOffset = function(config, scr) {
 		//translate to the chosen offset
-        CC.context.translate(
+        scr.context.translate(
             config.offsetX - ((config.FW - config.EW) / 2), 
             config.offsetY - ((config.FH - config.EH) / 2)
         );
 	};
 
-	var setElementFlip = function(el, config) {
+	var setElementFlip = function(el, config, scr) {
 		//flipping the element
         if (el.flip && el.flip.length) {
             var scaleHor = el.flip.indexOf("x") != -1 ? -1 : 1;
             var scaleVer = el.flip.indexOf("y") != -1 ? -1 : 1;
 
             //translate to the center
-            CC.context.translate(config.FW/2, config.FH/2);
+            scr.context.translate(config.FW/2, config.FH/2);
             //scale
-            CC.context.scale(scaleHor, scaleVer);
+            scr.context.scale(scaleHor, scaleVer);
             //translate back to 0, 0
-            CC.context.translate(-config.FW/2, -config.FH/2);
+            scr.context.translate(-config.FW/2, -config.FH/2);
         }
 	};
 
-	var setLayerFlip = function(layr, config) {
+	var setLayerFlip = function(layr, config, scr) {
 		//flipping the layer
         if (layr.flip && layr.flip.length) {
             var scaleHor = layr.flip.indexOf("x") != -1 ? -1 : 1;
             var scaleVer = layr.flip.indexOf("y") != -1 ? -1 : 1;
 
             //translate to the center
-            CC.context.translate(config.FW/2, config.FH/2);
+            scr.context.translate(config.FW/2, config.FH/2);
             //scale
-            CC.context.scale(scaleHor, scaleVer);
+            scr.context.scale(scaleHor, scaleVer);
             //translate back to 0, 0
-            CC.context.translate(-config.FW/2, -config.FH/2);
+            scr.context.translate(-config.FW/2, -config.FH/2);
         }
 	};
 
-	var setLayerScale = function(layr, config) {
+	var setLayerScale = function(layr, config, scr) {
 		//scale - if want to stretch or squeeze the layer
         if (layr.scale && (layr.scale.x || layr.scale.y)) {
 
             //translate to the center
-            CC.context.translate(config.FW/2, config.FH/2);
+            scr.context.translate(config.FW/2, config.FH/2);
             //scale
-            CC.context.scale(layr.scale.x || 1, layr.scale.y || 1);
+            scr.context.scale(layr.scale.x || 1, layr.scale.y || 1);
             //translate back to 0, 0
-            CC.context.translate(-config.FW/2, -config.FH/2);
+            scr.context.translate(-config.FW/2, -config.FH/2);
         }
 	};
 
-	var setLayerAlpha = function(layr) {
+	var setLayerAlpha = function(layr, scr) {
 		//alpha - semi transparent options
 		if (layr.alpha != undefined && layr.alpha < 1) {
-            CC.context.globalAlpha = layr.alpha;
+            scr.context.globalAlpha = layr.alpha;
         } else {
-            CC.context.globalAlpha = 1;
+            scr.context.globalAlpha = 1;
         }
 	};
 
-	var setLayerFill = function(layr, config) {
+	var setLayerFill = function(layr, config, scr) {
 		
 		if (!layr.fill) {
 			return;
 		}
 
-		setLayerFillStyle(layr, config);
+		setLayerFillStyle(layr, config, scr);
 
         //draw a rectangle
         if (layr.shape === "rect" || layr.shape === undefined) {
 
             if (!layr.roundedBorderRadius) {
-                CC.context.fillRect(0, 0, config.FW, config.FH);
+                scr.context.fillRect(0, 0, config.FW, config.FH);
             } else {
-                createRoundedBorder(config.FW, config.FH, layr.roundedBorderRadius);
-                CC.context.fill();
+                createRoundedBorder(config.FW, config.FH, layr.roundedBorderRadius, scr);
+                scr.context.fill();
             }
 
         //draw a circle
         } else if (layr.shape === "circle") {
 
-            createCircle(config);
-            CC.context.fill();
+            createCircle(config, scr);
+            scr.context.fill();
 
         //draw a polygon
         } else if (CC.isArray(layr.shape)) {
 
-            createPolygon(layr);
-            CC.context.fill();
+            createPolygon(layr, scr);
+            scr.context.fill();
 
         }
 	};
 
-	var setLayerStroke = function(layr, config) {
+	var setLayerStroke = function(layr, config, scr) {
 		//stroke
         if (!layr.stroke) {
         	return;
         }
 
-        setLayerStrokeStyle(layr, config);
+        setLayerStrokeStyle(layr, config, scr);
 
         //draw a rectangle
         if (layr.shape === "rect" || layr.shape === undefined) {
 
             if (!layr.roundedBorderRadius) {
-                CC.context.strokeRect(0, 0, config.FW, config.FH);
+                scr.context.strokeRect(0, 0, config.FW, config.FH);
             } else {
-                createRoundedBorder(config.FW, config.FH, layr.roundedBorderRadius);
-                CC.context.stroke();
+                createRoundedBorder(config.FW, config.FH, layr.roundedBorderRadius, scr);
+                scr.context.stroke();
             }
 
         //draw a circle
         } else if (layr.shape === "circle") {
 
-            createCircle(config);
+            createCircle(config, scr);
 
-            CC.context.stroke();
+            scr.context.stroke();
 
         //draw a polygon
         } else if (CC.isArray(layr.shape)) {
 
-            createPolygon(layr);
-            CC.context.stroke();
+            createPolygon(layr, scr);
+            scr.context.stroke();
 
         }
         
 	};
 
-    var setLayerSpriteOrTile = function(layr, config) {
+    var setLayerSpriteOrTile = function(layr, config, scr) {
         //sprite
         if (layr.sprite && layr.sprite.url) {
 
-            setLayerSprite(layr, config);            
+            setLayerSprite(layr, config, scr);            
 
         } else if (layr.tiles) {
 
-            setLayerTiles(layr, config);
+            setLayerTiles(layr, config, scr);
         }
     };
 
@@ -1442,48 +1515,48 @@ CC.drawer = new (function(){
     /* @melanke - 13/11/2013                                                                */
 
 
-	var setLayerFillStyle = function(layr, config) {
+	var setLayerFillStyle = function(layr, config, scr) {
 		//by color
         if (layr.fill.color && CC.isString(layr.fill.color)) {
 
-            CC.context.fillStyle = layr.fill.color;
+            scr.context.fillStyle = layr.fill.color;
 
         //by linear gradient
         } else if (layr.fill.linearGradient) {
 
-            CC.context.fillStyle = createLinearGradient(layr.fill.linearGradient, config.FW, config.FH);
+            scr.context.fillStyle = createLinearGradient(layr.fill.linearGradient, config.FW, config.FH, scr);
         
         //by radial gradient    
         } else if (layr.fill.radialGradient) {
 
-            CC.context.fillStyle = createRadialGradient(layr.fill.radialGradient, config.FW, config.FH);
+            scr.context.fillStyle = createRadialGradient(layr.fill.radialGradient, config.FW, config.FH, scr);
 
         }
 
 	};
 
-	var setLayerStrokeStyle = function(layr, config) {
+	var setLayerStrokeStyle = function(layr, config, scr) {
 		//by color
         if (layr.stroke.color && CC.isString(layr.stroke.color)) {
 
-            CC.context.strokeStyle = layr.stroke.color;
+            scr.context.strokeStyle = layr.stroke.color;
 
         //by linearGradient
         } else if (layr.stroke.linearGradient) {
 
-            CC.context.strokeStyle = createLinearGradient(layr.stroke.linearGradient, config.FW, config.FH);
+            scr.context.strokeStyle = createLinearGradient(layr.stroke.linearGradient, config.FW, config.FH, scr);
             
         //by radial gradient 
         } else if (layr.fill.radialGradient) {
 
-            CC.context.strokeStyle = createRadialGradient(layr.stroke.radialGradient, config.FW, config.FH);
+            scr.context.strokeStyle = createRadialGradient(layr.stroke.radialGradient, config.FW, config.FH, scr);
 
         }
 	};
 
-    var setLayerSprite = function(layr, config){
+    var setLayerSprite = function(layr, config, scr){
 
-        limitSprite(layr, config);
+        limitSprite(layr, config, scr);
         var sprite = createSprite(layr.sprite, config.FW, config.FH);
 
         var startX = 0;
@@ -1496,7 +1569,7 @@ CC.drawer = new (function(){
             startY = 0;
             do {
 
-                CC.context.drawImage(sprite.res, sprite.x, sprite.y, sprite.w, sprite.h, startX, startY, sprite.w, sprite.h);
+                scr.context.drawImage(sprite.res, sprite.x, sprite.y, sprite.w, sprite.h, startX, startY, sprite.w, sprite.h);
                 
                 if (repeatY) {
                     startY += sprite.h;
@@ -1510,9 +1583,9 @@ CC.drawer = new (function(){
         } while (startX < config.EW && repeatX);
     };
 
-    var setLayerTiles = function(layr, config) {
+    var setLayerTiles = function(layr, config, scr) {
         
-        limitSprite(layr, config);
+        limitSprite(layr, config, scr);
 
         var tw, th;
 
@@ -1536,7 +1609,7 @@ CC.drawer = new (function(){
                 tile.h = th;
 
                 var sprite = createSprite(tile, config.FW, config.FH);
-                CC.context.drawImage(sprite.res, sprite.x, sprite.y, sprite.w, sprite.h, startX, startY, sprite.w, sprite.h);
+                scr.context.drawImage(sprite.res, sprite.x, sprite.y, sprite.w, sprite.h, startX, startY, sprite.w, sprite.h);
 
                 startX += tw;
             }
@@ -1544,31 +1617,31 @@ CC.drawer = new (function(){
         }
     };
 
-	var createCircle = function(config) {
-		CC.context.beginPath();
+	var createCircle = function(config, scr) {
+		scr.context.beginPath();
 
-        CC.context.arc(
+        scr.context.arc(
             config.FW / 2, 
             config.FW / 2, 
             config.FW / 2,
             0, 2 * Math.PI);
 
-        CC.context.closePath();
+        scr.context.closePath();
 	};
 
-	var createPolygon = function(layr) {
-		CC.context.beginPath();
-        CC.context.moveTo(layr.shape[0][0], layr.shape[0][1]);
+	var createPolygon = function(layr, scr) {
+		scr.context.beginPath();
+        scr.context.moveTo(layr.shape[0][0], layr.shape[0][1]);
 
         for (var p in layr.shape) {
             var point = layr.shape[p];
-            CC.context.lineTo(point[0], point[1]);
+            scr.context.lineTo(point[0], point[1]);
         }
         
-        CC.context.closePath();
+        scr.context.closePath();
 	};
 
-    var createLinearGradient = function(linearGradient, FW, FH){
+    var createLinearGradient = function(linearGradient, FW, FH, scr){
 
         if (!linearGradient.start) {
             linearGradient.start = [0, 0];
@@ -1583,7 +1656,7 @@ CC.drawer = new (function(){
         var x2 = linearGradient.end[0] / 100 * FW;
         var y2 = linearGradient.end[1] / 100 * FH;
 
-        var gradient = CC.context.createLinearGradient(x1, y1, x2, y2);
+        var gradient = scr.context.createLinearGradient(x1, y1, x2, y2);
 
         for (var s in linearGradient) {
             var stop = parseFloat(s);
@@ -1596,7 +1669,7 @@ CC.drawer = new (function(){
 
     };
 
-    var createRadialGradient = function(radialGradient, FW, FH){
+    var createRadialGradient = function(radialGradient, FW, FH, scr){
 
         if (!radialGradient.innerCircle) {
             radialGradient.innerCircle = {};
@@ -1639,7 +1712,7 @@ CC.drawer = new (function(){
         var y2 = radialGradient.outerCircle.centerY / 100 * FH;
         var r2 = radialGradient.outerCircle.radius / 100 * maxDim;
 
-        var gradient = CC.context.createRadialGradient(x1, y1, r1, x2, y2, r2);
+        var gradient = scr.context.createRadialGradient(x1, y1, r1, x2, y2, r2);
 
         for (var s in radialGradient) {
             var stop = parseFloat(s);
@@ -1652,48 +1725,48 @@ CC.drawer = new (function(){
 
     };
 
-    var createRoundedBorder = function(FW, FH, radius){
-        CC.context.beginPath();
-        CC.context.moveTo(radius, 0);
-        CC.context.lineTo(FW-radius, 0);
-        CC.context.quadraticCurveTo(FW, 0, FW, radius);
-        CC.context.lineTo(FW, FH-radius);
-        CC.context.quadraticCurveTo(FW, FH, FW-radius, FH);
-        CC.context.lineTo(radius, FH);
-        CC.context.quadraticCurveTo(0, FH, 0, FH-radius);
-        CC.context.lineTo(0, radius);
-        CC.context.quadraticCurveTo(0, 0, radius, 0);
-        CC.context.closePath();
+    var createRoundedBorder = function(FW, FH, radius, scr){
+        scr.context.beginPath();
+        scr.context.moveTo(radius, 0);
+        scr.context.lineTo(FW-radius, 0);
+        scr.context.quadraticCurveTo(FW, 0, FW, radius);
+        scr.context.lineTo(FW, FH-radius);
+        scr.context.quadraticCurveTo(FW, FH, FW-radius, FH);
+        scr.context.lineTo(radius, FH);
+        scr.context.quadraticCurveTo(0, FH, 0, FH-radius);
+        scr.context.lineTo(0, radius);
+        scr.context.quadraticCurveTo(0, 0, radius, 0);
+        scr.context.closePath();
     };
 
-    var limitSprite = function(layr, config){
+    var limitSprite = function(layr, config, scr){
         //limit the sprite with a rectangle
         if (layr.shape === "rect" || layr.shape === undefined) {
 
             if (!layr.roundedBorderRadius) {
-                CC.context.beginPath();
-                CC.context.moveTo(0, 0);
-                CC.context.lineTo(config.FW, 0);
-                CC.context.lineTo(config.FW, config.FH);
-                CC.context.lineTo(0, config.FH);
-                CC.context.closePath();
+                scr.context.beginPath();
+                scr.context.moveTo(0, 0);
+                scr.context.lineTo(config.FW, 0);
+                scr.context.lineTo(config.FW, config.FH);
+                scr.context.lineTo(0, config.FH);
+                scr.context.closePath();
             } else {
-                createRoundedBorder(config.FW, config.FH, layr.roundedBorderRadius);
+                createRoundedBorder(config.FW, config.FH, layr.roundedBorderRadius, scr);
             }
 
-            CC.context.clip();
+            scr.context.clip();
 
         //limit the sprite with a circle
         } else if (layr.shape === "circle") {
 
-            createCircle(config);
-            CC.context.clip();
+            createCircle(config, scr);
+            scr.context.clip();
 
         //limit the sprite with a polygon
         } else if (CC.isArray(layr.shape)) {
 
-            createPolygon(layr);
-            CC.context.clip();
+            createPolygon(layr, scr);
+            scr.context.clip();
 
         }
     };
@@ -1743,17 +1816,16 @@ var intervalAnimId;
 */
 CC.startLoop = function(){
 
+    CC.loadScreens();
+
     var mainloop = function(){   
 
         if (!running) {
             return;
         }
 
-        CC.screen.w = canvas.offsetWidth;
-        CC.screen.h = canvas.offsetHeight;
-
         CC.trigger("enterframe");
-        CC.drawer.draw();
+        CC.draw();
         CC.step++;
     };
 
@@ -1818,22 +1890,6 @@ CC.pause = function(){
 */
 CC.play = function(){
     running = true;
-};
-
-
-
-
-/***** SCREEN *****/
-
-//have no dependency
-//is not a internal dependency
-
-/**
-* set the center position to focus the drawing
-*/
-CC.setScreenCenter = function(x, y) {
-    CC.screen.x = (CC.screen.w / 2) - x;
-    CC.screen.y = (CC.screen.h / 2) - y;
 };
 
 
