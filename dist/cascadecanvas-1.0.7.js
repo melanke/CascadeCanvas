@@ -1254,7 +1254,7 @@ CC.useResource = function(src){
             return;
         }
 
-        var config = configDrawing(el, layr);
+        var config = configDrawing(el, layr, scr);
 
         //dont draw if it isn't in screen range
         var normalSX = scr.x * -1;
@@ -1291,7 +1291,7 @@ CC.useResource = function(src){
 
 	};
 
-	var configDrawing = function(el, layr){
+	var configDrawing = function(el, layr, scr){
 
 		//drawing configuration
         var config = {};
@@ -1299,14 +1299,32 @@ CC.useResource = function(src){
         //defining a Width and Height of the element
         config.EW = el.w,
         config.EH = el.h;
+
+        //if it is a text, config the font
+        if (layr.shape === "text" && CC.isString(layr.text)) {
+            config.font = createFont(layr, scr);
+        }
+
         //if it is a polygon and dont have W and H we discover it
-        if (CC.isArray(layr.shape) && (!el.w || !el.h)) {
-            config.EW = el.w || 0;
-            config.EH = el.h || 0;
-            for (var i in layr.shape) {
-                config.EW = Math.max(config.EW, layr.shape[i][0]);
-                config.EH = Math.max(config.EH, layr.shape[i][1]);
+        if (!el.w || !el.h) {
+
+            if (CC.isArray(layr.shape)) {
+
+                config.EW = el.w || 0;
+                config.EH = el.h || 0;
+                for (var i in layr.shape) {
+                    config.EW = Math.max(config.EW, layr.shape[i][0]);
+                    config.EH = Math.max(config.EH, layr.shape[i][1]);
+                }
+
+            } else if (layr.shape === "text" && CC.isString(layr.text)) {
+
+                scr.context.font = config.font;
+
+                config.EW = scr.context.measureText(layr.text).width;
+                config.EH = layr.font.size * 1.5;
             }
+
         }
 
         config.offsetX = layr.offsetX || 0,
@@ -1444,6 +1462,13 @@ CC.useResource = function(src){
             createCircle(config, scr);
             scr.context.fill();
 
+        //draw a text
+        } else if (layr.shape === "text" && CC.isString(layr.text) && layr.text.length) {
+
+            scr.context.font = config.font;
+            scr.context.textBaseline = layr.font.baseline;
+            scr.context.fillText(layr.text, 0, 0);
+
         //draw a polygon
         } else if (CC.isArray(layr.shape)) {
 
@@ -1477,6 +1502,13 @@ CC.useResource = function(src){
             createCircle(config, scr);
 
             scr.context.stroke();
+
+        //draw a text
+        } else if (layr.shape === "text" && CC.isString(layr.text) && layr.text.length) {
+
+            scr.context.font = config.font;
+            scr.context.textBaseline = layr.font.baseline;
+            scr.context.strokeText(layr.text, 0, 0);
 
         //draw a polygon
         } else if (CC.isArray(layr.shape)) {
@@ -1725,6 +1757,21 @@ CC.useResource = function(src){
 
     };
 
+    var createFont = function(layr, scr) {
+        if (!layr.font) {
+            layr.font = {};
+        }
+
+        var b = " ";
+        var px = "px";
+        layr.font.style = layr.font.style || "";
+        layr.font.weight = layr.font.weight || "";
+        layr.font.size = layr.font.size || 10;
+        layr.font.family = layr.font.family || "sans-serif";
+        layr.font.baseline = layr.font.baseline || "top";
+        return layr.font.style + b + layr.font.weight + b + layr.font.size + px + b + layr.font.family;
+    };
+
     var createRoundedBorder = function(FW, FH, radius, scr){
         scr.context.beginPath();
         scr.context.moveTo(radius, 0);
@@ -1761,6 +1808,24 @@ CC.useResource = function(src){
 
             createCircle(config, scr);
             scr.context.clip();
+
+        //draw a text
+        } else if (layr.shape === "text" && CC.isString(layr.text) && layr.text.length) {
+
+            scr.context.font = config.font;
+            scr.context.textBaseline = layr.font.baseline;
+
+            var pathText = scr.context.pathText ||
+                scr.context.webkitPathText      ||
+                scr.context.mozPathText         ||
+                scr.context.oPathText           ||
+                scr.context.msPathText          ||
+                null;
+
+            if (pathText !== null) {
+                pathText(layr.text, 0, 0);
+                scr.context.clip();
+            }
 
         //limit the sprite with a polygon
         } else if (CC.isArray(layr.shape)) {
