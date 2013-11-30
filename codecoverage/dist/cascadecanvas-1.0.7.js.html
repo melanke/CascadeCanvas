@@ -183,16 +183,16 @@
     <h1>Code coverage report for <span class="entity">dist/cascadecanvas-1.0.7.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">42.5% <small>(405 / 953)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">42.34% <small>(406 / 959)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Branches: <span class="metric">29.02% <small>(168 / 579)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">28.52% <small>(168 / 589)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">35.76% <small>(54 / 151)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">35.53% <small>(54 / 152)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">42.68% <small>(405 / 949)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">42.51% <small>(406 / 955)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
     </h2>
     <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">dist/</a> &#187; cascadecanvas-1.0.7.js</div>
@@ -2729,7 +2729,29 @@
 2528
 2529
 2530
-2531</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+2531
+2532
+2533
+2534
+2535
+2536
+2537
+2538
+2539
+2540
+2541
+2542
+2543
+2544
+2545
+2546
+2547
+2548
+2549
+2550
+2551
+2552
+2553</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3089,6 +3111,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">28</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3893,8 +3922,18 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -4025,6 +4064,11 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -5622,6 +5666,13 @@ CC.isString = function(stringToCheck){
 };
 &nbsp;
 /**
+* check if param is a number
+*/
+CC.isNumber = <span class="fstat-no" title="function not covered" >function(numberToCheck) {</span>
+<span class="cstat-no" title="statement not covered" >	return !isNaN(parseFloat(numberToCheck)) &amp;&amp; isFinite(numberToCheck);</span>
+};
+&nbsp;
+/**
 * check if param is an array
 */
 CC.isArray = function(arrayToCheck){
@@ -6420,11 +6471,21 @@ CC.useResource = <span class="fstat-no" title="function not covered" >function(s
 <span class="cstat-no" title="statement not covered" >        var fx = x - (this.w / 2);</span>
 <span class="cstat-no" title="statement not covered" >        var fy = y - (this.h / 2);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        fx = Math.min(fx, this.maxX);</span>
-<span class="cstat-no" title="statement not covered" >        fy = Math.min(fy, this.maxY);</span>
+<span class="cstat-no" title="statement not covered" >        if (CC.isNumber(this.maxX)) {</span>
+<span class="cstat-no" title="statement not covered" >            fx = Math.min(fx, this.maxX);</span>
+        }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        fx = Math.max(fx, this.minX);</span>
-<span class="cstat-no" title="statement not covered" >        fy = Math.max(fy, this.minY);</span>
+<span class="cstat-no" title="statement not covered" >        if (CC.isNumber(this.maxY)) {</span>
+<span class="cstat-no" title="statement not covered" >            fy = Math.min(fy, this.maxY);</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (CC.isNumber(this.minX)) {</span>
+<span class="cstat-no" title="statement not covered" >            fx = Math.max(fx, this.minX);</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (CC.isNumber(this.minY)) {</span>
+<span class="cstat-no" title="statement not covered" >            fy = Math.max(fy, this.minY);</span>
+        }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        this.x = fx;</span>
 <span class="cstat-no" title="statement not covered" >        this.y = fy;</span>
@@ -6555,6 +6616,11 @@ CC.useResource = <span class="fstat-no" title="function not covered" >function(s
 <span class="cstat-no" title="statement not covered" >        setLayerFlip(layr, config, scr);</span>
 <span class="cstat-no" title="statement not covered" >        setLayerScale(layr, config, scr);</span>
 <span class="cstat-no" title="statement not covered" >        setLayerAlpha(layr, scr);</span>
+&nbsp;
+&nbsp;
+        // scr.context.shadowBlur=20;
+        // scr.context.shadowColor="black";
+&nbsp;
 <span class="cstat-no" title="statement not covered" >        setLayerFill(layr, config, scr);</span>
 <span class="cstat-no" title="statement not covered" >        setLayerStroke(layr, config, scr);</span>
 <span class="cstat-no" title="statement not covered" >        setLayerSpriteOrTile(layr, config, scr);</span>
@@ -7794,7 +7860,7 @@ return CC;
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Nov 30 2013 11:23:26 GMT-0200 (BRST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Nov 30 2013 11:32:33 GMT-0200 (BRST)</div>
 </div>
 
 <script src="../prettify.js"></script>

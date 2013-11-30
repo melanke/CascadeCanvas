@@ -95,11 +95,21 @@
         var fx = x - (this.w / 2);
         var fy = y - (this.h / 2);
 
-        fx = Math.min(fx, this.maxX);
-        fy = Math.min(fy, this.maxY);
+        if (CC.isNumber(this.maxX)) {
+            fx = Math.min(fx, this.maxX);
+        }
 
-        fx = Math.max(fx, this.minX);
-        fy = Math.max(fy, this.minY);
+        if (CC.isNumber(this.maxY)) {
+            fy = Math.min(fy, this.maxY);
+        }
+
+        if (CC.isNumber(this.minX)) {
+            fx = Math.max(fx, this.minX);
+        }
+
+        if (CC.isNumber(this.minY)) {
+            fy = Math.max(fy, this.minY);
+        }
 
         this.x = fx;
         this.y = fy;
@@ -230,6 +240,11 @@
         setLayerFlip(layr, config, scr);
         setLayerScale(layr, config, scr);
         setLayerAlpha(layr, scr);
+
+
+        // scr.context.shadowBlur=20;
+        // scr.context.shadowColor="black";
+
         setLayerFill(layr, config, scr);
         setLayerStroke(layr, config, scr);
         setLayerSpriteOrTile(layr, config, scr);

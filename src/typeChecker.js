@@ -18,6 +18,13 @@ CC.isString = function(stringToCheck){
 };
 
 /**
+* check if param is a number
+*/
+CC.isNumber = function(numberToCheck) {
+	return !isNaN(parseFloat(numberToCheck)) && isFinite(numberToCheck);
+};
+
+/**
 * check if param is an array
 */
 CC.isArray = function(arrayToCheck){
