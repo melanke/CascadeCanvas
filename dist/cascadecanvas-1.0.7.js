@@ -1156,8 +1156,17 @@ CC.useResource = function(src){
     };
 
     var setCenter = function(x, y) {
-        this.x = x - (this.w / 2);
-        this.y = y - (this.h / 2);
+        var fx = x - (this.w / 2);
+        var fy = y - (this.h / 2);
+
+        fx = Math.min(fx, this.maxX);
+        fy = Math.min(fy, this.maxY);
+
+        fx = Math.max(fx, this.minX);
+        fy = Math.max(fy, this.minY);
+
+        this.x = fx;
+        this.y = fy;
     };
 
     var canvasOnSelectStart = function() { return false; };
