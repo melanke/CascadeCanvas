@@ -38,6 +38,7 @@ var Element = function(specs, opts){
             el.flip = opts.flip;
             el.hidden = opts.hidden;
             el.zIndex = opts.zIndex;
+            el.fixedOnScreen = opts.fixedOnScreen;
         }
 
         eventEnvironmentBuilder(el);

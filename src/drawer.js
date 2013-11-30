@@ -92,13 +92,17 @@
     };
 
     var setCenter = function(x, y) {
-        this.x = (this.w / 2) - x;
-        this.y = (this.h / 2) - y;
+        this.x = x - (this.w / 2);
+        this.y = y - (this.h / 2);
     };
 
     var canvasOnSelectStart = function() { return false; };
     var canvasOnClick = function(event){ CC.trigger("click", event); };
     var canvasOnContextMenu = function (event) { CC.trigger("rightclick", event); return false; };
+
+
+
+
 
 	var drawElement = function(el, scr) {
 
@@ -193,20 +197,18 @@
         var config = configDrawing(el, layr, scr);
 
         //dont draw if it isn't in screen range
-        var normalSX = scr.x * -1;
-        var normalSY = scr.y * -1;
-        if (el.x + config.offsetX + config.FW < normalSX
-        || el.x + config.offsetX - config.FW > normalSX + scr.w
-        || el.y + config.offsetY + config.FH < normalSY
-        || el.y + config.offsetY - config.FH > normalSY + scr.h) {
+        if (!isElementInScreenRange(el, config, scr)) {
             return;
         }
 
         //save context to be able to restore to this state
         scr.context.save();
 
-        //draw the layer relative to screen x and y (to offset the camera position)
-        scr.context.translate(scr.x, scr.y);
+        //if the element is not fixed on this screen
+        if (el.fixedOnScreen !== true && el.fixedOnScreen !== scr.htmlId) {
+            //draw the layer relative to screen x and y (to offset the camera position)
+            scr.context.translate(-scr.x, -scr.y);
+        }
 
         //translate the canvas to the x, y of the element to draw it from 0, 0
         scr.context.translate(el.x, el.y);
@@ -271,6 +273,22 @@
         return config;
 
 	};
+
+    var isElementInScreenRange = function(el, config, scr) {
+
+        var sX = scr.x;
+        var sY = scr.y;
+        
+        if (el.fixedOnScreen === true || el.fixedOnScreen === scr.htmlId) {
+            sX = 0;
+            sY = 0;
+        }
+
+        return (el.x + config.offsetX + config.FW >= sX
+        && el.x + config.offsetX - config.FW <= sX + scr.w
+        && el.y + config.offsetY + config.FH >= sY
+        && el.y + config.offsetY - config.FH <= sY + scr.h);
+    };
 
 	var setElementRotation = function(el, config, scr) {
 		//element rotation
