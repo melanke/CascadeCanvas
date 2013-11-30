@@ -44,9 +44,9 @@ var ElementList = function(elements, selection){
     };
 
     /**
-    * get an element by the index
+    * get an element by the index.
     */
-    this.eg = function(index){
+    this.e = function(index){
         return elements[index];
     };
 
@@ -55,21 +55,6 @@ var ElementList = function(elements, selection){
     */
     this.asArray = function(){
         return elements.slice(0);
-    };
-
-    /**
-    * invoke the constructors for this element
-    * @param classesStr a string with the name of the classes to this element inherit, example:
-    * 'Class1 Class2' - this element will inherit both
-    */
-    this.inherit = function(classesStr, opts){
-
-        this.each(function(){
-            this.inherit(classesStr, opts);
-        });
-
-        return this;
-
     };
 
     /**
@@ -101,6 +86,65 @@ var ElementList = function(elements, selection){
         });
 
         return new ElementList(result, selection + "\n" + JSON.parse(atrs) + "\n\n");
+
+    };
+
+    this.add = function(otherElements){
+
+        if (otherElements == null) {
+            return this;
+        }
+
+        if (CC.isString(otherElements)) {
+            otherElements = CC(otherElements);
+        } else if (!CC.isFunction(otherElements.asArray)) {
+            return this;
+        }
+
+        var resultArray = elements.concat(otherElements.asArray());
+        var resultSelection = this.selection + " + " + otherElements.selection;
+        return new ElementList(resultArray, resultSelection);
+
+    };
+
+    this.sub = function(otherElements){
+
+        if (otherElements == null) {
+            return this;
+        }
+
+        if (CC.isString(otherElements)) {
+            otherElements = CC(otherElements);
+        } else if (!CC.isFunction(otherElements.each)) {
+            return this;
+        }
+
+        var resultArray = this.asArray();
+
+        otherElements.each(function(){
+            var index = resultArray.indexOf(this);
+            if (index > -1) {
+                resultArray.splice(index, 1);
+            }
+        });
+
+        var resultSelection = this.selection + " - " + otherElements.selection;
+        return new ElementList(resultArray, resultSelection);
+
+    };
+
+    /**
+    * invoke the constructors for this element
+    * @param classesStr a string with the name of the classes to this element inherit, example:
+    * 'Class1 Class2' - this element will inherit both
+    */
+    this.inherit = function(classesStr, opts){
+
+        this.each(function(){
+            this.inherit(classesStr, opts);
+        });
+
+        return this;
 
     };
 
