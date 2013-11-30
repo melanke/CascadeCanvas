@@ -1311,11 +1311,7 @@ CC.useResource = function(src){
         setLayerFlip(layr, config, scr);
         setLayerScale(layr, config, scr);
         setLayerAlpha(layr, scr);
-
-
-        // scr.context.shadowBlur=20;
-        // scr.context.shadowColor="black";
-
+        setLayerShadow(layr, scr);
         setLayerFill(layr, config, scr);
         setLayerStroke(layr, config, scr);
         setLayerSpriteOrTile(layr, config, scr);
@@ -1486,6 +1482,30 @@ CC.useResource = function(src){
             scr.context.globalAlpha = 1;
         }
 	};
+
+    var setLayerShadow = function(layr, scr) {
+
+        if (!layr.shadow) {
+            return;
+        }
+
+        if (layr.shadow.blur) {
+            scr.context.shadowBlur = layr.shadow.blur;
+        }
+
+        if (layr.shadow.color) {
+            scr.context.shadowColor = layr.shadow.color;
+        }
+
+        if (layr.shadow.x) {
+            scr.context.shadowOffsetX = layr.shadow.x;
+        }
+
+        if (layr.shadow.y) {
+            scr.context.shadowOffsetY = layr.shadow.y;
+        }
+
+    };
 
 	var setLayerFill = function(layr, config, scr) {
 		

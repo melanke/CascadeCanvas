@@ -183,16 +183,16 @@
     <h1>Code coverage report for <span class="entity">dist/cascadecanvas-1.0.7.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">42.34% <small>(406 / 959)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">41.92% <small>(407 / 971)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Branches: <span class="metric">28.52% <small>(168 / 589)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">28.05% <small>(168 / 599)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">35.53% <small>(54 / 152)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">35.29% <small>(54 / 153)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">42.51% <small>(406 / 955)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">42.09% <small>(407 / 967)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
     </h2>
     <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">dist/</a> &#187; cascadecanvas-1.0.7.js</div>
@@ -2751,7 +2751,27 @@
 2550
 2551
 2552
-2553</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+2553
+2554
+2555
+2556
+2557
+2558
+2559
+2560
+2561
+2562
+2563
+2564
+2565
+2566
+2567
+2568
+2569
+2570
+2571
+2572
+2573</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -4064,11 +4084,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -4237,6 +4253,30 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -6616,11 +6656,7 @@ CC.useResource = <span class="fstat-no" title="function not covered" >function(s
 <span class="cstat-no" title="statement not covered" >        setLayerFlip(layr, config, scr);</span>
 <span class="cstat-no" title="statement not covered" >        setLayerScale(layr, config, scr);</span>
 <span class="cstat-no" title="statement not covered" >        setLayerAlpha(layr, scr);</span>
-&nbsp;
-&nbsp;
-        // scr.context.shadowBlur=20;
-        // scr.context.shadowColor="black";
-&nbsp;
+<span class="cstat-no" title="statement not covered" >        setLayerShadow(layr, scr);</span>
 <span class="cstat-no" title="statement not covered" >        setLayerFill(layr, config, scr);</span>
 <span class="cstat-no" title="statement not covered" >        setLayerStroke(layr, config, scr);</span>
 <span class="cstat-no" title="statement not covered" >        setLayerSpriteOrTile(layr, config, scr);</span>
@@ -6791,6 +6827,30 @@ CC.useResource = <span class="fstat-no" title="function not covered" >function(s
 <span class="cstat-no" title="statement not covered" >            scr.context.globalAlpha = 1;</span>
         }
 	};
+&nbsp;
+    var setLayerShadow = <span class="fstat-no" title="function not covered" >function(layr, scr) {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (!layr.shadow) {</span>
+<span class="cstat-no" title="statement not covered" >            return;</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (layr.shadow.blur) {</span>
+<span class="cstat-no" title="statement not covered" >            scr.context.shadowBlur = layr.shadow.blur;</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (layr.shadow.color) {</span>
+<span class="cstat-no" title="statement not covered" >            scr.context.shadowColor = layr.shadow.color;</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (layr.shadow.x) {</span>
+<span class="cstat-no" title="statement not covered" >            scr.context.shadowOffsetX = layr.shadow.x;</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (layr.shadow.y) {</span>
+<span class="cstat-no" title="statement not covered" >            scr.context.shadowOffsetY = layr.shadow.y;</span>
+        }
+&nbsp;
+    };
 &nbsp;
 	var setLayerFill = <span class="fstat-no" title="function not covered" >function(layr, config, scr) {</span>
 		
@@ -7860,7 +7920,7 @@ return CC;
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Nov 30 2013 11:32:33 GMT-0200 (BRST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Nov 30 2013 11:46:05 GMT-0200 (BRST)</div>
 </div>
 
 <script src="../prettify.js"></script>
