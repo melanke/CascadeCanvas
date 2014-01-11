@@ -183,16 +183,16 @@
     <h1>Code coverage report for <span class="entity">src/loop.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">65.63% <small>(21 / 32)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">67.65% <small>(23 / 34)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
         Branches: <span class="metric">45.45% <small>(10 / 22)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">50% <small>(3 / 6)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">62.5% <small>(5 / 8)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">65.63% <small>(21 / 32)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">67.65% <small>(23 / 34)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
     </h2>
     <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">src/</a> &#187; loop.js</div>
@@ -287,7 +287,17 @@
 86
 87
 88
-89</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -295,6 +305,8 @@
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -305,13 +317,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">56</span>
+<span class="cline-any cline-yes">55</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">56</span>
-<span class="cline-any cline-yes">56</span>
-<span class="cline-any cline-yes">56</span>
+<span class="cline-any cline-yes">55</span>
+<span class="cline-any cline-yes">55</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2</span>
@@ -375,100 +386,119 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">235</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/***** LOOP *****/
 &nbsp;
 //depends on event and drawer
 //is not a internal dependency
 &nbsp;
-var running = true;
-var requestAnimId;
-var intervalAnimId;
+(function(){
+    var running = true;
+    var requestAnimId;
+    var intervalAnimId;
+    
 &nbsp;
-/**
-* start the routine of the gameloop, for each loop it triggers 'enterframe' event and render the elements
-*/
-CC.startLoop = function(){
+    /**
+    * start the routine of the gameloop, for each loop it triggers 'enterframe' event and render the elements
+    */
+    CC.startLoop = function(){
 &nbsp;
-    CC.loadScreens();
+        CC.loadScreens();
 &nbsp;
-    var mainloop = function(){   
+        var mainloop = function(){   
 &nbsp;
-        <span class="missing-if-branch" title="if path not taken"" >I</span>if (!running) {
-<span class="cstat-no" title="statement not covered" >            return;</span>
-        }
+            <span class="missing-if-branch" title="if path not taken"" >I</span>if (!running) {
+<span class="cstat-no" title="statement not covered" >                return;</span>
+            }
 &nbsp;
-        CC.trigger("enterframe");
-        CC.draw();
-        CC.step++;
-    };
-&nbsp;
-    var animFrame = window.requestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame    ||
-        window.oRequestAnimationFrame      ||
-        window.msRequestAnimationFrame     ||
-        null;
-&nbsp;
-    <span class="missing-if-branch" title="if path not taken"" >I</span>if (animFrame !== null) {
-        
-<span class="cstat-no" title="statement not covered" >        var recursiveAnim = <span class="fstat-no" title="function not covered" >function() {</span></span>
-<span class="cstat-no" title="statement not covered" >            mainloop();</span>
-<span class="cstat-no" title="statement not covered" >            requestAnimId = animFrame(recursiveAnim);</span>
+            CC.trigger("enterframe");
+            CC.draw();
         };
 &nbsp;
-        // start the mainloop
-<span class="cstat-no" title="statement not covered" >        requestAnimId = animFrame(recursiveAnim);</span>
-&nbsp;
-    } else {
-        var ONE_FRAME_TIME = 1000.0 / 60.0 ;
-        intervalAnimId = setInterval( mainloop, ONE_FRAME_TIME );
-    }
-&nbsp;
-};
-&nbsp;
-/**
-* stop the gameloop
-*/
-CC.stopLoop = function(){
-    <span class="missing-if-branch" title="if path not taken"" >I</span>if (requestAnimId) {
-<span class="cstat-no" title="statement not covered" >        var cancelFrame = window.cancelAnimationFrame ||</span>
-            window.webkitCancelAnimationFrame ||
-            window.mozCancelAnimationFrame    ||
-            window.oCancelAnimationFrame      ||
-            window.msCancelAnimationFrame     ||
+        var animFrame = window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame    ||
+            window.oRequestAnimationFrame      ||
+            window.msRequestAnimationFrame     ||
             null;
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        if (cancelFrame !== null) {</span>
-<span class="cstat-no" title="statement not covered" >            cancelFrame(requestAnimId);</span>
-<span class="cstat-no" title="statement not covered" >            requestAnimId = null;</span>
+        <span class="missing-if-branch" title="if path not taken"" >I</span>if (animFrame !== null) {
+            
+<span class="cstat-no" title="statement not covered" >            var recursiveAnim = <span class="fstat-no" title="function not covered" >function() {</span></span>
+<span class="cstat-no" title="statement not covered" >                mainloop();</span>
+<span class="cstat-no" title="statement not covered" >                requestAnimId = animFrame(recursiveAnim);</span>
+            };
+&nbsp;
+            // start the mainloop
+<span class="cstat-no" title="statement not covered" >            requestAnimId = animFrame(recursiveAnim);</span>
+&nbsp;
+        } else {
+            var ONE_FRAME_TIME = 1000.0 / 60.0 ;
+            intervalAnimId = setInterval( mainloop, ONE_FRAME_TIME );
         }
-    }
 &nbsp;
-    <span class="missing-if-branch" title="else path not taken"" >E</span>if (intervalAnimId) {
-        clearInterval(intervalAnimId);
-        intervalAnimId = null;
-    }
-};
+    };
 &nbsp;
-/**
-* make the triggers and the gameloop to be ignored
-*/
-CC.pause = <span class="fstat-no" title="function not covered" >function(){</span>
-<span class="cstat-no" title="statement not covered" >    running = false;</span>
-};
+    /**
+    * stop the gameloop
+    */
+    CC.stopLoop = function(){
+        <span class="missing-if-branch" title="if path not taken"" >I</span>if (requestAnimId) {
+<span class="cstat-no" title="statement not covered" >            var cancelFrame = window.cancelAnimationFrame ||</span>
+                window.webkitCancelAnimationFrame ||
+                window.mozCancelAnimationFrame    ||
+                window.oCancelAnimationFrame      ||
+                window.msCancelAnimationFrame     ||
+                null;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            if (cancelFrame !== null) {</span>
+<span class="cstat-no" title="statement not covered" >                cancelFrame(requestAnimId);</span>
+<span class="cstat-no" title="statement not covered" >                requestAnimId = null;</span>
+            }
+        }
+&nbsp;
+        <span class="missing-if-branch" title="else path not taken"" >E</span>if (intervalAnimId) {
+            clearInterval(intervalAnimId);
+            intervalAnimId = null;
+        }
+    };
+&nbsp;
+    /**
+    * make the triggers and the gameloop to be ignored
+    */
+    CC.pause = <span class="fstat-no" title="function not covered" >function(){</span>
+<span class="cstat-no" title="statement not covered" >        running = false;</span>
+    };
 &nbsp;
 &nbsp;
-/**
-* make the triggers and the gameloop to be considered again
-*/
-CC.play = <span class="fstat-no" title="function not covered" >function(){</span>
-<span class="cstat-no" title="statement not covered" >    running = true;</span>
-};</pre></td></tr>
+    /**
+    * make the triggers and the gameloop to be considered again
+    */
+    CC.play = <span class="fstat-no" title="function not covered" >function(){</span>
+<span class="cstat-no" title="statement not covered" >        running = true;</span>
+    };
+&nbsp;
+    /**
+    * check if loop is enabled. Important: "stopLoop" will not disable the loop, only "pause" will do it
+    */
+    CC.isRunning = function(){
+        return running;
+    };
+    
+})();</pre></td></tr>
 </table></pre>
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Jan 11 2014 00:16:36 GMT-0200 (BRST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Jan 11 2014 10:49:35 GMT-0200 (BRST)</div>
 </div>
 
 <script src="../prettify.js"></script>

@@ -183,16 +183,16 @@
     <h1>Code coverage report for <span class="entity">src/typeChecker.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">100% <small>(10 / 10)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(11 / 11)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
         Branches: <span class="metric">100% <small>(14 / 14)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(5 / 5)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(6 / 6)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">100% <small>(10 / 10)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(11 / 11)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
     </h2>
     <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">src/</a> &#187; typeChecker.js</div>
@@ -242,10 +242,16 @@
 41
 42
 43
-44</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+44
+45
+46
+47
+48</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -258,7 +264,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">147</span>
+<span class="cline-any cline-yes">145</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -279,7 +285,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">153</span>
+<span class="cline-any cline-yes">151</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -290,50 +298,54 @@
 //have no dependency
 //is dependency of objectTools, element, promise
 &nbsp;
-/**
-* check if param is a function
-*/
-CC.isFunction = function(functionToCheck){
-    return functionToCheck != null &amp;&amp; {}.toString.call(functionToCheck) === '[object Function]';
-}
+(function(){
 &nbsp;
-/**
-* check if param is a string
-*/
-CC.isString = function(stringToCheck){
-    return typeof stringToCheck == 'string' || stringToCheck instanceof String;
-};
+    /**
+    * check if param is a function
+    */
+    CC.isFunction = function(functionToCheck){
+        return functionToCheck != null &amp;&amp; {}.toString.call(functionToCheck) === '[object Function]';
+    }
 &nbsp;
-/**
-* check if param is a number
-*/
-CC.isNumber = function(numberToCheck) {
-	return !isNaN(parseFloat(numberToCheck)) &amp;&amp; isFinite(numberToCheck);
-};
+    /**
+    * check if param is a string
+    */
+    CC.isString = function(stringToCheck){
+        return typeof stringToCheck == 'string' || stringToCheck instanceof String;
+    };
 &nbsp;
-/**
-* check if param is an array
-*/
-CC.isArray = function(arrayToCheck){
-    return arrayToCheck != null &amp;&amp; {}.toString.call(arrayToCheck) === '[object Array]';
-};
+    /**
+    * check if param is a number
+    */
+    CC.isNumber = function(numberToCheck) {
+    	return !isNaN(parseFloat(numberToCheck)) &amp;&amp; isFinite(numberToCheck);
+    };
 &nbsp;
-/**
-* check if param is an object and not a function, string or array
-*/
-CC.isObject = function(objectToCheck){
-    return objectToCheck != null 
-    &amp;&amp; typeof objectToCheck === 'object' 
-    &amp;&amp; !CC.isFunction(objectToCheck) 
-    &amp;&amp; !CC.isString(objectToCheck)
-    &amp;&amp; !CC.isNumber(objectToCheck)
-    &amp;&amp; !CC.isArray(objectToCheck);
-};</pre></td></tr>
+    /**
+    * check if param is an array
+    */
+    CC.isArray = function(arrayToCheck){
+        return arrayToCheck != null &amp;&amp; {}.toString.call(arrayToCheck) === '[object Array]';
+    };
+&nbsp;
+    /**
+    * check if param is an object and not a function, string or array
+    */
+    CC.isObject = function(objectToCheck){
+        return objectToCheck != null 
+        &amp;&amp; typeof objectToCheck === 'object' 
+        &amp;&amp; !CC.isFunction(objectToCheck) 
+        &amp;&amp; !CC.isString(objectToCheck)
+        &amp;&amp; !CC.isNumber(objectToCheck)
+        &amp;&amp; !CC.isArray(objectToCheck);
+    };
+&nbsp;
+})();</pre></td></tr>
 </table></pre>
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Jan 11 2014 00:16:36 GMT-0200 (BRST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Jan 11 2014 10:49:35 GMT-0200 (BRST)</div>
 </div>
 
 <script src="../prettify.js"></script>

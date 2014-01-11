@@ -183,16 +183,16 @@
     <h1>Code coverage report for <span class="entity">src/keyboard.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">100% <small>(88 / 88)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(89 / 89)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
         Branches: <span class="metric">100% <small>(34 / 34)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(14 / 14)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(15 / 15)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">100% <small>(88 / 88)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(89 / 89)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
     </h2>
     <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">src/</a> &#187; keyboard.js</div>
@@ -486,10 +486,16 @@
 285
 286
 287
-288</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+288
+289
+290
+291
+292</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
@@ -773,299 +779,305 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/***** KEYBOARD *****/
 &nbsp;
 //depends on event
 //is not an internal dependency
 &nbsp;
-var keyPressed = {} //keys pressed
-var keyMapping = {
-    8:  "BACKSPACE",
+(function(){
 &nbsp;
-    13: "ENTER",
-    16: "SHIFT",
-    17: "CTRL",
-    18: "ALT",
+    var keyPressed = {} //keys pressed
+    var keyMapping = {
+        8:  "BACKSPACE",
 &nbsp;
-    20: "CAPSLOCK",
+        13: "ENTER",
+        16: "SHIFT",
+        17: "CTRL",
+        18: "ALT",
 &nbsp;
-    27: "ESC",
+        20: "CAPSLOCK",
 &nbsp;
-    33: "PGUP",
-    34: "PGDOWN",
-    35: "END",
-    36: "HOME",
-    37: "LEFT",
-    38: "UP",
-    39: "RIGHT",
-    40: "DOWN",
+        27: "ESC",
 &nbsp;
-    44: "PRINTSCREEN",
-    45: "INSERT",
+        33: "PGUP",
+        34: "PGDOWN",
+        35: "END",
+        36: "HOME",
+        37: "LEFT",
+        38: "UP",
+        39: "RIGHT",
+        40: "DOWN",
 &nbsp;
-    46: "DEL",
+        44: "PRINTSCREEN",
+        45: "INSERT",
 &nbsp;
-    48: "0",
-    49: "1",
-    50: "2",
-    51: "3",
-    52: "4",
-    53: "5",
-    54: "6",
-    55: "7",
-    56: "8",
-    57: "9",
+        46: "DEL",
 &nbsp;
-    65: "A",
-    66: "B",
-    67: "C",
-    68: "D",
-    69: "E",
-    70: "F",
-    71: "G",
-    72: "H",
-    73: "I",
-    74: "J",
-    75: "K",
-    76: "L",
-    77: "M",
-    78: "N",
-    79: "O",
-    80: "P",
-    81: "Q",
-    82: "R",
-    83: "S",
-    84: "T",
-    85: "U",
-    86: "V",
-    87: "W",
-    88: "X",
-    89: "Y",
-    90: "Z",
+        48: "0",
+        49: "1",
+        50: "2",
+        51: "3",
+        52: "4",
+        53: "5",
+        54: "6",
+        55: "7",
+        56: "8",
+        57: "9",
 &nbsp;
-    91: "WIN",
-    93: "RIGHTCMD",
+        65: "A",
+        66: "B",
+        67: "C",
+        68: "D",
+        69: "E",
+        70: "F",
+        71: "G",
+        72: "H",
+        73: "I",
+        74: "J",
+        75: "K",
+        76: "L",
+        77: "M",
+        78: "N",
+        79: "O",
+        80: "P",
+        81: "Q",
+        82: "R",
+        83: "S",
+        84: "T",
+        85: "U",
+        86: "V",
+        87: "W",
+        88: "X",
+        89: "Y",
+        90: "Z",
 &nbsp;
-    112: "F1",
-    113: "F2",
-    114: "F3",
-    115: "F4",
-    116: "F5",
-    117: "F6",
-    118: "F7",
-    119: "F8",
-    120: "F9",
-    121: "F10",
-    122: "F11",
-    123: "F12"
-};
+        91: "WIN",
+        93: "RIGHTCMD",
 &nbsp;
-var keyAlias = {
-    CMD: "WIN",
-    OPTION: "ALT"
-};
+        112: "F1",
+        113: "F2",
+        114: "F3",
+        115: "F4",
+        116: "F5",
+        117: "F6",
+        118: "F7",
+        119: "F8",
+        120: "F9",
+        121: "F10",
+        122: "F11",
+        123: "F12"
+    };
+&nbsp;
+    var keyAlias = {
+        CMD: "WIN",
+        OPTION: "ALT"
+    };
 &nbsp;
 &nbsp;
 &nbsp;
 &nbsp;
-window.addEventListener('keyup', function(event) {
-    delete keyPressed[keyMapping[event.keyCode]];
-    CC.trigger("keyup", event);
-}, false);
+    window.addEventListener('keyup', function(event) {
+        delete keyPressed[keyMapping[event.keyCode]];
+        CC.trigger("keyup", event);
+    }, false);
 &nbsp;
-window.addEventListener('keydown', function(event) {
-    keyPressed[keyMapping[event.keyCode]] = true; 
-    CC.trigger("keydown", event);
-}, false);
+    window.addEventListener('keydown', function(event) {
+        keyPressed[keyMapping[event.keyCode]] = true; 
+        CC.trigger("keydown", event);
+    }, false);
 &nbsp;
-/**
-* return true if no key is pressed
-*/
-CC.isNoKeyPressed = function(){
+    /**
+    * return true if no key is pressed
+    */
+    CC.isNoKeyPressed = function(){
 &nbsp;
-    for (var j in keyPressed) {
-        return false;   
-    }
-&nbsp;
-    return true;
-&nbsp;
-};
-&nbsp;
-/**
-* detect if all keys in param are pressed
-* @param keys which keys you want to check if are pressed as string separeted by '+'
-* eg.: "Ctrl + Up + A"
-*/
-CC.isKeysPressed = function(keys) {
-    var keysArr = keys.toUpperCase().replace(/ /g, "").split("+");
-&nbsp;
-    for (var i in keysArr) {
-        var k = keysArr[i].toUpperCase();
-        if (keyAlias[k]) {
-            k = keyAlias[k];
+        for (var j in keyPressed) {
+            return false;   
         }
 &nbsp;
-        if (!keyPressed[k]) {
-            return false;
-        }
-    }
+        return true;
 &nbsp;
-    return true;
-};
+    };
 &nbsp;
-/**
-* detect if all and only keys in param are pressed
-* @param keys which keys you want to check if are pressed as string separeted by '+'
-* eg.: "Ctrl + Up + A"
-*/
-CC.isKeysPressedOnly = function(keys) {
-    var keysArr = keys.toUpperCase().replace(/ /g, "").split("+");
-    var map = {};
+    /**
+    * detect if all keys in param are pressed
+    * @param keys which keys you want to check if are pressed as string separeted by '+'
+    * eg.: "Ctrl + Up + A"
+    */
+    CC.isKeysPressed = function(keys) {
+        var keysArr = keys.toUpperCase().replace(/ /g, "").split("+");
 &nbsp;
-    for (var i in keysArr) {
-        
-        var k = keysArr[i].toUpperCase();
-        if (keyAlias[k]) {
-            k = keyAlias[k];
-        }
+        for (var i in keysArr) {
+            var k = keysArr[i].toUpperCase();
+            if (keyAlias[k]) {
+                k = keyAlias[k];
+            }
 &nbsp;
-        if (!keyPressed[k]) {
-            return false;
-        }
-        map[k] = true;
-    }
-&nbsp;
-    for (var j in keyPressed) {
-        if (!map[j]) {
-            return false;
-        }
-    }
-&nbsp;
-    return true;
-};
-&nbsp;
-/**
-* if all keys are down, trigger the action
-* @param keys which keys you want to check if are pressed as string separeted by '+'
-* @param action a function to be invoked when the event is triggered
-*/
-CC.onKeysDown = function(keys, action) {
-    return CC.bind("keydown", function(event){
-        if (!CC.isKeysPressed(keys)) {
-            return;
+            if (!keyPressed[k]) {
+                return false;
+            }
         }
 &nbsp;
-        //verify if the event key is a desired key
-        var wantedArr = keys.toUpperCase().replace(/ /g, "").split("+");
+        return true;
+    };
 &nbsp;
-        for (var i in wantedArr) {
+    /**
+    * detect if all and only keys in param are pressed
+    * @param keys which keys you want to check if are pressed as string separeted by '+'
+    * eg.: "Ctrl + Up + A"
+    */
+    CC.isKeysPressedOnly = function(keys) {
+        var keysArr = keys.toUpperCase().replace(/ /g, "").split("+");
+        var map = {};
+&nbsp;
+        for (var i in keysArr) {
             
-            var k = wantedArr[i].toUpperCase();
+            var k = keysArr[i].toUpperCase();
             if (keyAlias[k]) {
                 k = keyAlias[k];
             }
 &nbsp;
-            if (k == keyMapping[event.keyCode]) {
-                action(event);
-                break;
+            if (!keyPressed[k]) {
+                return false;
             }
-        }
-&nbsp;
-        
-    });
-};
-&nbsp;
-/**
-* if all and only keys are down, trigger the action
-* @param keys which keys you want to check if are pressed as string separeted by '+'
-* @param action a function to be invoked when the event is triggered
-*/
-CC.onKeysDownOnly = function(keys, action) {
-    return CC.bind("keydown", function(event){
-        if (CC.isKeysPressedOnly(keys)) {
-            action(event);
-        }
-    });
-};
-&nbsp;
-/**
-* if all keys was down, no more keys was down and now one of them is released, trigger the action
-* @param keys which keys you want to check if are pressed as string separeted by '+'
-* @param action a function to be invoked when the event is triggered
-*/
-CC.onKeysUpOnly = function(keys, action) {
-    return CC.bind("keyup", function(event){
-        var wantedArr = keys.toUpperCase().replace(/ /g, "").split("+");
-        var wantedMap = {};
-&nbsp;
-        for (var i in wantedArr) {
-            var k = wantedArr[i].toUpperCase();
-            if (keyAlias[k]) {
-                k = keyAlias[k];
-            }
-&nbsp;
-            if (!keyPressed[k] &amp;&amp; k != keyMapping[event.keyCode]) {
-                return;
-            }
-            wantedMap[k] = true;
-        }
-&nbsp;
-        if (!wantedMap[keyMapping[event.keyCode]]) {
-            return;
+            map[k] = true;
         }
 &nbsp;
         for (var j in keyPressed) {
-            if (!wantedMap[j]) {
-                return;
+            if (!map[j]) {
+                return false;
             }
         }
 &nbsp;
-        action(event);
-    });
-};
+        return true;
+    };
 &nbsp;
-CC.onKeysSequence = function(keys, maxdelay, action){
-    var step = 0;
+    /**
+    * if all keys are down, trigger the action
+    * @param keys which keys you want to check if are pressed as string separeted by '+'
+    * @param action a function to be invoked when the event is triggered
+    */
+    CC.onKeysDown = function(keys, action) {
+        return CC.bind("keydown", function(event){
+            if (!CC.isKeysPressed(keys)) {
+                return;
+            }
 &nbsp;
-    var wantedKeys = [];
-    for (var i in keys) {
-        var k = keys[i].toUpperCase();
-        if (keyAlias[k]) {
-            k = keyAlias[k];
+            //verify if the event key is a desired key
+            var wantedArr = keys.toUpperCase().replace(/ /g, "").split("+");
+&nbsp;
+            for (var i in wantedArr) {
+                
+                var k = wantedArr[i].toUpperCase();
+                if (keyAlias[k]) {
+                    k = keyAlias[k];
+                }
+&nbsp;
+                if (k == keyMapping[event.keyCode]) {
+                    action(event);
+                    break;
+                }
+            }
+&nbsp;
+            
+        });
+    };
+&nbsp;
+    /**
+    * if all and only keys are down, trigger the action
+    * @param keys which keys you want to check if are pressed as string separeted by '+'
+    * @param action a function to be invoked when the event is triggered
+    */
+    CC.onKeysDownOnly = function(keys, action) {
+        return CC.bind("keydown", function(event){
+            if (CC.isKeysPressedOnly(keys)) {
+                action(event);
+            }
+        });
+    };
+&nbsp;
+    /**
+    * if all keys was down, no more keys was down and now one of them is released, trigger the action
+    * @param keys which keys you want to check if are pressed as string separeted by '+'
+    * @param action a function to be invoked when the event is triggered
+    */
+    CC.onKeysUpOnly = function(keys, action) {
+        return CC.bind("keyup", function(event){
+            var wantedArr = keys.toUpperCase().replace(/ /g, "").split("+");
+            var wantedMap = {};
+&nbsp;
+            for (var i in wantedArr) {
+                var k = wantedArr[i].toUpperCase();
+                if (keyAlias[k]) {
+                    k = keyAlias[k];
+                }
+&nbsp;
+                if (!keyPressed[k] &amp;&amp; k != keyMapping[event.keyCode]) {
+                    return;
+                }
+                wantedMap[k] = true;
+            }
+&nbsp;
+            if (!wantedMap[keyMapping[event.keyCode]]) {
+                return;
+            }
+&nbsp;
+            for (var j in keyPressed) {
+                if (!wantedMap[j]) {
+                    return;
+                }
+            }
+&nbsp;
+            action(event);
+        });
+    };
+&nbsp;
+    CC.onKeysSequence = function(keys, maxdelay, action){
+        var step = 0;
+&nbsp;
+        var wantedKeys = [];
+        for (var i in keys) {
+            var k = keys[i].toUpperCase();
+            if (keyAlias[k]) {
+                k = keyAlias[k];
+            }
+&nbsp;
+            wantedKeys.push(k);
         }
 &nbsp;
-        wantedKeys.push(k);
-    }
+        var timeout;
 &nbsp;
-    var timeout;
+        return CC.bind("keydown", function(event){
 &nbsp;
-    return CC.bind("keydown", function(event){
+            clearTimeout(timeout);
 &nbsp;
-        clearTimeout(timeout);
+            if (wantedKeys[step] === keyMapping[event.keyCode]) {
+                step++;
+            } else {
+                step = 0;
+            }
 &nbsp;
-        if (wantedKeys[step] === keyMapping[event.keyCode]) {
-            step++;
-        } else {
-            step = 0;
-        }
+            if (step == wantedKeys.length) {
+                step = 0;
+                action();
+            }
 &nbsp;
-        if (step == wantedKeys.length) {
-            step = 0;
-            action();
-        }
+            timeout = setTimeout(function(){
+                step = 0;
+            }, maxdelay);
 &nbsp;
-        timeout = setTimeout(function(){
-            step = 0;
-        }, maxdelay);
+        });
 &nbsp;
-    });
+    };
 &nbsp;
-};</pre></td></tr>
+})();</pre></td></tr>
 </table></pre>
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Jan 11 2014 00:16:36 GMT-0200 (BRST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Jan 11 2014 10:49:35 GMT-0200 (BRST)</div>
 </div>
 
 <script src="../prettify.js"></script>

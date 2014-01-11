@@ -3,87 +3,97 @@
 //depends on event and drawer
 //is not a internal dependency
 
-var running = true;
-var requestAnimId;
-var intervalAnimId;
+(function(){
+    var running = true;
+    var requestAnimId;
+    var intervalAnimId;
+    
 
-/**
-* start the routine of the gameloop, for each loop it triggers 'enterframe' event and render the elements
-*/
-CC.startLoop = function(){
+    /**
+    * start the routine of the gameloop, for each loop it triggers 'enterframe' event and render the elements
+    */
+    CC.startLoop = function(){
 
-    CC.loadScreens();
+        CC.loadScreens();
 
-    var mainloop = function(){   
+        var mainloop = function(){   
 
-        if (!running) {
-            return;
-        }
+            if (!running) {
+                return;
+            }
 
-        CC.trigger("enterframe");
-        CC.draw();
-        CC.step++;
-    };
-
-    var animFrame = window.requestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame    ||
-        window.oRequestAnimationFrame      ||
-        window.msRequestAnimationFrame     ||
-        null;
-
-    if (animFrame !== null) {
-        
-        var recursiveAnim = function() {
-            mainloop();
-            requestAnimId = animFrame(recursiveAnim);
+            CC.trigger("enterframe");
+            CC.draw();
         };
 
-        // start the mainloop
-        requestAnimId = animFrame(recursiveAnim);
-
-    } else {
-        var ONE_FRAME_TIME = 1000.0 / 60.0 ;
-        intervalAnimId = setInterval( mainloop, ONE_FRAME_TIME );
-    }
-
-};
-
-/**
-* stop the gameloop
-*/
-CC.stopLoop = function(){
-    if (requestAnimId) {
-        var cancelFrame = window.cancelAnimationFrame ||
-            window.webkitCancelAnimationFrame ||
-            window.mozCancelAnimationFrame    ||
-            window.oCancelAnimationFrame      ||
-            window.msCancelAnimationFrame     ||
+        var animFrame = window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame    ||
+            window.oRequestAnimationFrame      ||
+            window.msRequestAnimationFrame     ||
             null;
 
-        if (cancelFrame !== null) {
-            cancelFrame(requestAnimId);
-            requestAnimId = null;
+        if (animFrame !== null) {
+            
+            var recursiveAnim = function() {
+                mainloop();
+                requestAnimId = animFrame(recursiveAnim);
+            };
+
+            // start the mainloop
+            requestAnimId = animFrame(recursiveAnim);
+
+        } else {
+            var ONE_FRAME_TIME = 1000.0 / 60.0 ;
+            intervalAnimId = setInterval( mainloop, ONE_FRAME_TIME );
         }
-    }
 
-    if (intervalAnimId) {
-        clearInterval(intervalAnimId);
-        intervalAnimId = null;
-    }
-};
+    };
 
-/**
-* make the triggers and the gameloop to be ignored
-*/
-CC.pause = function(){
-    running = false;
-};
+    /**
+    * stop the gameloop
+    */
+    CC.stopLoop = function(){
+        if (requestAnimId) {
+            var cancelFrame = window.cancelAnimationFrame ||
+                window.webkitCancelAnimationFrame ||
+                window.mozCancelAnimationFrame    ||
+                window.oCancelAnimationFrame      ||
+                window.msCancelAnimationFrame     ||
+                null;
+
+            if (cancelFrame !== null) {
+                cancelFrame(requestAnimId);
+                requestAnimId = null;
+            }
+        }
+
+        if (intervalAnimId) {
+            clearInterval(intervalAnimId);
+            intervalAnimId = null;
+        }
+    };
+
+    /**
+    * make the triggers and the gameloop to be ignored
+    */
+    CC.pause = function(){
+        running = false;
+    };
 
 
-/**
-* make the triggers and the gameloop to be considered again
-*/
-CC.play = function(){
-    running = true;
-};
+    /**
+    * make the triggers and the gameloop to be considered again
+    */
+    CC.play = function(){
+        running = true;
+    };
+
+    /**
+    * check if loop is enabled. Important: "stopLoop" will not disable the loop, only "pause" will do it
+    */
+    CC.isRunning = function(){
+        return running;
+    };
+    
+})();

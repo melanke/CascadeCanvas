@@ -183,16 +183,16 @@
     <h1>Code coverage report for <span class="entity">src/objectTools.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">92.59% <small>(50 / 54)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">92.73% <small>(51 / 55)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
         Branches: <span class="metric">78.57% <small>(44 / 56)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(5 / 5)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(6 / 6)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">92.59% <small>(50 / 54)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">92.73% <small>(51 / 55)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
     </h2>
     <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">src/</a> &#187; objectTools.js</div>
@@ -334,10 +334,16 @@
 133
 134
 135
-136</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+136
+137
+138
+139
+140</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -469,147 +475,153 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/***** OBJECT TOOLS *****/
 &nbsp;
 //depends on typeChecker
 //is dependency of element, elementlist
 &nbsp;
-/**
-* merge all attributes of the arguments recursively into the first argument and returns it
-*/
-CC.merge = function() {
+(function(){
 &nbsp;
-    var mergeRecursively = function(merged, obj){
+    /**
+    * merge all attributes of the arguments recursively into the first argument and returns it
+    */
+    CC.merge = function() {
 &nbsp;
-        if(!merged || !obj) {
-            return;
-        }
+        var mergeRecursively = function(merged, obj){
 &nbsp;
-        for (var p in obj) {
+            if(!merged || !obj) {
+                return;
+            }
 &nbsp;
-            // Property in destination object set; update its value.
-            if (CC.isObject(obj[p])) {
+            for (var p in obj) {
 &nbsp;
-                if (!merged[p] || !CC.isObject(merged[p])) {
-                    merged[p] = {};
+                // Property in destination object set; update its value.
+                if (CC.isObject(obj[p])) {
+&nbsp;
+                    if (!merged[p] || !CC.isObject(merged[p])) {
+                        merged[p] = {};
+                    }
+&nbsp;
+                    mergeRecursively(merged[p], obj[p]);
+&nbsp;
+                } else {
+&nbsp;
+                    merged[p] = obj[p];
+&nbsp;
                 }
 &nbsp;
-                mergeRecursively(merged[p], obj[p]);
-&nbsp;
-            } else {
-&nbsp;
-                merged[p] = obj[p];
-&nbsp;
             }
 &nbsp;
+        };
+&nbsp;
+        for (var i = 1; i &lt; arguments.length; i++) {
+&nbsp;
+            mergeRecursively(arguments[0], arguments[i]);
+&nbsp;
         }
+&nbsp;
+        return arguments[0];
 &nbsp;
     };
 &nbsp;
-    for (var i = 1; i &lt; arguments.length; i++) {
+    /**
+    * sort the items of an array by property
+    * @param elements array to be sorted
+    * @param prop the property to compare
+    * @param invert if you want the reverse order
+    */
+    CC.sort = function(elements, prop, invert){
 &nbsp;
-        mergeRecursively(arguments[0], arguments[i]);
-&nbsp;
-    }
-&nbsp;
-    return arguments[0];
-&nbsp;
-};
-&nbsp;
-/**
-* sort the items of an array by property
-* @param elements array to be sorted
-* @param prop the property to compare
-* @param invert if you want the reverse order
-*/
-CC.sort = function(elements, prop, invert){
-&nbsp;
-    if (!CC.isArray(elements)) {
-        var asArray = [];
-        for (var e in elements) {
-            asArray.push(elements[e]);
-        }
-        elements = asArray;
-    }
-&nbsp;
-    return elements.sort(function(a, b){
-        if (a[prop] &gt; b[prop]) {
-            return invert ? -1 : 1;
+        if (!CC.isArray(elements)) {
+            var asArray = [];
+            for (var e in elements) {
+                asArray.push(elements[e]);
+            }
+            elements = asArray;
         }
 &nbsp;
-        if (a[prop] &lt; b[prop]) {
-            return invert ? 1 : -1;
-        }
-&nbsp;
-        <span class="missing-if-branch" title="if path not taken"" >I</span>if (a[prop] == undefined) {
-<span class="cstat-no" title="statement not covered" >            if (b[prop] &lt; 0) {</span>
-<span class="cstat-no" title="statement not covered" >                return invert ? -1 : 1;</span>
+        return elements.sort(function(a, b){
+            if (a[prop] &gt; b[prop]) {
+                return invert ? -1 : 1;
             }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >            if (b[prop] &gt; 0) {</span>
-<span class="cstat-no" title="statement not covered" >                return invert ? 1 : -1;</span>
-            }
-        }
-&nbsp;
-        if (b[prop] == undefined) {
-            if (a[prop] &lt; 0) {
-                return invert ? <span class="branch-0 cbranch-no" title="branch not covered" >1 </span>: -1;
+            if (a[prop] &lt; b[prop]) {
+                return invert ? 1 : -1;
             }
 &nbsp;
-            <span class="missing-if-branch" title="else path not taken"" >E</span>if (a[prop] &gt; 0) {
-                return invert ? <span class="branch-0 cbranch-no" title="branch not covered" >-1 </span>: 1;
+            <span class="missing-if-branch" title="if path not taken"" >I</span>if (a[prop] == undefined) {
+<span class="cstat-no" title="statement not covered" >                if (b[prop] &lt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >                    return invert ? -1 : 1;</span>
+                }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                if (b[prop] &gt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >                    return invert ? 1 : -1;</span>
+                }
             }
-        }
 &nbsp;
-        return 0;
-    });
-};
+            if (b[prop] == undefined) {
+                if (a[prop] &lt; 0) {
+                    return invert ? <span class="branch-0 cbranch-no" title="branch not covered" >1 </span>: -1;
+                }
 &nbsp;
-/**
-* rotate a point
-* @param p the point to be rotated
-* @param anchor the anchor point
-* @param angle the angle of the rotation
-*/
-CC.rotatePoint = function(p, anchor, angle){
+                <span class="missing-if-branch" title="else path not taken"" >E</span>if (a[prop] &gt; 0) {
+                    return invert ? <span class="branch-0 cbranch-no" title="branch not covered" >-1 </span>: 1;
+                }
+            }
 &nbsp;
-    var px = p.x;
-    if (px == undefined &amp;&amp; p.length &gt; 1) {
-        px = p[0];
-    }
-&nbsp;
-    var py = p.y;
-    if (py == undefined &amp;&amp; p.length &gt; 1) {
-        py = p[1];
-    }
-&nbsp;
-    var ax = anchor.x;
-    if (ax == undefined &amp;&amp; anchor.length &gt; 1) {
-        ax = anchor[0];
-    }
-&nbsp;
-    var ay = anchor.y;
-    if (ay == undefined &amp;&amp; anchor.length &gt; 1) {
-        ay = anchor[1];
-    }
-&nbsp;
-    var teta = angle * Math.PI / -180.0;
-    var diffX = px - ax;
-    var diffY = py - ay;
-    var cos = Math.cos(teta);
-    var sin = Math.sin(teta);
-&nbsp;
-    return {
-        x: Math.round(cos * diffX - sin * diffY + ax),
-        y: Math.round(sin * diffX + cos * diffY + ay)
+            return 0;
+        });
     };
 &nbsp;
-};</pre></td></tr>
+    /**
+    * rotate a point
+    * @param p the point to be rotated
+    * @param anchor the anchor point
+    * @param angle the angle of the rotation
+    */
+    CC.rotatePoint = function(p, anchor, angle){
+&nbsp;
+        var px = p.x;
+        if (px == undefined &amp;&amp; p.length &gt; 1) {
+            px = p[0];
+        }
+&nbsp;
+        var py = p.y;
+        if (py == undefined &amp;&amp; p.length &gt; 1) {
+            py = p[1];
+        }
+&nbsp;
+        var ax = anchor.x;
+        if (ax == undefined &amp;&amp; anchor.length &gt; 1) {
+            ax = anchor[0];
+        }
+&nbsp;
+        var ay = anchor.y;
+        if (ay == undefined &amp;&amp; anchor.length &gt; 1) {
+            ay = anchor[1];
+        }
+&nbsp;
+        var teta = angle * Math.PI / -180.0;
+        var diffX = px - ax;
+        var diffY = py - ay;
+        var cos = Math.cos(teta);
+        var sin = Math.sin(teta);
+&nbsp;
+        return {
+            x: Math.round(cos * diffX - sin * diffY + ax),
+            y: Math.round(sin * diffX + cos * diffY + ay)
+        };
+&nbsp;
+    };
+&nbsp;
+})();</pre></td></tr>
 </table></pre>
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Jan 11 2014 00:16:36 GMT-0200 (BRST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Jan 11 2014 10:49:35 GMT-0200 (BRST)</div>
 </div>
 
 <script src="../prettify.js"></script>

@@ -183,16 +183,16 @@
     <h1>Code coverage report for <span class="entity">src/promise.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">100% <small>(50 / 50)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(51 / 51)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
         Branches: <span class="metric">92.86% <small>(13 / 14)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(12 / 12)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(13 / 13)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">100% <small>(50 / 50)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(51 / 51)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
     </h2>
     <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">src/</a> &#187; promise.js</div>
@@ -309,10 +309,16 @@
 108
 109
 110
-111</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+111
+112
+113
+114
+115</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">49</span>
@@ -419,122 +425,128 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/***** PROMISE *****/
 &nbsp;
 //depends on event, typeChecker
 //is dependency of ajax
 &nbsp;
-CC.Promise = function() {
-    this._callbacks = [];
-};
+(function(){
 &nbsp;
-CC.Promise.prototype.then = function(func, context) {
-    
-    var p;
-&nbsp;
-    if (this._isdone) {
-        p = func.apply(context, this.result);
-    } else {
-&nbsp;
-        p = new CC.Promise();
-&nbsp;
-        this._callbacks.push(function () {
-            
-            var res = func.apply(context, arguments);
-            
-            if (res &amp;&amp; CC.isFunction(res.then)) {
-                res.then(p.done, p);
-            }
-            
-        });
-    }
-&nbsp;
-    return p;
-};
-&nbsp;
-CC.Promise.prototype.done = function() {
-    
-    this.result = arguments;
-    this._isdone = true;
-&nbsp;
-    for (var i = 0; i &lt; this._callbacks.length; i++) {
-        this._callbacks[i].apply(null, arguments);
-    }
-&nbsp;
-    this._callbacks = [];
-};
-&nbsp;
-CC.when = function(eventsStr){
-&nbsp;
-    var p = new CC.Promise();
-&nbsp;
-    var cb = function(){
-        p.done.apply(p, arguments);
-        CC.unbind(eventsStr, cb);
+    CC.Promise = function() {
+        this._callbacks = [];
     };
 &nbsp;
-    CC.bind(eventsStr, cb);
+    CC.Promise.prototype.then = function(func, context) {
+        
+        var p;
 &nbsp;
-    return p;
+        if (this._isdone) {
+            p = func.apply(context, this.result);
+        } else {
 &nbsp;
-};
+            p = new CC.Promise();
 &nbsp;
-CC.promiseJoin = function(promises) {
-&nbsp;
-    var p = new CC.Promise();
-    var total = promises.length;
-    var numdone = 0;
-    var results = [];
-&nbsp;
-    var notifier = function(i) {
-        return function() {
-            numdone += 1;
-            results[i] = Array.prototype.slice.call(arguments);
-            
-            if (numdone === total) {
-                p.done.apply(p, results);
-            }
-        };
-    }
-&nbsp;
-    for (var i = 0; i &lt; total; i++) {
-        promises[i].then(notifier(i));
-    }
-&nbsp;
-    return p;
-};
-&nbsp;
-CC.promiseChain = function(funcs, args) {
-    
-    var p = new CC.Promise();
-    
-    if (funcs.length === 0) {
-        p.done.apply(p, args);
-    } else {
-&nbsp;
-        var pi = funcs[0].apply(null, args);
-&nbsp;
-        <span class="missing-if-branch" title="else path not taken"" >E</span>if (pi &amp;&amp; CC.isFunction(pi.then)) {
-&nbsp;
-            pi.then(function() {
+            this._callbacks.push(function () {
                 
-                funcs.splice(0, 1);
+                var res = func.apply(context, arguments);
                 
-                CC.promiseChain(funcs, arguments).then(function() {
-                    p.done.apply(p, arguments);
-                });
+                if (res &amp;&amp; CC.isFunction(res.then)) {
+                    res.then(p.done, p);
+                }
+                
             });
-&nbsp;
         }
-    }
-    return p;
-};
+&nbsp;
+        return p;
+    };
+&nbsp;
+    CC.Promise.prototype.done = function() {
+        
+        this.result = arguments;
+        this._isdone = true;
+&nbsp;
+        for (var i = 0; i &lt; this._callbacks.length; i++) {
+            this._callbacks[i].apply(null, arguments);
+        }
+&nbsp;
+        this._callbacks = [];
+    };
+&nbsp;
+    CC.when = function(eventsStr){
+&nbsp;
+        var p = new CC.Promise();
+&nbsp;
+        var cb = function(){
+            p.done.apply(p, arguments);
+            CC.unbind(eventsStr, cb);
+        };
+&nbsp;
+        CC.bind(eventsStr, cb);
+&nbsp;
+        return p;
+&nbsp;
+    };
+&nbsp;
+    CC.promiseJoin = function(promises) {
+&nbsp;
+        var p = new CC.Promise();
+        var total = promises.length;
+        var numdone = 0;
+        var results = [];
+&nbsp;
+        var notifier = function(i) {
+            return function() {
+                numdone += 1;
+                results[i] = Array.prototype.slice.call(arguments);
+                
+                if (numdone === total) {
+                    p.done.apply(p, results);
+                }
+            };
+        }
+&nbsp;
+        for (var i = 0; i &lt; total; i++) {
+            promises[i].then(notifier(i));
+        }
+&nbsp;
+        return p;
+    };
+&nbsp;
+    CC.promiseChain = function(funcs, args) {
+        
+        var p = new CC.Promise();
+        
+        if (funcs.length === 0) {
+            p.done.apply(p, args);
+        } else {
+&nbsp;
+            var pi = funcs[0].apply(null, args);
+&nbsp;
+            <span class="missing-if-branch" title="else path not taken"" >E</span>if (pi &amp;&amp; CC.isFunction(pi.then)) {
+&nbsp;
+                pi.then(function() {
+                    
+                    funcs.splice(0, 1);
+                    
+                    CC.promiseChain(funcs, arguments).then(function() {
+                        p.done.apply(p, arguments);
+                    });
+                });
+&nbsp;
+            }
+        }
+        return p;
+    };
+&nbsp;
+})();
 &nbsp;</pre></td></tr>
 </table></pre>
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Jan 11 2014 00:16:36 GMT-0200 (BRST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Jan 11 2014 10:49:35 GMT-0200 (BRST)</div>
 </div>
 
 <script src="../prettify.js"></script>

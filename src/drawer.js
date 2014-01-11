@@ -1,6 +1,13 @@
+/***** DRAWER *****/
+
+//depends on typeChecker, event, objectTools, resource
+//is dependency of loop
+
 (function(){
 
     CC.screens = [];
+    CC.tiles = {};
+    CC.step = 0; //each loop increments the step, it is used for animation proposes
 
 	CC.draw = function(){
 
@@ -16,6 +23,8 @@
     	    });
 
         }
+
+        CC.step++;
 	};
 
     CC.loadScreens = function() {

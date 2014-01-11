@@ -3,134 +3,138 @@
 //depends on typeChecker
 //is dependency of element, elementlist
 
-/**
-* merge all attributes of the arguments recursively into the first argument and returns it
-*/
-CC.merge = function() {
+(function(){
 
-    var mergeRecursively = function(merged, obj){
+    /**
+    * merge all attributes of the arguments recursively into the first argument and returns it
+    */
+    CC.merge = function() {
 
-        if(!merged || !obj) {
-            return;
-        }
+        var mergeRecursively = function(merged, obj){
 
-        for (var p in obj) {
+            if(!merged || !obj) {
+                return;
+            }
 
-            // Property in destination object set; update its value.
-            if (CC.isObject(obj[p])) {
+            for (var p in obj) {
 
-                if (!merged[p] || !CC.isObject(merged[p])) {
-                    merged[p] = {};
+                // Property in destination object set; update its value.
+                if (CC.isObject(obj[p])) {
+
+                    if (!merged[p] || !CC.isObject(merged[p])) {
+                        merged[p] = {};
+                    }
+
+                    mergeRecursively(merged[p], obj[p]);
+
+                } else {
+
+                    merged[p] = obj[p];
+
                 }
 
-                mergeRecursively(merged[p], obj[p]);
-
-            } else {
-
-                merged[p] = obj[p];
-
             }
 
+        };
+
+        for (var i = 1; i < arguments.length; i++) {
+
+            mergeRecursively(arguments[0], arguments[i]);
+
         }
+
+        return arguments[0];
 
     };
 
-    for (var i = 1; i < arguments.length; i++) {
+    /**
+    * sort the items of an array by property
+    * @param elements array to be sorted
+    * @param prop the property to compare
+    * @param invert if you want the reverse order
+    */
+    CC.sort = function(elements, prop, invert){
 
-        mergeRecursively(arguments[0], arguments[i]);
-
-    }
-
-    return arguments[0];
-
-};
-
-/**
-* sort the items of an array by property
-* @param elements array to be sorted
-* @param prop the property to compare
-* @param invert if you want the reverse order
-*/
-CC.sort = function(elements, prop, invert){
-
-    if (!CC.isArray(elements)) {
-        var asArray = [];
-        for (var e in elements) {
-            asArray.push(elements[e]);
-        }
-        elements = asArray;
-    }
-
-    return elements.sort(function(a, b){
-        if (a[prop] > b[prop]) {
-            return invert ? -1 : 1;
+        if (!CC.isArray(elements)) {
+            var asArray = [];
+            for (var e in elements) {
+                asArray.push(elements[e]);
+            }
+            elements = asArray;
         }
 
-        if (a[prop] < b[prop]) {
-            return invert ? 1 : -1;
-        }
-
-        if (a[prop] == undefined) {
-            if (b[prop] < 0) {
+        return elements.sort(function(a, b){
+            if (a[prop] > b[prop]) {
                 return invert ? -1 : 1;
             }
 
-            if (b[prop] > 0) {
-                return invert ? 1 : -1;
-            }
-        }
-
-        if (b[prop] == undefined) {
-            if (a[prop] < 0) {
+            if (a[prop] < b[prop]) {
                 return invert ? 1 : -1;
             }
 
-            if (a[prop] > 0) {
-                return invert ? -1 : 1;
+            if (a[prop] == undefined) {
+                if (b[prop] < 0) {
+                    return invert ? -1 : 1;
+                }
+
+                if (b[prop] > 0) {
+                    return invert ? 1 : -1;
+                }
             }
-        }
 
-        return 0;
-    });
-};
+            if (b[prop] == undefined) {
+                if (a[prop] < 0) {
+                    return invert ? 1 : -1;
+                }
 
-/**
-* rotate a point
-* @param p the point to be rotated
-* @param anchor the anchor point
-* @param angle the angle of the rotation
-*/
-CC.rotatePoint = function(p, anchor, angle){
+                if (a[prop] > 0) {
+                    return invert ? -1 : 1;
+                }
+            }
 
-    var px = p.x;
-    if (px == undefined && p.length > 1) {
-        px = p[0];
-    }
-
-    var py = p.y;
-    if (py == undefined && p.length > 1) {
-        py = p[1];
-    }
-
-    var ax = anchor.x;
-    if (ax == undefined && anchor.length > 1) {
-        ax = anchor[0];
-    }
-
-    var ay = anchor.y;
-    if (ay == undefined && anchor.length > 1) {
-        ay = anchor[1];
-    }
-
-    var teta = angle * Math.PI / -180.0;
-    var diffX = px - ax;
-    var diffY = py - ay;
-    var cos = Math.cos(teta);
-    var sin = Math.sin(teta);
-
-    return {
-        x: Math.round(cos * diffX - sin * diffY + ax),
-        y: Math.round(sin * diffX + cos * diffY + ay)
+            return 0;
+        });
     };
 
-};
+    /**
+    * rotate a point
+    * @param p the point to be rotated
+    * @param anchor the anchor point
+    * @param angle the angle of the rotation
+    */
+    CC.rotatePoint = function(p, anchor, angle){
+
+        var px = p.x;
+        if (px == undefined && p.length > 1) {
+            px = p[0];
+        }
+
+        var py = p.y;
+        if (py == undefined && p.length > 1) {
+            py = p[1];
+        }
+
+        var ax = anchor.x;
+        if (ax == undefined && anchor.length > 1) {
+            ax = anchor[0];
+        }
+
+        var ay = anchor.y;
+        if (ay == undefined && anchor.length > 1) {
+            ay = anchor[1];
+        }
+
+        var teta = angle * Math.PI / -180.0;
+        var diffX = px - ax;
+        var diffY = py - ay;
+        var cos = Math.cos(teta);
+        var sin = Math.sin(teta);
+
+        return {
+            x: Math.round(cos * diffX - sin * diffY + ax),
+            y: Math.round(sin * diffX + cos * diffY + ay)
+        };
+
+    };
+
+})();

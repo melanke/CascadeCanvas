@@ -26,150 +26,149 @@
 //depends on element and elementlist
 //is dependency of all classes
 
-var elementMap = {} //elements stored by id
-,   elementsSize = 0;
+var CC;
+
+(function(){
+    
+    var elementMap = {}, //elements stored by id
+        elementsSize = 0;
 
 
 
 
-/**
-* returns a collection of elements that match the string passed as argument
-* @param selector '*' to select all, '#elementId' to select the element by id 'elementId', 
-* 'Class1 Class2' to select elements that contain both classes 'Class1' and 'Class2'
-*/
-var CC = function(selector){
+    /**
+    * returns a collection of elements that match the string passed as argument
+    * @param selector '*' to select all, '#elementId' to select the element by id 'elementId', 
+    * 'Class1 Class2' to select elements that contain both classes 'Class1' and 'Class2'
+    */
+    CC = function(selector){
 
-    if (selector.indexOf("*") != -1) {
-        var asArray = [];
-        for (var e in elementMap) {
-            asArray.push(elementMap[e]);
+        if (selector.indexOf("*") != -1) {
+            var asArray = [];
+            for (var e in elementMap) {
+                asArray.push(elementMap[e]);
+            }
+
+            return new ElementList(asArray, selector);
         }
 
-        return new ElementList(asArray, selector);
-    }
+        var id;
 
-    var id;
+        var idArray = selector.match(/#[a-zA-Z0-9]*/);
 
-    var idArray = selector.match(/#[a-zA-Z0-9]*/);
-
-    if (idArray) {
-        id = idArray[0];
-    }
-
-    var classes = selector.replace(/#[a-zA-Z0-9]*/, "").split(" ");
-
-    var selecteds = [];
-
-    for (var i in elementMap) {
-        var e = elementMap[i];
-
-        if (id && id != e.id) { 
-            //if we are selecting by id and it dont have the desired id: pass
-            continue;
+        if (idArray) {
+            id = idArray[0];
         }
 
-        var add = true;
+        var classes = selector.replace(/#[a-zA-Z0-9]*/, "").split(" ");
 
-        for (var j in classes) {
-            var c = classes[j];
+        var selecteds = [];
 
-            if (c.length && !e.classes[c]) { 
-                //if the element dont have all classes we are looking for: pass
-                add = false;
-                break;
+        for (var i in elementMap) {
+            var e = elementMap[i];
 
+            if (id && id != e.id) { 
+                //if we are selecting by id and it dont have the desired id: pass
+                continue;
+            }
+
+            var add = true;
+
+            for (var j in classes) {
+                var c = classes[j];
+
+                if (c.length && !e.classes[c]) { 
+                    //if the element dont have all classes we are looking for: pass
+                    add = false;
+                    break;
+
+                }
+            }
+
+            if (add) {
+                selecteds.push(e);
+            }
+
+        }
+
+        //else: return all items as a Collection
+        return new ElementList(selecteds, selector);
+
+    };
+
+
+
+    CC.classes = {}; //defined classes expecting to be instantiated
+
+
+
+
+    /**
+    * creates an element and put it in the canvas
+    * @param specs a string where you can specify the id and the classes it inherit, example:
+    * '#elementId Class1 Class2' - it will have id: elementId and will inherit Class1 and Class2
+    * @opts an object with params that can be used in the class constructor, will affect all inherited classes
+    */
+    CC.new = function(specs, opts){
+
+        var element = new Element(specs, opts);
+        elementMap[element.id ? element.id : elementsSize++] = element;
+
+        return element;
+    };
+
+    /**
+    * defines a class to be inherited
+    * @param classesStr a string with the name of the classes that will have tis behaviour, example:
+    * 'Class1 Class2' - those 2 classes will have this behaviour
+    * @param constructor a function that will be used as constructor
+    */
+    CC.def = function(classesStr, constructor){
+        var classes = classesStr.split(" ");
+
+        for (var i in classes) {
+            var c = classes[i];
+
+            if (c.length) {
+                if (!CC.classes[c]) {
+                    CC.classes[c] = {
+                        constructors: []
+                    };
+                }
+
+                CC.classes[c].constructors.push(constructor);
+            }
+        }
+    };
+
+    /**
+    * erase all information in CascadeCanvas
+    */
+    CC.clear = function() {
+
+        CC.classes = {};
+        elementMap = {};
+        elementsSize = 0;
+        CC.clearEvents();
+
+    };
+
+    /**
+    * removes an element
+    */
+    CC.remove = function(el){
+
+        el.trigger("remove");
+
+        for (var i in elementMap) {
+            if (elementMap[i] == el) {
+                delete elementMap[i];
             }
         }
 
-        if (add) {
-            selecteds.push(e);
-        }
+    };
 
-    }
-
-    //else: return all items as a Collection
-    return new ElementList(selecteds, selector);
-
-};
-
-
-
-CC.classes = {}; //defined classes expecting to be instantiated
-CC.step = 0; //each loop increments the step, it is used for animation proposes
-CC.fn = {}; //functions that elementlist and element implement (global methods)
-CC.tiles = {};
-
-
-
-
-/**
-* creates an element and put it in the canvas
-* @param specs a string where you can specify the id and the classes it inherit, example:
-* '#elementId Class1 Class2' - it will have id: elementId and will inherit Class1 and Class2
-* @opts an object with params that can be used in the class constructor, will affect all inherited classes
-*/
-CC.new = function(specs, opts){
-
-    var element = new Element(specs, opts);
-    elementMap[element.id ? element.id : elementsSize++] = element;
-
-    return element;
-};
-
-/**
-* defines a class to be inherited
-* @param classesStr a string with the name of the classes that will have tis behaviour, example:
-* 'Class1 Class2' - those 2 classes will have this behaviour
-* @param constructor a function that will be used as constructor
-*/
-CC.def = function(classesStr, constructor){
-    var classes = classesStr.split(" ");
-
-    for (var i in classes) {
-        var c = classes[i];
-
-        if (c.length) {
-            if (!CC.classes[c]) {
-                CC.classes[c] = {
-                    constructors: []
-                };
-            }
-
-            CC.classes[c].constructors.push(constructor);
-        }
-    }
-};
-
-/**
-* erase all information in CascadeCanvas
-*/
-CC.clear = function() {
-
-    CC.classes = {};
-    elementMap = {};
-    elementsSize = 0;
-    CC.clearEvents();
-
-};
-
-/**
-* removes an element
-*/
-CC.remove = function(el){
-
-    el.trigger("remove");
-
-    for (var i in elementMap) {
-        if (elementMap[i] == el) {
-            delete elementMap[i];
-        }
-    }
-
-};
-
-
-
-
+})();
 
 
 
@@ -179,6 +178,9 @@ CC.remove = function(el){
 //have no dependency
 //is dependency of element, loop, keyboard, mouse, promise
 
+/**
+* builds an enviroment for event handling (internal use)
+*/
 var eventEnvironmentBuilder = function(owner, shouldTrigger){
 
     var events = [];
@@ -301,7 +303,7 @@ var eventEnvironmentBuilder = function(owner, shouldTrigger){
     */
     owner.trigger = function(eventsStr){
 
-        if (!running || (shouldTrigger && !shouldTrigger())) {
+        if (!CC.isRunning() || (shouldTrigger && !shouldTrigger())) {
             return;
         }
 
@@ -350,45 +352,49 @@ eventEnvironmentBuilder(CC);
 //have no dependency
 //is dependency of objectTools, element, promise
 
-/**
-* check if param is a function
-*/
-CC.isFunction = function(functionToCheck){
-    return functionToCheck != null && {}.toString.call(functionToCheck) === '[object Function]';
-}
+(function(){
 
-/**
-* check if param is a string
-*/
-CC.isString = function(stringToCheck){
-    return typeof stringToCheck == 'string' || stringToCheck instanceof String;
-};
+    /**
+    * check if param is a function
+    */
+    CC.isFunction = function(functionToCheck){
+        return functionToCheck != null && {}.toString.call(functionToCheck) === '[object Function]';
+    }
 
-/**
-* check if param is a number
-*/
-CC.isNumber = function(numberToCheck) {
-	return !isNaN(parseFloat(numberToCheck)) && isFinite(numberToCheck);
-};
+    /**
+    * check if param is a string
+    */
+    CC.isString = function(stringToCheck){
+        return typeof stringToCheck == 'string' || stringToCheck instanceof String;
+    };
 
-/**
-* check if param is an array
-*/
-CC.isArray = function(arrayToCheck){
-    return arrayToCheck != null && {}.toString.call(arrayToCheck) === '[object Array]';
-};
+    /**
+    * check if param is a number
+    */
+    CC.isNumber = function(numberToCheck) {
+    	return !isNaN(parseFloat(numberToCheck)) && isFinite(numberToCheck);
+    };
 
-/**
-* check if param is an object and not a function, string or array
-*/
-CC.isObject = function(objectToCheck){
-    return objectToCheck != null 
-    && typeof objectToCheck === 'object' 
-    && !CC.isFunction(objectToCheck) 
-    && !CC.isString(objectToCheck)
-    && !CC.isNumber(objectToCheck)
-    && !CC.isArray(objectToCheck);
-};
+    /**
+    * check if param is an array
+    */
+    CC.isArray = function(arrayToCheck){
+        return arrayToCheck != null && {}.toString.call(arrayToCheck) === '[object Array]';
+    };
+
+    /**
+    * check if param is an object and not a function, string or array
+    */
+    CC.isObject = function(objectToCheck){
+        return objectToCheck != null 
+        && typeof objectToCheck === 'object' 
+        && !CC.isFunction(objectToCheck) 
+        && !CC.isString(objectToCheck)
+        && !CC.isNumber(objectToCheck)
+        && !CC.isArray(objectToCheck);
+    };
+
+})();
 
 
 
@@ -398,137 +404,141 @@ CC.isObject = function(objectToCheck){
 //depends on typeChecker
 //is dependency of element, elementlist
 
-/**
-* merge all attributes of the arguments recursively into the first argument and returns it
-*/
-CC.merge = function() {
+(function(){
 
-    var mergeRecursively = function(merged, obj){
+    /**
+    * merge all attributes of the arguments recursively into the first argument and returns it
+    */
+    CC.merge = function() {
 
-        if(!merged || !obj) {
-            return;
-        }
+        var mergeRecursively = function(merged, obj){
 
-        for (var p in obj) {
+            if(!merged || !obj) {
+                return;
+            }
 
-            // Property in destination object set; update its value.
-            if (CC.isObject(obj[p])) {
+            for (var p in obj) {
 
-                if (!merged[p] || !CC.isObject(merged[p])) {
-                    merged[p] = {};
+                // Property in destination object set; update its value.
+                if (CC.isObject(obj[p])) {
+
+                    if (!merged[p] || !CC.isObject(merged[p])) {
+                        merged[p] = {};
+                    }
+
+                    mergeRecursively(merged[p], obj[p]);
+
+                } else {
+
+                    merged[p] = obj[p];
+
                 }
 
-                mergeRecursively(merged[p], obj[p]);
-
-            } else {
-
-                merged[p] = obj[p];
-
             }
 
+        };
+
+        for (var i = 1; i < arguments.length; i++) {
+
+            mergeRecursively(arguments[0], arguments[i]);
+
         }
+
+        return arguments[0];
 
     };
 
-    for (var i = 1; i < arguments.length; i++) {
+    /**
+    * sort the items of an array by property
+    * @param elements array to be sorted
+    * @param prop the property to compare
+    * @param invert if you want the reverse order
+    */
+    CC.sort = function(elements, prop, invert){
 
-        mergeRecursively(arguments[0], arguments[i]);
-
-    }
-
-    return arguments[0];
-
-};
-
-/**
-* sort the items of an array by property
-* @param elements array to be sorted
-* @param prop the property to compare
-* @param invert if you want the reverse order
-*/
-CC.sort = function(elements, prop, invert){
-
-    if (!CC.isArray(elements)) {
-        var asArray = [];
-        for (var e in elements) {
-            asArray.push(elements[e]);
-        }
-        elements = asArray;
-    }
-
-    return elements.sort(function(a, b){
-        if (a[prop] > b[prop]) {
-            return invert ? -1 : 1;
+        if (!CC.isArray(elements)) {
+            var asArray = [];
+            for (var e in elements) {
+                asArray.push(elements[e]);
+            }
+            elements = asArray;
         }
 
-        if (a[prop] < b[prop]) {
-            return invert ? 1 : -1;
-        }
-
-        if (a[prop] == undefined) {
-            if (b[prop] < 0) {
+        return elements.sort(function(a, b){
+            if (a[prop] > b[prop]) {
                 return invert ? -1 : 1;
             }
 
-            if (b[prop] > 0) {
-                return invert ? 1 : -1;
-            }
-        }
-
-        if (b[prop] == undefined) {
-            if (a[prop] < 0) {
+            if (a[prop] < b[prop]) {
                 return invert ? 1 : -1;
             }
 
-            if (a[prop] > 0) {
-                return invert ? -1 : 1;
+            if (a[prop] == undefined) {
+                if (b[prop] < 0) {
+                    return invert ? -1 : 1;
+                }
+
+                if (b[prop] > 0) {
+                    return invert ? 1 : -1;
+                }
             }
-        }
 
-        return 0;
-    });
-};
+            if (b[prop] == undefined) {
+                if (a[prop] < 0) {
+                    return invert ? 1 : -1;
+                }
 
-/**
-* rotate a point
-* @param p the point to be rotated
-* @param anchor the anchor point
-* @param angle the angle of the rotation
-*/
-CC.rotatePoint = function(p, anchor, angle){
+                if (a[prop] > 0) {
+                    return invert ? -1 : 1;
+                }
+            }
 
-    var px = p.x;
-    if (px == undefined && p.length > 1) {
-        px = p[0];
-    }
-
-    var py = p.y;
-    if (py == undefined && p.length > 1) {
-        py = p[1];
-    }
-
-    var ax = anchor.x;
-    if (ax == undefined && anchor.length > 1) {
-        ax = anchor[0];
-    }
-
-    var ay = anchor.y;
-    if (ay == undefined && anchor.length > 1) {
-        ay = anchor[1];
-    }
-
-    var teta = angle * Math.PI / -180.0;
-    var diffX = px - ax;
-    var diffY = py - ay;
-    var cos = Math.cos(teta);
-    var sin = Math.sin(teta);
-
-    return {
-        x: Math.round(cos * diffX - sin * diffY + ax),
-        y: Math.round(sin * diffX + cos * diffY + ay)
+            return 0;
+        });
     };
 
-};
+    /**
+    * rotate a point
+    * @param p the point to be rotated
+    * @param anchor the anchor point
+    * @param angle the angle of the rotation
+    */
+    CC.rotatePoint = function(p, anchor, angle){
+
+        var px = p.x;
+        if (px == undefined && p.length > 1) {
+            px = p[0];
+        }
+
+        var py = p.y;
+        if (py == undefined && p.length > 1) {
+            py = p[1];
+        }
+
+        var ax = anchor.x;
+        if (ax == undefined && anchor.length > 1) {
+            ax = anchor[0];
+        }
+
+        var ay = anchor.y;
+        if (ay == undefined && anchor.length > 1) {
+            ay = anchor[1];
+        }
+
+        var teta = angle * Math.PI / -180.0;
+        var diffX = px - ax;
+        var diffY = py - ay;
+        var cos = Math.cos(teta);
+        var sin = Math.sin(teta);
+
+        return {
+            x: Math.round(cos * diffX - sin * diffY + ax),
+            y: Math.round(sin * diffX + cos * diffY + ay)
+        };
+
+    };
+
+})();
 
 
 
@@ -538,111 +548,115 @@ CC.rotatePoint = function(p, anchor, angle){
 //depends on event, typeChecker
 //is dependency of ajax
 
-CC.Promise = function() {
-    this._callbacks = [];
-};
+(function(){
 
-CC.Promise.prototype.then = function(func, context) {
-    
-    var p;
-
-    if (this._isdone) {
-        p = func.apply(context, this.result);
-    } else {
-
-        p = new CC.Promise();
-
-        this._callbacks.push(function () {
-            
-            var res = func.apply(context, arguments);
-            
-            if (res && CC.isFunction(res.then)) {
-                res.then(p.done, p);
-            }
-            
-        });
-    }
-
-    return p;
-};
-
-CC.Promise.prototype.done = function() {
-    
-    this.result = arguments;
-    this._isdone = true;
-
-    for (var i = 0; i < this._callbacks.length; i++) {
-        this._callbacks[i].apply(null, arguments);
-    }
-
-    this._callbacks = [];
-};
-
-CC.when = function(eventsStr){
-
-    var p = new CC.Promise();
-
-    var cb = function(){
-        p.done.apply(p, arguments);
-        CC.unbind(eventsStr, cb);
+    CC.Promise = function() {
+        this._callbacks = [];
     };
 
-    CC.bind(eventsStr, cb);
+    CC.Promise.prototype.then = function(func, context) {
+        
+        var p;
 
-    return p;
+        if (this._isdone) {
+            p = func.apply(context, this.result);
+        } else {
 
-};
+            p = new CC.Promise();
 
-CC.promiseJoin = function(promises) {
-
-    var p = new CC.Promise();
-    var total = promises.length;
-    var numdone = 0;
-    var results = [];
-
-    var notifier = function(i) {
-        return function() {
-            numdone += 1;
-            results[i] = Array.prototype.slice.call(arguments);
-            
-            if (numdone === total) {
-                p.done.apply(p, results);
-            }
-        };
-    }
-
-    for (var i = 0; i < total; i++) {
-        promises[i].then(notifier(i));
-    }
-
-    return p;
-};
-
-CC.promiseChain = function(funcs, args) {
-    
-    var p = new CC.Promise();
-    
-    if (funcs.length === 0) {
-        p.done.apply(p, args);
-    } else {
-
-        var pi = funcs[0].apply(null, args);
-
-        if (pi && CC.isFunction(pi.then)) {
-
-            pi.then(function() {
+            this._callbacks.push(function () {
                 
-                funcs.splice(0, 1);
+                var res = func.apply(context, arguments);
                 
-                CC.promiseChain(funcs, arguments).then(function() {
-                    p.done.apply(p, arguments);
-                });
+                if (res && CC.isFunction(res.then)) {
+                    res.then(p.done, p);
+                }
+                
             });
-
         }
-    }
-    return p;
-};
+
+        return p;
+    };
+
+    CC.Promise.prototype.done = function() {
+        
+        this.result = arguments;
+        this._isdone = true;
+
+        for (var i = 0; i < this._callbacks.length; i++) {
+            this._callbacks[i].apply(null, arguments);
+        }
+
+        this._callbacks = [];
+    };
+
+    CC.when = function(eventsStr){
+
+        var p = new CC.Promise();
+
+        var cb = function(){
+            p.done.apply(p, arguments);
+            CC.unbind(eventsStr, cb);
+        };
+
+        CC.bind(eventsStr, cb);
+
+        return p;
+
+    };
+
+    CC.promiseJoin = function(promises) {
+
+        var p = new CC.Promise();
+        var total = promises.length;
+        var numdone = 0;
+        var results = [];
+
+        var notifier = function(i) {
+            return function() {
+                numdone += 1;
+                results[i] = Array.prototype.slice.call(arguments);
+                
+                if (numdone === total) {
+                    p.done.apply(p, results);
+                }
+            };
+        }
+
+        for (var i = 0; i < total; i++) {
+            promises[i].then(notifier(i));
+        }
+
+        return p;
+    };
+
+    CC.promiseChain = function(funcs, args) {
+        
+        var p = new CC.Promise();
+        
+        if (funcs.length === 0) {
+            p.done.apply(p, args);
+        } else {
+
+            var pi = funcs[0].apply(null, args);
+
+            if (pi && CC.isFunction(pi.then)) {
+
+                pi.then(function() {
+                    
+                    funcs.splice(0, 1);
+                    
+                    CC.promiseChain(funcs, arguments).then(function() {
+                        p.done.apply(p, arguments);
+                    });
+                });
+
+            }
+        }
+        return p;
+    };
+
+})();
 
 
 
@@ -650,7 +664,7 @@ CC.promiseChain = function(funcs, args) {
 
 /***** MOUSE *****/
 
-//TODO
+//TODO touchscreen
 
 
 
@@ -661,289 +675,293 @@ CC.promiseChain = function(funcs, args) {
 //depends on event
 //is not an internal dependency
 
-var keyPressed = {} //keys pressed
-var keyMapping = {
-    8:  "BACKSPACE",
+(function(){
 
-    13: "ENTER",
-    16: "SHIFT",
-    17: "CTRL",
-    18: "ALT",
+    var keyPressed = {} //keys pressed
+    var keyMapping = {
+        8:  "BACKSPACE",
 
-    20: "CAPSLOCK",
+        13: "ENTER",
+        16: "SHIFT",
+        17: "CTRL",
+        18: "ALT",
 
-    27: "ESC",
+        20: "CAPSLOCK",
 
-    33: "PGUP",
-    34: "PGDOWN",
-    35: "END",
-    36: "HOME",
-    37: "LEFT",
-    38: "UP",
-    39: "RIGHT",
-    40: "DOWN",
+        27: "ESC",
 
-    44: "PRINTSCREEN",
-    45: "INSERT",
+        33: "PGUP",
+        34: "PGDOWN",
+        35: "END",
+        36: "HOME",
+        37: "LEFT",
+        38: "UP",
+        39: "RIGHT",
+        40: "DOWN",
 
-    46: "DEL",
+        44: "PRINTSCREEN",
+        45: "INSERT",
 
-    48: "0",
-    49: "1",
-    50: "2",
-    51: "3",
-    52: "4",
-    53: "5",
-    54: "6",
-    55: "7",
-    56: "8",
-    57: "9",
+        46: "DEL",
 
-    65: "A",
-    66: "B",
-    67: "C",
-    68: "D",
-    69: "E",
-    70: "F",
-    71: "G",
-    72: "H",
-    73: "I",
-    74: "J",
-    75: "K",
-    76: "L",
-    77: "M",
-    78: "N",
-    79: "O",
-    80: "P",
-    81: "Q",
-    82: "R",
-    83: "S",
-    84: "T",
-    85: "U",
-    86: "V",
-    87: "W",
-    88: "X",
-    89: "Y",
-    90: "Z",
+        48: "0",
+        49: "1",
+        50: "2",
+        51: "3",
+        52: "4",
+        53: "5",
+        54: "6",
+        55: "7",
+        56: "8",
+        57: "9",
 
-    91: "WIN",
-    93: "RIGHTCMD",
+        65: "A",
+        66: "B",
+        67: "C",
+        68: "D",
+        69: "E",
+        70: "F",
+        71: "G",
+        72: "H",
+        73: "I",
+        74: "J",
+        75: "K",
+        76: "L",
+        77: "M",
+        78: "N",
+        79: "O",
+        80: "P",
+        81: "Q",
+        82: "R",
+        83: "S",
+        84: "T",
+        85: "U",
+        86: "V",
+        87: "W",
+        88: "X",
+        89: "Y",
+        90: "Z",
 
-    112: "F1",
-    113: "F2",
-    114: "F3",
-    115: "F4",
-    116: "F5",
-    117: "F6",
-    118: "F7",
-    119: "F8",
-    120: "F9",
-    121: "F10",
-    122: "F11",
-    123: "F12"
-};
+        91: "WIN",
+        93: "RIGHTCMD",
 
-var keyAlias = {
-    CMD: "WIN",
-    OPTION: "ALT"
-};
+        112: "F1",
+        113: "F2",
+        114: "F3",
+        115: "F4",
+        116: "F5",
+        117: "F6",
+        118: "F7",
+        119: "F8",
+        120: "F9",
+        121: "F10",
+        122: "F11",
+        123: "F12"
+    };
+
+    var keyAlias = {
+        CMD: "WIN",
+        OPTION: "ALT"
+    };
 
 
 
 
-window.addEventListener('keyup', function(event) {
-    delete keyPressed[keyMapping[event.keyCode]];
-    CC.trigger("keyup", event);
-}, false);
+    window.addEventListener('keyup', function(event) {
+        delete keyPressed[keyMapping[event.keyCode]];
+        CC.trigger("keyup", event);
+    }, false);
 
-window.addEventListener('keydown', function(event) {
-    keyPressed[keyMapping[event.keyCode]] = true; 
-    CC.trigger("keydown", event);
-}, false);
+    window.addEventListener('keydown', function(event) {
+        keyPressed[keyMapping[event.keyCode]] = true; 
+        CC.trigger("keydown", event);
+    }, false);
 
-/**
-* return true if no key is pressed
-*/
-CC.isNoKeyPressed = function(){
+    /**
+    * return true if no key is pressed
+    */
+    CC.isNoKeyPressed = function(){
 
-    for (var j in keyPressed) {
-        return false;   
-    }
-
-    return true;
-
-};
-
-/**
-* detect if all keys in param are pressed
-* @param keys which keys you want to check if are pressed as string separeted by '+'
-* eg.: "Ctrl + Up + A"
-*/
-CC.isKeysPressed = function(keys) {
-    var keysArr = keys.toUpperCase().replace(/ /g, "").split("+");
-
-    for (var i in keysArr) {
-        var k = keysArr[i].toUpperCase();
-        if (keyAlias[k]) {
-            k = keyAlias[k];
+        for (var j in keyPressed) {
+            return false;   
         }
 
-        if (!keyPressed[k]) {
-            return false;
-        }
-    }
+        return true;
 
-    return true;
-};
+    };
 
-/**
-* detect if all and only keys in param are pressed
-* @param keys which keys you want to check if are pressed as string separeted by '+'
-* eg.: "Ctrl + Up + A"
-*/
-CC.isKeysPressedOnly = function(keys) {
-    var keysArr = keys.toUpperCase().replace(/ /g, "").split("+");
-    var map = {};
+    /**
+    * detect if all keys in param are pressed
+    * @param keys which keys you want to check if are pressed as string separeted by '+'
+    * eg.: "Ctrl + Up + A"
+    */
+    CC.isKeysPressed = function(keys) {
+        var keysArr = keys.toUpperCase().replace(/ /g, "").split("+");
 
-    for (var i in keysArr) {
-        
-        var k = keysArr[i].toUpperCase();
-        if (keyAlias[k]) {
-            k = keyAlias[k];
-        }
+        for (var i in keysArr) {
+            var k = keysArr[i].toUpperCase();
+            if (keyAlias[k]) {
+                k = keyAlias[k];
+            }
 
-        if (!keyPressed[k]) {
-            return false;
-        }
-        map[k] = true;
-    }
-
-    for (var j in keyPressed) {
-        if (!map[j]) {
-            return false;
-        }
-    }
-
-    return true;
-};
-
-/**
-* if all keys are down, trigger the action
-* @param keys which keys you want to check if are pressed as string separeted by '+'
-* @param action a function to be invoked when the event is triggered
-*/
-CC.onKeysDown = function(keys, action) {
-    return CC.bind("keydown", function(event){
-        if (!CC.isKeysPressed(keys)) {
-            return;
+            if (!keyPressed[k]) {
+                return false;
+            }
         }
 
-        //verify if the event key is a desired key
-        var wantedArr = keys.toUpperCase().replace(/ /g, "").split("+");
+        return true;
+    };
 
-        for (var i in wantedArr) {
+    /**
+    * detect if all and only keys in param are pressed
+    * @param keys which keys you want to check if are pressed as string separeted by '+'
+    * eg.: "Ctrl + Up + A"
+    */
+    CC.isKeysPressedOnly = function(keys) {
+        var keysArr = keys.toUpperCase().replace(/ /g, "").split("+");
+        var map = {};
+
+        for (var i in keysArr) {
             
-            var k = wantedArr[i].toUpperCase();
+            var k = keysArr[i].toUpperCase();
             if (keyAlias[k]) {
                 k = keyAlias[k];
             }
 
-            if (k == keyMapping[event.keyCode]) {
-                action(event);
-                break;
+            if (!keyPressed[k]) {
+                return false;
             }
-        }
-
-        
-    });
-};
-
-/**
-* if all and only keys are down, trigger the action
-* @param keys which keys you want to check if are pressed as string separeted by '+'
-* @param action a function to be invoked when the event is triggered
-*/
-CC.onKeysDownOnly = function(keys, action) {
-    return CC.bind("keydown", function(event){
-        if (CC.isKeysPressedOnly(keys)) {
-            action(event);
-        }
-    });
-};
-
-/**
-* if all keys was down, no more keys was down and now one of them is released, trigger the action
-* @param keys which keys you want to check if are pressed as string separeted by '+'
-* @param action a function to be invoked when the event is triggered
-*/
-CC.onKeysUpOnly = function(keys, action) {
-    return CC.bind("keyup", function(event){
-        var wantedArr = keys.toUpperCase().replace(/ /g, "").split("+");
-        var wantedMap = {};
-
-        for (var i in wantedArr) {
-            var k = wantedArr[i].toUpperCase();
-            if (keyAlias[k]) {
-                k = keyAlias[k];
-            }
-
-            if (!keyPressed[k] && k != keyMapping[event.keyCode]) {
-                return;
-            }
-            wantedMap[k] = true;
-        }
-
-        if (!wantedMap[keyMapping[event.keyCode]]) {
-            return;
+            map[k] = true;
         }
 
         for (var j in keyPressed) {
-            if (!wantedMap[j]) {
-                return;
+            if (!map[j]) {
+                return false;
             }
         }
 
-        action(event);
-    });
-};
+        return true;
+    };
 
-CC.onKeysSequence = function(keys, maxdelay, action){
-    var step = 0;
+    /**
+    * if all keys are down, trigger the action
+    * @param keys which keys you want to check if are pressed as string separeted by '+'
+    * @param action a function to be invoked when the event is triggered
+    */
+    CC.onKeysDown = function(keys, action) {
+        return CC.bind("keydown", function(event){
+            if (!CC.isKeysPressed(keys)) {
+                return;
+            }
 
-    var wantedKeys = [];
-    for (var i in keys) {
-        var k = keys[i].toUpperCase();
-        if (keyAlias[k]) {
-            k = keyAlias[k];
+            //verify if the event key is a desired key
+            var wantedArr = keys.toUpperCase().replace(/ /g, "").split("+");
+
+            for (var i in wantedArr) {
+                
+                var k = wantedArr[i].toUpperCase();
+                if (keyAlias[k]) {
+                    k = keyAlias[k];
+                }
+
+                if (k == keyMapping[event.keyCode]) {
+                    action(event);
+                    break;
+                }
+            }
+
+            
+        });
+    };
+
+    /**
+    * if all and only keys are down, trigger the action
+    * @param keys which keys you want to check if are pressed as string separeted by '+'
+    * @param action a function to be invoked when the event is triggered
+    */
+    CC.onKeysDownOnly = function(keys, action) {
+        return CC.bind("keydown", function(event){
+            if (CC.isKeysPressedOnly(keys)) {
+                action(event);
+            }
+        });
+    };
+
+    /**
+    * if all keys was down, no more keys was down and now one of them is released, trigger the action
+    * @param keys which keys you want to check if are pressed as string separeted by '+'
+    * @param action a function to be invoked when the event is triggered
+    */
+    CC.onKeysUpOnly = function(keys, action) {
+        return CC.bind("keyup", function(event){
+            var wantedArr = keys.toUpperCase().replace(/ /g, "").split("+");
+            var wantedMap = {};
+
+            for (var i in wantedArr) {
+                var k = wantedArr[i].toUpperCase();
+                if (keyAlias[k]) {
+                    k = keyAlias[k];
+                }
+
+                if (!keyPressed[k] && k != keyMapping[event.keyCode]) {
+                    return;
+                }
+                wantedMap[k] = true;
+            }
+
+            if (!wantedMap[keyMapping[event.keyCode]]) {
+                return;
+            }
+
+            for (var j in keyPressed) {
+                if (!wantedMap[j]) {
+                    return;
+                }
+            }
+
+            action(event);
+        });
+    };
+
+    CC.onKeysSequence = function(keys, maxdelay, action){
+        var step = 0;
+
+        var wantedKeys = [];
+        for (var i in keys) {
+            var k = keys[i].toUpperCase();
+            if (keyAlias[k]) {
+                k = keyAlias[k];
+            }
+
+            wantedKeys.push(k);
         }
 
-        wantedKeys.push(k);
-    }
+        var timeout;
 
-    var timeout;
+        return CC.bind("keydown", function(event){
 
-    return CC.bind("keydown", function(event){
+            clearTimeout(timeout);
 
-        clearTimeout(timeout);
+            if (wantedKeys[step] === keyMapping[event.keyCode]) {
+                step++;
+            } else {
+                step = 0;
+            }
 
-        if (wantedKeys[step] === keyMapping[event.keyCode]) {
-            step++;
-        } else {
-            step = 0;
-        }
+            if (step == wantedKeys.length) {
+                step = 0;
+                action();
+            }
 
-        if (step == wantedKeys.length) {
-            step = 0;
-            action();
-        }
+            timeout = setTimeout(function(){
+                step = 0;
+            }, maxdelay);
 
-        timeout = setTimeout(function(){
-            step = 0;
-        }, maxdelay);
+        });
 
-    });
+    };
 
-};
+})();
 
 
 
@@ -953,102 +971,106 @@ CC.onKeysSequence = function(keys, maxdelay, action){
 //depends on promise
 //is not a internal dependency
 
-//time in milliseconds after which a pending AJAX request is considered unresponsive
-CC.ajaxTimeout = 0;
+(function(){
 
-var _encode = function(data) {
-    var result = "";
-    
-    if (typeof data === "string") {
-        result = data;
-    } else {
-        var e = encodeURIComponent;
+    //time in milliseconds after which a pending AJAX request is considered unresponsive
+    CC.ajaxTimeout = 0;
 
-        for (var k in data) {
-            if (data.hasOwnProperty(k)) {
-                result += '&' + e(k) + '=' + e(data[k]);
+    var _encode = function(data) {
+        var result = "";
+        
+        if (typeof data === "string") {
+            result = data;
+        } else {
+            var e = encodeURIComponent;
+
+            for (var k in data) {
+                if (data.hasOwnProperty(k)) {
+                    result += '&' + e(k) + '=' + e(data[k]);
+                }
             }
         }
-    }
-    return result;
-};
-
-var new_xhr = function() {
-    var xhr;
-    
-    if (window.XMLHttpRequest) {
-        xhr = new XMLHttpRequest();
-    } else if (window.ActiveXObject) {
-        
-        try {
-            xhr = new ActiveXObject("Msxml2.XMLHTTP");
-        } catch (e) {
-            xhr = new ActiveXObject("Microsoft.XMLHTTP");
-        }
-    }
-
-    return xhr;
-};
-
-/**
-* do ajax request adn the response will be delivered via promise
-*/
-CC.ajax = function(method, url, data, headers) {
-
-    var p = new CC.Promise();
-
-    var xhr, payload;
-    data = data || {};
-    headers = headers || {};
-
-    try {
-        xhr = new_xhr();
-    } catch (e) {
-        p.done(false, "no xhr");
-    	return p;
-    }
-
-    payload = _encode(data);
-
-    if (method === 'GET' && payload) {
-        url += '?' + payload;
-        payload = null;
-    }
-
-    xhr.open(method, url);
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    
-    for (var h in headers) {
-        if (headers.hasOwnProperty(h)) {
-            xhr.setRequestHeader(h, headers[h]);
-        }
-    }
-
-    var onTimeout = function() {
-        xhr.abort();
-        p.done(false, "timeout", xhr);
-    }
-
-    var timeout = CC.ajaxTimeout;
-    
-    if (timeout) {
-        var tid = setTimeout(onTimeout, timeout);
-    }
-
-    xhr.onreadystatechange = function() {
-        if (timeout) {
-            clearTimeout(tid);
-        }
-        if (xhr.readyState === 4) {
-            var success = xhr.status && ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304);
-            p.done(success, xhr.responseText, xhr);
-        }
+        return result;
     };
 
-    xhr.send(payload);
+    var new_xhr = function() {
+        var xhr;
+        
+        if (window.XMLHttpRequest) {
+            xhr = new XMLHttpRequest();
+        } else if (window.ActiveXObject) {
+            
+            try {
+                xhr = new ActiveXObject("Msxml2.XMLHTTP");
+            } catch (e) {
+                xhr = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+        }
 
-    return p;
-};
+        return xhr;
+    };
+
+    /**
+    * do ajax request adn the response will be delivered via promise
+    */
+    CC.ajax = function(method, url, data, headers) {
+
+        var p = new CC.Promise();
+
+        var xhr, payload;
+        data = data || {};
+        headers = headers || {};
+
+        try {
+            xhr = new_xhr();
+        } catch (e) {
+            p.done(false, "no xhr");
+        	return p;
+        }
+
+        payload = _encode(data);
+
+        if (method === 'GET' && payload) {
+            url += '?' + payload;
+            payload = null;
+        }
+
+        xhr.open(method, url);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        
+        for (var h in headers) {
+            if (headers.hasOwnProperty(h)) {
+                xhr.setRequestHeader(h, headers[h]);
+            }
+        }
+
+        var onTimeout = function() {
+            xhr.abort();
+            p.done(false, "timeout", xhr);
+        }
+
+        var timeout = CC.ajaxTimeout;
+        
+        if (timeout) {
+            var tid = setTimeout(onTimeout, timeout);
+        }
+
+        xhr.onreadystatechange = function() {
+            if (timeout) {
+                clearTimeout(tid);
+            }
+            if (xhr.readyState === 4) {
+                var success = xhr.status && ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304);
+                p.done(success, xhr.responseText, xhr);
+            }
+        };
+
+        xhr.send(payload);
+
+        return p;
+    };
+
+})();
 
 
 
@@ -1058,45 +1080,56 @@ CC.ajax = function(method, url, data, headers) {
 //have no dependency
 //is dependency of element
 
-var sprites = {}; //sprites loaded stored by url
+(function(){
 
-/**
-* pre-load the image resources used in game
-* @param srcs an array of strings with the path of file
-* @param callback function called when all resources are loaded
-*/
-CC.loadResources = function(srcs, callback){
-    
-    var loadRecursively = function(index) {
-        var img = new Image();
-        img.src = srcs[index];
-        img.onload = function(){
+    var sprites = {}; //sprites loaded stored by url
 
-            sprites[srcs[index]] = this;
+    /**
+    * pre-load the image resources used in game
+    * @param srcs an array of strings with the path of file
+    * @param callback function called when all resources are loaded
+    */
+    CC.loadResources = function(srcs, callback){
+        
+        var loadRecursively = function(index) {
+            var img = new Image();
+            img.src = srcs[index];
+            img.onload = function(){
 
-            if (index < srcs.length - 1) {
-                loadRecursively(index+1);
-            } else {
-                callback();
-            }
+                sprites[srcs[index]] = this;
 
+                if (index < srcs.length - 1) {
+                    loadRecursively(index+1);
+                } else if (callback) {
+                    callback();
+                }
+
+            };
         };
+
+        loadRecursively(0);
+
     };
 
-    loadRecursively(0);
+    CC.useResource = function(src){
+        return sprites[src];
+    };
 
-};
-
-CC.useResource = function(src){
-    return sprites[src];
-};
+})();
 
 
 
+
+/***** DRAWER *****/
+
+//depends on typeChecker, event, objectTools, resource
+//is dependency of loop
 
 (function(){
 
     CC.screens = [];
+    CC.tiles = {};
+    CC.step = 0; //each loop increments the step, it is used for animation proposes
 
 	CC.draw = function(){
 
@@ -1112,6 +1145,8 @@ CC.useResource = function(src){
     	    });
 
         }
+
+        CC.step++;
 	};
 
     CC.loadScreens = function() {
@@ -1966,90 +2001,100 @@ CC.useResource = function(src){
 //depends on event and drawer
 //is not a internal dependency
 
-var running = true;
-var requestAnimId;
-var intervalAnimId;
+(function(){
+    var running = true;
+    var requestAnimId;
+    var intervalAnimId;
+    
 
-/**
-* start the routine of the gameloop, for each loop it triggers 'enterframe' event and render the elements
-*/
-CC.startLoop = function(){
+    /**
+    * start the routine of the gameloop, for each loop it triggers 'enterframe' event and render the elements
+    */
+    CC.startLoop = function(){
 
-    CC.loadScreens();
+        CC.loadScreens();
 
-    var mainloop = function(){   
+        var mainloop = function(){   
 
-        if (!running) {
-            return;
-        }
+            if (!running) {
+                return;
+            }
 
-        CC.trigger("enterframe");
-        CC.draw();
-        CC.step++;
-    };
-
-    var animFrame = window.requestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame    ||
-        window.oRequestAnimationFrame      ||
-        window.msRequestAnimationFrame     ||
-        null;
-
-    if (animFrame !== null) {
-        
-        var recursiveAnim = function() {
-            mainloop();
-            requestAnimId = animFrame(recursiveAnim);
+            CC.trigger("enterframe");
+            CC.draw();
         };
 
-        // start the mainloop
-        requestAnimId = animFrame(recursiveAnim);
-
-    } else {
-        var ONE_FRAME_TIME = 1000.0 / 60.0 ;
-        intervalAnimId = setInterval( mainloop, ONE_FRAME_TIME );
-    }
-
-};
-
-/**
-* stop the gameloop
-*/
-CC.stopLoop = function(){
-    if (requestAnimId) {
-        var cancelFrame = window.cancelAnimationFrame ||
-            window.webkitCancelAnimationFrame ||
-            window.mozCancelAnimationFrame    ||
-            window.oCancelAnimationFrame      ||
-            window.msCancelAnimationFrame     ||
+        var animFrame = window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame    ||
+            window.oRequestAnimationFrame      ||
+            window.msRequestAnimationFrame     ||
             null;
 
-        if (cancelFrame !== null) {
-            cancelFrame(requestAnimId);
-            requestAnimId = null;
+        if (animFrame !== null) {
+            
+            var recursiveAnim = function() {
+                mainloop();
+                requestAnimId = animFrame(recursiveAnim);
+            };
+
+            // start the mainloop
+            requestAnimId = animFrame(recursiveAnim);
+
+        } else {
+            var ONE_FRAME_TIME = 1000.0 / 60.0 ;
+            intervalAnimId = setInterval( mainloop, ONE_FRAME_TIME );
         }
-    }
 
-    if (intervalAnimId) {
-        clearInterval(intervalAnimId);
-        intervalAnimId = null;
-    }
-};
+    };
 
-/**
-* make the triggers and the gameloop to be ignored
-*/
-CC.pause = function(){
-    running = false;
-};
+    /**
+    * stop the gameloop
+    */
+    CC.stopLoop = function(){
+        if (requestAnimId) {
+            var cancelFrame = window.cancelAnimationFrame ||
+                window.webkitCancelAnimationFrame ||
+                window.mozCancelAnimationFrame    ||
+                window.oCancelAnimationFrame      ||
+                window.msCancelAnimationFrame     ||
+                null;
+
+            if (cancelFrame !== null) {
+                cancelFrame(requestAnimId);
+                requestAnimId = null;
+            }
+        }
+
+        if (intervalAnimId) {
+            clearInterval(intervalAnimId);
+            intervalAnimId = null;
+        }
+    };
+
+    /**
+    * make the triggers and the gameloop to be ignored
+    */
+    CC.pause = function(){
+        running = false;
+    };
 
 
-/**
-* make the triggers and the gameloop to be considered again
-*/
-CC.play = function(){
-    running = true;
-};
+    /**
+    * make the triggers and the gameloop to be considered again
+    */
+    CC.play = function(){
+        running = true;
+    };
+
+    /**
+    * check if loop is enabled. Important: "stopLoop" will not disable the loop, only "pause" will do it
+    */
+    CC.isRunning = function(){
+        return running;
+    };
+    
+})();
 
 
 
@@ -2334,6 +2379,9 @@ var Element = function(specs, opts){
 
 //depends on element, objectTools
 //is not a internal dependency
+
+
+CC.fn = {}; //functions elementlist implement (global methods)
 
 /**
 * a collection of elements

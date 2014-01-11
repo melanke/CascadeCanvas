@@ -3,6 +3,9 @@
 //depends on element, objectTools
 //is not a internal dependency
 
+
+CC.fn = {}; //functions elementlist implement (global methods)
+
 /**
 * a collection of elements
 */
