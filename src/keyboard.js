@@ -125,11 +125,12 @@ CC.isKeysPressed = function(keys) {
     var keysArr = keys.toUpperCase().replace(/ /g, "").split("+");
 
     for (var i in keysArr) {
-        if (keyAlias[i]) {
-            i = keyAlias[i];
+        var k = keysArr[i].toUpperCase();
+        if (keyAlias[k]) {
+            k = keyAlias[k];
         }
 
-        if (!keyPressed[keysArr[i]]) {
+        if (!keyPressed[k]) {
             return false;
         }
     }
@@ -147,15 +148,16 @@ CC.isKeysPressedOnly = function(keys) {
     var map = {};
 
     for (var i in keysArr) {
-        if (keyAlias[i]) {
-            i = keyAlias[i];
+        
+        var k = keysArr[i].toUpperCase();
+        if (keyAlias[k]) {
+            k = keyAlias[k];
         }
 
-        var key = keysArr[i];
-        if (!keyPressed[key]) {
+        if (!keyPressed[k]) {
             return false;
         }
-        map[key] = true;
+        map[k] = true;
     }
 
     for (var j in keyPressed) {
@@ -174,9 +176,27 @@ CC.isKeysPressedOnly = function(keys) {
 */
 CC.onKeysDown = function(keys, action) {
     return CC.bind("keydown", function(event){
-        if (CC.isKeysPressed(keys)) {
-            action(event);
+        if (!CC.isKeysPressed(keys)) {
+            return;
         }
+
+        //verify if the event key is a desired key
+        var wantedArr = keys.toUpperCase().replace(/ /g, "").split("+");
+
+        for (var i in wantedArr) {
+            
+            var k = wantedArr[i].toUpperCase();
+            if (keyAlias[k]) {
+                k = keyAlias[k];
+            }
+
+            if (k == keyMapping[event.keyCode]) {
+                action(event);
+                break;
+            }
+        }
+
+        
     });
 };
 
@@ -204,15 +224,15 @@ CC.onKeysUpOnly = function(keys, action) {
         var wantedMap = {};
 
         for (var i in wantedArr) {
-            if (keyAlias[i]) {
-                i = keyAlias[i];
+            var k = wantedArr[i].toUpperCase();
+            if (keyAlias[k]) {
+                k = keyAlias[k];
             }
 
-            var wanted = wantedArr[i];
-            if (!keyPressed[wanted] && wanted != keyMapping[event.keyCode]) {
+            if (!keyPressed[k] && k != keyMapping[event.keyCode]) {
                 return;
             }
-            wantedMap[wanted] = true;
+            wantedMap[k] = true;
         }
 
         if (!wantedMap[keyMapping[event.keyCode]]) {
@@ -244,7 +264,7 @@ CC.onKeysSequence = function(keys, maxdelay, action){
 
     var timeout;
 
-    CC.bind("keydown", function(event){
+    return CC.bind("keydown", function(event){
 
         clearTimeout(timeout);
 

@@ -281,4 +281,33 @@ describe("core.js", function() {
 
 	});
 
+	describe("remove", function(){
+
+		var timesEventWasTriggeredWhenBinded;
+
+		beforeEach(function(){
+
+			timesEventWasTriggeredWhenBinded = 0;
+
+		});
+
+		it("remove the element", function(){
+
+			var el = CC.new("#El");
+			el.bind("remove", function(){
+				timesEventWasTriggeredWhenBinded++;
+			});
+
+			expect(CC("#El").length).toBe(1);
+			expect(timesEventWasTriggeredWhenBinded).toBe(0);
+			CC.remove(el);
+			expect(CC("#El").length).toBe(0);
+			expect(timesEventWasTriggeredWhenBinded).toBe(1);
+			CC.remove(el);
+			expect(timesEventWasTriggeredWhenBinded).toBe(1);
+
+		});
+
+	});
+
 });

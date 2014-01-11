@@ -1,4 +1,8 @@
-(function (factory) {
+/**
+ * Cascade Canvas - MIT
+ * https://github.com/CascadeCanvas/CascadeCanvas
+ */
+ (function (factory) {
     "use strict";
     if (typeof exports === 'object') {
         // Node. Does not work with strict CommonJS, but
@@ -149,9 +153,9 @@ CC.clear = function() {
 };
 
 /**
-* forget about this, you should not use it
+* removes an element
 */
-CC.___remove = function(el){
+CC.remove = function(el){
 
     el.trigger("remove");
 
@@ -175,7 +179,7 @@ CC.___remove = function(el){
 //have no dependency
 //is dependency of element, loop, keyboard, mouse, promise
 
-var eventEnvironmentBuilder = function(owner){
+var eventEnvironmentBuilder = function(owner, shouldTrigger){
 
     var events = [];
 
@@ -297,7 +301,7 @@ var eventEnvironmentBuilder = function(owner){
     */
     owner.trigger = function(eventsStr){
 
-        if (!running) {
+        if (!running || (shouldTrigger && !shouldTrigger())) {
             return;
         }
 
@@ -382,6 +386,7 @@ CC.isObject = function(objectToCheck){
     && typeof objectToCheck === 'object' 
     && !CC.isFunction(objectToCheck) 
     && !CC.isString(objectToCheck)
+    && !CC.isNumber(objectToCheck)
     && !CC.isArray(objectToCheck);
 };
 
@@ -778,11 +783,12 @@ CC.isKeysPressed = function(keys) {
     var keysArr = keys.toUpperCase().replace(/ /g, "").split("+");
 
     for (var i in keysArr) {
-        if (keyAlias[i]) {
-            i = keyAlias[i];
+        var k = keysArr[i].toUpperCase();
+        if (keyAlias[k]) {
+            k = keyAlias[k];
         }
 
-        if (!keyPressed[keysArr[i]]) {
+        if (!keyPressed[k]) {
             return false;
         }
     }
@@ -800,15 +806,16 @@ CC.isKeysPressedOnly = function(keys) {
     var map = {};
 
     for (var i in keysArr) {
-        if (keyAlias[i]) {
-            i = keyAlias[i];
+        
+        var k = keysArr[i].toUpperCase();
+        if (keyAlias[k]) {
+            k = keyAlias[k];
         }
 
-        var key = keysArr[i];
-        if (!keyPressed[key]) {
+        if (!keyPressed[k]) {
             return false;
         }
-        map[key] = true;
+        map[k] = true;
     }
 
     for (var j in keyPressed) {
@@ -827,9 +834,27 @@ CC.isKeysPressedOnly = function(keys) {
 */
 CC.onKeysDown = function(keys, action) {
     return CC.bind("keydown", function(event){
-        if (CC.isKeysPressed(keys)) {
-            action(event);
+        if (!CC.isKeysPressed(keys)) {
+            return;
         }
+
+        //verify if the event key is a desired key
+        var wantedArr = keys.toUpperCase().replace(/ /g, "").split("+");
+
+        for (var i in wantedArr) {
+            
+            var k = wantedArr[i].toUpperCase();
+            if (keyAlias[k]) {
+                k = keyAlias[k];
+            }
+
+            if (k == keyMapping[event.keyCode]) {
+                action(event);
+                break;
+            }
+        }
+
+        
     });
 };
 
@@ -857,15 +882,15 @@ CC.onKeysUpOnly = function(keys, action) {
         var wantedMap = {};
 
         for (var i in wantedArr) {
-            if (keyAlias[i]) {
-                i = keyAlias[i];
+            var k = wantedArr[i].toUpperCase();
+            if (keyAlias[k]) {
+                k = keyAlias[k];
             }
 
-            var wanted = wantedArr[i];
-            if (!keyPressed[wanted] && wanted != keyMapping[event.keyCode]) {
+            if (!keyPressed[k] && k != keyMapping[event.keyCode]) {
                 return;
             }
-            wantedMap[wanted] = true;
+            wantedMap[k] = true;
         }
 
         if (!wantedMap[keyMapping[event.keyCode]]) {
@@ -897,7 +922,7 @@ CC.onKeysSequence = function(keys, maxdelay, action){
 
     var timeout;
 
-    CC.bind("keydown", function(event){
+    return CC.bind("keydown", function(event){
 
         clearTimeout(timeout);
 
@@ -2040,7 +2065,6 @@ CC.play = function(){
 var Element = function(specs, opts){
 
     var el = this,
-        thisevents = {}, //events attached to this
         removed = false; //an extra protection to ignore removed elements
 
     this.classes = {}; //classes this inherits
@@ -2072,7 +2096,9 @@ var Element = function(specs, opts){
             el.fixedOnScreen = opts.fixedOnScreen;
         }
 
-        eventEnvironmentBuilder(el);
+        eventEnvironmentBuilder(el, function(){ return !removed; }); 
+        //should not trigger an event if the element is removed
+        bindRemoveEvent();
 
         el.inherit(specs.replace(/#[a-zA-Z0-9]*/g, ""), opts);
 
@@ -2131,7 +2157,7 @@ var Element = function(specs, opts){
 
         var matchesRecursively = function(a, b){
 
-            if (!a || !b) {
+            if (a === undefined || b === undefined) {
                 return false;
             }
 
@@ -2209,14 +2235,15 @@ var Element = function(specs, opts){
     */
     this.remove = function(){
 
-        if (removed) {
-            return;
-        }
+        CC.remove(this);
 
-        removed = true;
+    };
 
-        CC.___remove(this);
+    var bindRemoveEvent = function() {
 
+        el.bind("remove", function(){
+            removed = true;
+        });
     };
 
     /**

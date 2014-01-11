@@ -39,5 +39,6 @@ CC.isObject = function(objectToCheck){
     && typeof objectToCheck === 'object' 
     && !CC.isFunction(objectToCheck) 
     && !CC.isString(objectToCheck)
+    && !CC.isNumber(objectToCheck)
     && !CC.isArray(objectToCheck);
 };

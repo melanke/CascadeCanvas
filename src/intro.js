@@ -1,4 +1,8 @@
-(function (factory) {
+/**
+ * Cascade Canvas - MIT
+ * https://github.com/CascadeCanvas/CascadeCanvas
+ */
+ (function (factory) {
     "use strict";
     if (typeof exports === 'object') {
         // Node. Does not work with strict CommonJS, but

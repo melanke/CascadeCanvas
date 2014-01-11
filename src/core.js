@@ -130,9 +130,9 @@ CC.clear = function() {
 };
 
 /**
-* forget about this, you should not use it
+* removes an element
 */
-CC.___remove = function(el){
+CC.remove = function(el){
 
     el.trigger("remove");
 

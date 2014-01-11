@@ -9,7 +9,6 @@
 var Element = function(specs, opts){
 
     var el = this,
-        thisevents = {}, //events attached to this
         removed = false; //an extra protection to ignore removed elements
 
     this.classes = {}; //classes this inherits
@@ -41,7 +40,9 @@ var Element = function(specs, opts){
             el.fixedOnScreen = opts.fixedOnScreen;
         }
 
-        eventEnvironmentBuilder(el);
+        eventEnvironmentBuilder(el, function(){ return !removed; }); 
+        //should not trigger an event if the element is removed
+        bindRemoveEvent();
 
         el.inherit(specs.replace(/#[a-zA-Z0-9]*/g, ""), opts);
 
@@ -100,7 +101,7 @@ var Element = function(specs, opts){
 
         var matchesRecursively = function(a, b){
 
-            if (!a || !b) {
+            if (a === undefined || b === undefined) {
                 return false;
             }
 
@@ -178,14 +179,15 @@ var Element = function(specs, opts){
     */
     this.remove = function(){
 
-        if (removed) {
-            return;
-        }
+        CC.remove(this);
 
-        removed = true;
+    };
 
-        CC.___remove(this);
+    var bindRemoveEvent = function() {
 
+        el.bind("remove", function(){
+            removed = true;
+        });
     };
 
     /**

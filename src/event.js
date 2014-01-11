@@ -3,7 +3,7 @@
 //have no dependency
 //is dependency of element, loop, keyboard, mouse, promise
 
-var eventEnvironmentBuilder = function(owner){
+var eventEnvironmentBuilder = function(owner, shouldTrigger){
 
     var events = [];
 
@@ -125,7 +125,7 @@ var eventEnvironmentBuilder = function(owner){
     */
     owner.trigger = function(eventsStr){
 
-        if (!running) {
+        if (!running || (shouldTrigger && !shouldTrigger())) {
             return;
         }
 

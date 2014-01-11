@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>Code coverage report for All files</title>
+    <title>Code coverage report for src/typeChecker.js</title>
     <meta charset="utf-8">
 
-    <link rel="stylesheet" href="prettify.css">
+    <link rel="stylesheet" href="../prettify.css">
 
     <style>
         body, html {
@@ -179,63 +179,164 @@
     </style>
 </head>
 <body>
-<div class="header medium">
-    <h1>Code coverage report for <span class="entity">All files</span></h1>
+<div class="header high">
+    <h1>Code coverage report for <span class="entity">src/typeChecker.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">55.46% <small>(554 / 999)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(10 / 10)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Branches: <span class="metric">44.7% <small>(274 / 613)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">100% <small>(14 / 14)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">55.41% <small>(87 / 157)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(5 / 5)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">55.63% <small>(553 / 994)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(10 / 10)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
     </h2>
-    <div class="path"></div>
+    <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">src/</a> &#187; typeChecker.js</div>
 </div>
 <div class="body">
-<div class="coverage-summary">
-<table>
-<thead>
-<tr>
-   <th data-col="file" data-fmt="html" data-html="true" class="file">File</th>
-   <th data-col="pic" data-type="number" data-fmt="html" data-html="true" class="pic"></th>
-   <th data-col="statements" data-type="number" data-fmt="pct" class="pct">Statements</th>
-   <th data-col="statements_raw" data-type="number" data-fmt="html" class="abs"></th>
-   <th data-col="branches" data-type="number" data-fmt="pct" class="pct">Branches</th>
-   <th data-col="branches_raw" data-type="number" data-fmt="html" class="abs"></th>
-   <th data-col="functions" data-type="number" data-fmt="pct" class="pct">Functions</th>
-   <th data-col="functions_raw" data-type="number" data-fmt="html" class="abs"></th>
-   <th data-col="lines" data-type="number" data-fmt="pct" class="pct">Lines</th>
-   <th data-col="lines_raw" data-type="number" data-fmt="html" class="abs"></th>
-</tr>
-</thead>
-<tbody><tr>
-	<td class="file medium" data-value="src/"><a href="src/index.html">src/</a></td>
-	<td data-value="55.46" class="pic medium"><span class="cover-fill" style="width: 55px;"></span><span class="cover-empty" style="width:45px;"></span></td>
-	<td data-value="55.46" class="pct medium">55.46%</td>
-	<td data-value="999" class="abs medium">(554&nbsp;/&nbsp;999)</td>
-	<td data-value="44.7" class="pct low">44.7%</td>
-	<td data-value="613" class="abs low">(274&nbsp;/&nbsp;613)</td>
-	<td data-value="55.41" class="pct medium">55.41%</td>
-	<td data-value="157" class="abs medium">(87&nbsp;/&nbsp;157)</td>
-	<td data-value="55.63" class="pct medium">55.63%</td>
-	<td data-value="994" class="abs medium">(553&nbsp;/&nbsp;994)</td>
-	</tr>
+<pre><table class="coverage">
+<tr><td class="line-count">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">47</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">147</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">39</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">43</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">153</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/***** TYPE CHECKER *****/
+&nbsp;
+//have no dependency
+//is dependency of objectTools, element, promise
+&nbsp;
+/**
+* check if param is a function
+*/
+CC.isFunction = function(functionToCheck){
+    return functionToCheck != null &amp;&amp; {}.toString.call(functionToCheck) === '[object Function]';
+}
+&nbsp;
+/**
+* check if param is a string
+*/
+CC.isString = function(stringToCheck){
+    return typeof stringToCheck == 'string' || stringToCheck instanceof String;
+};
+&nbsp;
+/**
+* check if param is a number
+*/
+CC.isNumber = function(numberToCheck) {
+	return !isNaN(parseFloat(numberToCheck)) &amp;&amp; isFinite(numberToCheck);
+};
+&nbsp;
+/**
+* check if param is an array
+*/
+CC.isArray = function(arrayToCheck){
+    return arrayToCheck != null &amp;&amp; {}.toString.call(arrayToCheck) === '[object Array]';
+};
+&nbsp;
+/**
+* check if param is an object and not a function, string or array
+*/
+CC.isObject = function(objectToCheck){
+    return objectToCheck != null 
+    &amp;&amp; typeof objectToCheck === 'object' 
+    &amp;&amp; !CC.isFunction(objectToCheck) 
+    &amp;&amp; !CC.isString(objectToCheck)
+    &amp;&amp; !CC.isNumber(objectToCheck)
+    &amp;&amp; !CC.isArray(objectToCheck);
+};</pre></td></tr>
+</table></pre>
 
-</tbody>
-</table>
-</div>
 </div>
 <div class="footer">
     <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Jan 11 2014 00:16:36 GMT-0200 (BRST)</div>
 </div>
 
-<script src="prettify.js"></script>
+<script src="../prettify.js"></script>
 
 <script src="http://yui.yahooapis.com/3.6.0/build/yui/yui-min.js"></script>
 <script>
