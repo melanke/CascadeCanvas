@@ -88,7 +88,7 @@ var ElementList = function(elements, selection){
             }
         });
 
-        return new ElementList(result, selection + "\n" + JSON.parse(atrs) + "\n\n");
+        return new ElementList(result, selection + "\n" + JSON.stringify(atrs) + "\n\n");
 
     };
 

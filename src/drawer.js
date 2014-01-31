@@ -60,33 +60,34 @@
                 }
 
                 var canvas = document.getElementById(s.htmlId);
+
+                if (!canvas || !canvas.getContext) {
+                    CC.screens.splice(i, 1);
+                    continue;
+                }
+
                 canvas.onselectstart = canvasOnSelectStart;
                 canvas.onclick = canvasOnClick;
                 canvas.oncontextmenu = canvasOnContextMenu;
 
                 if (!s.context) {
 
-                    if (!canvas || !canvas.getContext) {
-                        CC.screens.splice(i, 1);
-                        continue;
-                    }
-
                     s.context = canvas.getContext('2d');
                 }
 
-                if (!s.x) {
+                if (s.x === undefined) {
                     s.x = 0;
                 }
 
-                if (!s.y) {
+                if (s.y === undefined) {
                     s.y = 0;
                 }
 
-                if (!s.w) {
+                if (s.w === undefined) {
                     s.w = canvas.offsetWidth;
                 }
 
-                if (!s.h) {
+                if (s.h === undefined) {
                     s.h = canvas.offsetHeight;
                 }
 
@@ -152,66 +153,72 @@
 	};
 
 	/**
-    * {
-    *       hidden: true, //make the layer invisible
-    *       alpha: 0.5, //semi transparent by 50%
-    *       zIndex: 3, //the less zIndex is most visible it is (in in front of other layers)
-    *       offsetX: 10, //layer will be 10 to the right
-    *       offsetY: 10, //10 to the bottom
-    *       w: 10, 
-    *       h: 10, 
-    *       shape: "rect", //could be 'circle' or an array of points to form a polygon [ [0,0], [50, 50], [0, 50] ]
-    *       flip: "xy", //flip layer horizontally and vertically
-    *       angle: 30, //rotated 30 degrees
-    *       anchor: { //point where the rotation will anchor
-    *           x: 10, //x and y from element x and y
-    *           y: 10
-    *       },
-    *       scale: {
-    *           x: 2, //will strech horizontaly
-    *           y: 0.5 //will squeeze vertically
-    *       },
-    *       stroke: {
-    *           color: "#330099",
-    *           thickness: 5,
-    *           cap: "butt", //style of the ends of the line
-    *           join: "bevel" //style of the curves of the line
-    *       },
-    *       fill: {
-    *           linearGradient: {
-    *               start: [0, 0], //percentage of start point
-    *               end: [100, 100], //percentage of the end point
-    *               "0": "rgba(200, 100, 100, 0.8)", //color stops (beginning)
-    *               "0.5": "#f00", //(middle)
-    *               "1": "#0000dd" //(end)
-    *           },
-    *           radialGradient: {
-    *               innerCircle: {
-    *                   centerX: 25, //percentage of the position of the inner circle
-    *                   centerY: 25, //percentage of the position of the inner circle
-    *                   radius: 20 //percentage of the radius of the inner circle
-    *               },
-    *               outerCircle: {
-    *                   centerX: 75, //percentage of the position of the inner circle
-    *                   centerY: 75, //percentage of the position of the inner circle
-    *                   radius: 50 //percentage of the radius of the inner circle
-    *               },
-    *               "0": "rgba(200, 100, 100, 0.8)", //color stops (beginning)
-    *               "0.5": "#f00", //(middle)
-    *               "1": "#0000dd" //(end)
-    *           }
-    *       },
-    *       sprite: {
-    *           url: "res/player.png", //image url
-    *           x: 160, //x position of the sprite in the image
-    *           y: 48, //y position of the sprite in the image
-    *           w: 16, //width of consideration
-    *           h: 24, //height of consideration
-    *           repeat: "xy", //if the string contain x - repeat horizontaly; if the string contain y - repeat verticaly
-    *           frames: 5, //how many frames of the animation,
-    *           delay: 10 //how many loops until the next frame
-    *       }
-    * }
+     {
+           hidden: true, //make the layer invisible
+           alpha: 0.5, //semi transparent by 50%
+           zIndex: 3, //the less zIndex is most visible it is (in in front of other layers)
+           offsetX: 10, //layer will be 10 to the right
+           offsetY: 10, //10 to the bottom
+           w: 10, 
+           h: 10, 
+           shape: "rect", //could be 'circle' or an array of points to form a polygon [ [0,0], [50, 50], [0, 50] ]
+           flip: "xy", //flip layer horizontally and vertically
+           angle: 30, //rotated 30 degrees
+           anchor: { //point where the rotation will anchor
+               x: 10, //x and y from element x and y
+               y: 10
+           },
+           scale: {
+               x: 2, //will strech horizontaly
+               y: 0.5 //will squeeze vertically
+           },
+           stroke: {
+               color: "#330099",
+               thickness: 5,
+               cap: "butt", //style of the ends of the line
+               join: "bevel" //style of the curves of the line
+           },
+           fill: {
+               linearGradient: {
+                   start: [0, 0], //percentage of start point
+                   end: [100, 100], //percentage of the end point
+                   "0": "rgba(200, 100, 100, 0.8)", //color stops (beginning)
+                   "0.5": "#f00", //(middle)
+                   "1": "#0000dd" //(end)
+               },
+               radialGradient: {
+                   innerCircle: {
+                       centerX: 25, //percentage of the position of the inner circle
+                       centerY: 25, //percentage of the position of the inner circle
+                       radius: 20 //percentage of the radius of the inner circle
+                   },
+                   outerCircle: {
+                       centerX: 75, //percentage of the position of the inner circle
+                       centerY: 75, //percentage of the position of the inner circle
+                       radius: 50 //percentage of the radius of the inner circle
+                   },
+                   "0": "rgba(200, 100, 100, 0.8)", //color stops (beginning)
+                   "0.5": "#f00", //(middle)
+                   "1": "#0000dd" //(end)
+               }
+           },
+           shadow: {
+               x: 0,
+               y: 3,
+               blur: 3,
+               color: "#000000"
+           },
+           sprite: {
+               url: "res/player.png", //image url
+               x: 160, //x position of the sprite in the image
+               y: 48, //y position of the sprite in the image
+               w: 16, //width of consideration
+               h: 24, //height of consideration
+               repeat: "xy", //if the string contain x - repeat horizontaly; if the string contain y - repeat verticaly
+               frames: 5, //how many frames of the animation,
+               delay: 10 //how many loops until the next frame
+           }
+     }
     */
 	var drawLayer = function(el, layr, scr) {
 
@@ -272,9 +279,10 @@
             config.font = createFont(layr, scr);
         }
 
-        //if it is a polygon and dont have W and H we discover it
+        //if we dont know W and H we discover it
         if (!el.w || !el.h) {
 
+            //W will be the farest point at right, H will be the farest point at bottom
             if (CC.isArray(layr.shape)) {
 
                 config.EW = el.w || 0;
@@ -288,8 +296,8 @@
 
                 scr.context.font = config.font;
 
-                config.EW = scr.context.measureText(layr.text).width;
-                config.EH = layr.font.size * 1.5;
+                config.EW = el.w || scr.context.measureText(layr.text).width;
+                config.EH = el.h || layr.font.size * 1.5;
             }
 
         }
@@ -449,7 +457,7 @@
 		
 		if (!layr.fill) {
 			return;
-		}
+		} 
 
 		setLayerFillStyle(layr, config, scr);
 
@@ -586,7 +594,7 @@
             scr.context.strokeStyle = createLinearGradient(layr.stroke.linearGradient, config.FW, config.FH, scr);
             
         //by radial gradient 
-        } else if (layr.fill.radialGradient) {
+        } else if (layr.stroke.radialGradient) {
 
             scr.context.strokeStyle = createRadialGradient(layr.stroke.radialGradient, config.FW, config.FH, scr);
 
@@ -669,6 +677,13 @@
 	};
 
 	var createPolygon = function(layr, scr) {
+
+        if (!CC.isArray(layr.shape[0]) 
+            || !CC.isNumber(layr.shape[0][0]) 
+            || !CC.isNumber(layr.shape[0][1])) {
+            return;
+        }
+
 		scr.context.beginPath();
         scr.context.moveTo(layr.shape[0][0], layr.shape[0][1]);
 
@@ -699,7 +714,7 @@
 
         for (var s in linearGradient) {
             var stop = parseFloat(s);
-            if (!isNaN(stop) && isFinite(stop)) {
+            if (CC.isNumber(stop)) {
                 gradient.addColorStop(stop, linearGradient[s]);
             }
         }
