@@ -4,7 +4,7 @@ CascadeCanvas is not just a good way to declare how to draw in HTML5 Canvas. CC 
 
 The Games and Rich Internet Applications API made for who already Loves Javascript.
 
-[Download](https://rawgithub.com/CascadeCanvas/CascadeCanvas/master/cc.min.js)
+###[Download](https://rawgithub.com/CascadeCanvas/CascadeCanvas/master/cc.min.js)
 
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=H84XN5VYTBVYQ&lc=US&item_name=Cascade%20Canvas&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted)
 
