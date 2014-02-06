@@ -1,7 +1,7 @@
 {
   "name": "cascadecanvas",
-  "version": "1.0.7",
-  "description": "CascadeCanvas (CC) is an API to work with canvas rich applications (or games), drawing and organizing classes that works with mult-inheritance and will help to encapsulate behaviours to be reused",
+  "version": "1.1.0",
+  "description": "A framework for canvas that gives you the freedom of Javascript Development",
   "repository": {
     "type": "git",
     "url": "http://github.com/CascadeCanvas/CascadeCanvas"

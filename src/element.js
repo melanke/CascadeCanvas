@@ -17,6 +17,8 @@ var Element = function(specs, opts){
     /**
     * routine for initialization:
     *  - set its ID
+    *  - set the properties of the option
+    *  - initialize the events
     *  - make it inherit the classes
     */
     var init = function(){
