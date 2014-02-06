@@ -21,7 +21,11 @@ var Element = function(specs, opts){
     */
     var init = function(){
 
-        var idArray = specs.match(/#[a-zA-Z0-9]*/);
+        var idArray;
+
+        if (CC.isString(specs)) {
+            idArray = specs.match(/#[a-zA-Z0-9]*/);
+        }
 
         if (idArray) {
             el.id = idArray[0];
