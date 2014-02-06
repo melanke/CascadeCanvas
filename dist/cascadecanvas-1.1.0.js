@@ -2166,7 +2166,9 @@ var Element = function(specs, opts){
         //should not trigger an event if the element is removed
         bindRemoveEvent();
 
-        el.inherit(specs.replace(/#[a-zA-Z0-9]*/g, ""), opts);
+        if (CC.isString(specs)) {
+            el.inherit(specs.replace(/#[a-zA-Z0-9]*/g, ""), opts);
+        }
 
     };
 
