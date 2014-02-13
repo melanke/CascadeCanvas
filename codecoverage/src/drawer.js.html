@@ -183,16 +183,16 @@
     <h1>Code coverage report for <span class="entity">src/drawer.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">82.4% <small>(309 / 375)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">82.56% <small>(322 / 390)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Branches: <span class="metric">79.44% <small>(228 / 287)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">79.73% <small>(240 / 301)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
         Functions: <span class="metric">88.57% <small>(31 / 35)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">82.21% <small>(305 / 371)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">82.38% <small>(318 / 386)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
     </h2>
     <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">src/</a> &#187; drawer.js</div>
@@ -1085,7 +1085,39 @@
 884
 885
 886
-887</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+887
+888
+889
+890
+891
+892
+893
+894
+895
+896
+897
+898
+899
+900
+901
+902
+903
+904
+905
+906
+907
+908
+909
+910
+911
+912
+913
+914
+915
+916
+917
+918
+919</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1098,7 +1130,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">157</span>
+<span class="cline-any cline-yes">156</span>
 <span class="cline-any cline-yes">52</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">52</span>
@@ -1111,7 +1143,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">157</span>
+<span class="cline-any cline-yes">156</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -1684,6 +1716,38 @@
 <span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2572,6 +2636,38 @@
             scr.context.strokeStyle = createRadialGradient(layr.stroke.radialGradient, config.FW, config.FH, scr);
 &nbsp;
         }
+&nbsp;
+        //stroke thickness
+        if (layr.stroke.thickness) { 
+            scr.context.lineWidth = layr.stroke.thickness;
+        }
+&nbsp;
+        //stroke end style - 'butt','round' OR 'square'
+        if (layr.stroke.cap) { 
+            scr.context.lineCap = layr.stroke.cap;
+        }
+&nbsp;
+        //stroke curve style - 'round','bevel' OR 'miter'
+        if (layr.stroke.join) { 
+            scr.context.lineJoin = layr.stroke.join;
+        }
+&nbsp;
+        //line dashes
+        if (layr.stroke.dash) {
+            var arr;
+&nbsp;
+            if (CC.isArray(layr.stroke.dash)) {
+                arr = layr.stroke.dash;
+            } else {
+                arr  = [layr.stroke.dash];
+            }
+&nbsp;
+            <span class="missing-if-branch" title="if path not taken"" >I</span>if (scr.context.setLineDash !== undefined) {
+<span class="cstat-no" title="statement not covered" >                scr.context.setLineDash(arr);</span>
+            } else <span class="missing-if-branch" title="if path not taken"" >I</span>if (scr.context.mozDash !== undefined) {
+<span class="cstat-no" title="statement not covered" >                scr.context.mozDash = arr;</span>
+            }
+        }
 	};
 &nbsp;
     var setLayerSprite = <span class="fstat-no" title="function not covered" >function(layr, config, scr){</span>
@@ -2862,7 +2958,7 @@
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Feb 06 2014 16:59:42 GMT-0200 (BRST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Feb 13 2014 13:20:26 GMT-0200 (BRST)</div>
 </div>
 
 <script src="../prettify.js"></script>

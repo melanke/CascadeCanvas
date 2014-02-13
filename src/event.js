@@ -24,20 +24,19 @@ var eventEnvironmentBuilder = function(owner, shouldTrigger){
         var evtName = evtAndNamespace[0];
         var namespace = evtAndNamespace[1] || "root";
 
-        if (!evtName || !evtName.length) {
-            return;
-        }
+        if (evtName && evtName.length) {
 
-        if (!events[evtName]) {
-            events[evtName] = {};
-        }
+            if (!events[evtName]) {
+                events[evtName] = {};
+            }
 
-        if (!events[evtName][namespace]) {
-            events[evtName][namespace] = [];
-        }
+            if (!events[evtName][namespace]) {
+                events[evtName][namespace] = [];
+            }
 
-        if (action) {
-            events[evtName][namespace].push(action);
+            if (action) {
+                events[evtName][namespace].push(action);
+            }
         }
 
         return {

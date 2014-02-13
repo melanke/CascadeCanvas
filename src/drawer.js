@@ -599,6 +599,38 @@
             scr.context.strokeStyle = createRadialGradient(layr.stroke.radialGradient, config.FW, config.FH, scr);
 
         }
+
+        //stroke thickness
+        if (layr.stroke.thickness) { 
+            scr.context.lineWidth = layr.stroke.thickness;
+        }
+
+        //stroke end style - 'butt','round' OR 'square'
+        if (layr.stroke.cap) { 
+            scr.context.lineCap = layr.stroke.cap;
+        }
+
+        //stroke curve style - 'round','bevel' OR 'miter'
+        if (layr.stroke.join) { 
+            scr.context.lineJoin = layr.stroke.join;
+        }
+
+        //line dashes
+        if (layr.stroke.dash) {
+            var arr;
+
+            if (CC.isArray(layr.stroke.dash)) {
+                arr = layr.stroke.dash;
+            } else {
+                arr  = [layr.stroke.dash];
+            }
+
+            if (scr.context.setLineDash !== undefined) {
+                scr.context.setLineDash(arr);
+            } else if (scr.context.mozDash !== undefined) {
+                scr.context.mozDash = arr;
+            }
+        }
 	};
 
     var setLayerSprite = function(layr, config, scr){

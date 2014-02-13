@@ -183,7 +183,7 @@
     <h1>Code coverage report for <span class="entity">src/event.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">98.41% <small>(62 / 63)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(62 / 62)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
         Branches: <span class="metric">96.36% <small>(53 / 55)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
@@ -192,7 +192,7 @@
         Functions: <span class="metric">100% <small>(7 / 7)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">98.41% <small>(62 / 63)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(62 / 62)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
     </h2>
     <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">src/</a> &#187; event.js</div>
@@ -367,8 +367,7 @@
 166
 167
 168
-169
-170</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+169</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -395,8 +394,6 @@
 <span class="cline-any cline-yes">422</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">422</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">422</span>
 <span class="cline-any cline-yes">409</span>
@@ -408,6 +405,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">422</span>
 <span class="cline-any cline-yes">420</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">422</span>
@@ -498,29 +496,29 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">263</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">293</span>
+<span class="cline-any cline-yes">292</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">292</span>
-<span class="cline-any cline-yes">292</span>
-<span class="cline-any cline-yes">292</span>
+<span class="cline-any cline-yes">291</span>
+<span class="cline-any cline-yes">291</span>
+<span class="cline-any cline-yes">291</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">292</span>
+<span class="cline-any cline-yes">291</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">292</span>
-<span class="cline-any cline-yes">221</span>
+<span class="cline-any cline-yes">291</span>
+<span class="cline-any cline-yes">220</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">221</span>
-<span class="cline-any cline-yes">240</span>
+<span class="cline-any cline-yes">220</span>
+<span class="cline-any cline-yes">239</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">292</span>
+<span class="cline-any cline-yes">291</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">228</span>
-<span class="cline-any cline-yes">184</span>
-<span class="cline-any cline-yes">186</span>
+<span class="cline-any cline-yes">227</span>
+<span class="cline-any cline-yes">183</span>
+<span class="cline-any cline-yes">185</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">44</span>
 <span class="cline-any cline-yes">35</span>
@@ -563,20 +561,19 @@ var eventEnvironmentBuilder = function(owner, shouldTrigger){
         var evtName = evtAndNamespace[0];
         var namespace = evtAndNamespace[1] || "root";
 &nbsp;
-        <span class="missing-if-branch" title="if path not taken"" >I</span>if (!evtName || !evtName.length) {
-<span class="cstat-no" title="statement not covered" >            return;</span>
-        }
+        <span class="missing-if-branch" title="else path not taken"" >E</span>if (evtName &amp;&amp; evtName.length) {
 &nbsp;
-        if (!events[evtName]) {
-            events[evtName] = {};
-        }
+            if (!events[evtName]) {
+                events[evtName] = {};
+            }
 &nbsp;
-        if (!events[evtName][namespace]) {
-            events[evtName][namespace] = [];
-        }
+            if (!events[evtName][namespace]) {
+                events[evtName][namespace] = [];
+            }
 &nbsp;
-        if (action) {
-            events[evtName][namespace].push(action);
+            if (action) {
+                events[evtName][namespace].push(action);
+            }
         }
 &nbsp;
         return {
@@ -711,7 +708,7 @@ eventEnvironmentBuilder(CC);</pre></td></tr>
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Feb 06 2014 16:59:42 GMT-0200 (BRST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Feb 13 2014 13:20:26 GMT-0200 (BRST)</div>
 </div>
 
 <script src="../prettify.js"></script>

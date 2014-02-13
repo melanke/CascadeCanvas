@@ -124,6 +124,10 @@ var CC;
     * @param constructor a function that will be used as constructor
     */
     CC.def = function(classesStr, constructor){
+        if (!CC.isString(classesStr) || !CC.isFunction(constructor)) {
+            return;
+        }
+
         var classes = classesStr.split(" ");
 
         for (var i in classes) {
@@ -199,20 +203,19 @@ var eventEnvironmentBuilder = function(owner, shouldTrigger){
         var evtName = evtAndNamespace[0];
         var namespace = evtAndNamespace[1] || "root";
 
-        if (!evtName || !evtName.length) {
-            return;
-        }
+        if (evtName && evtName.length) {
 
-        if (!events[evtName]) {
-            events[evtName] = {};
-        }
+            if (!events[evtName]) {
+                events[evtName] = {};
+            }
 
-        if (!events[evtName][namespace]) {
-            events[evtName][namespace] = [];
-        }
+            if (!events[evtName][namespace]) {
+                events[evtName][namespace] = [];
+            }
 
-        if (action) {
-            events[evtName][namespace].push(action);
+            if (action) {
+                events[evtName][namespace].push(action);
+            }
         }
 
         return {
@@ -1720,6 +1723,38 @@ eventEnvironmentBuilder(CC);
 
             scr.context.strokeStyle = createRadialGradient(layr.stroke.radialGradient, config.FW, config.FH, scr);
 
+        }
+
+        //stroke thickness
+        if (layr.stroke.thickness) { 
+            scr.context.lineWidth = layr.stroke.thickness;
+        }
+
+        //stroke end style - 'butt','round' OR 'square'
+        if (layr.stroke.cap) { 
+            scr.context.lineCap = layr.stroke.cap;
+        }
+
+        //stroke curve style - 'round','bevel' OR 'miter'
+        if (layr.stroke.join) { 
+            scr.context.lineJoin = layr.stroke.join;
+        }
+
+        //line dashes
+        if (layr.stroke.dash) {
+            var arr;
+
+            if (CC.isArray(layr.stroke.dash)) {
+                arr = layr.stroke.dash;
+            } else {
+                arr  = [layr.stroke.dash];
+            }
+
+            if (scr.context.setLineDash !== undefined) {
+                scr.context.setLineDash(arr);
+            } else if (scr.context.mozDash !== undefined) {
+                scr.context.mozDash = arr;
+            }
         }
 	};
 

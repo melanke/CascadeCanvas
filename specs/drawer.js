@@ -362,6 +362,10 @@ describe("drawer", function () {
 				spyOn(ctx, "clip");
 				spyOn(ctx, "restore");
 
+				if (ctx.setLineDash !== undefined) {
+	                spyOn(ctx, "setLineDash");
+	            }
+
 				var pathTextName = null;
 				if (ctx.pathText) pathTextName = "pathText";
 				else if (ctx.webkitPathText) pathTextName = "webkitPathText";
@@ -1589,13 +1593,17 @@ describe("drawer", function () {
 
 			});
 
-			it("draws stroke of the text with empty linear gradient", function(){
+			it("draws stroke of the text with empty linear gradient and draws its thickness, cap, join and array dash", function(){
 
 				layers.uniq = { 
 					shape: "text",  
 					text: "heey!",
 					stroke: { 
-						linearGradient: {  } 
+						linearGradient: {  } ,
+						thickness: 3,
+						cap: "round",
+						join: "bevel",
+						dash: [3, 5]
 					} 
 				};
 
@@ -1603,6 +1611,9 @@ describe("drawer", function () {
 
 				expect(ctx.font).toBe("  10px sans-serif");
 	            expect(ctx.textBaseline).toBe("top");
+	            expect(ctx.lineWidth).toBe(3);
+	            expect(ctx.lineCap).toBe("round");
+	            expect(ctx.lineJoin).toBe("bevel");
 
 				expect(ctx.save).toHaveBeenCalled();
 				expect(ctx.createLinearGradient).toHaveBeenCalledWith(0, 0, 10, 0);
@@ -1631,7 +1642,7 @@ describe("drawer", function () {
 
 			});
 
-			it("draws stroke of the text with linear gradient", function(){
+			it("draws stroke of the text with linear gradient and draws numeric dash", function(){
 
 				layers.uniq = { 
 					shape: "text",  
@@ -1643,7 +1654,8 @@ describe("drawer", function () {
 							0: "#000000",
 							0.5: "rgb(255, 255, 255)",
 							1: "#ff0000"
-						} 
+						},
+						dash: 3
 					} 
 				};
 

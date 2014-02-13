@@ -101,6 +101,10 @@ var CC;
     * @param constructor a function that will be used as constructor
     */
     CC.def = function(classesStr, constructor){
+        if (!CC.isString(classesStr) || !CC.isFunction(constructor)) {
+            return;
+        }
+
         var classes = classesStr.split(" ");
 
         for (var i in classes) {
