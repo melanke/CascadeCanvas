@@ -10,7 +10,6 @@ The Games and Rich Internet Applications API made for who already Loves Javascri
 
 ## Comparing CSS and jQuery with CascadeCanvas
 
-[Try in JSFiddle](http://jsfiddle.net/H45b7/)
 ```
 /*** CSS ***/                            |  /*** CASCADECANVAS ***/
                                          |
@@ -69,6 +68,9 @@ $(“.subClass1”).eq(0).css({				 |	CC(“subClass1”).e(0).merge({
 										 |
 										 |  CC.startLoop();
 ```
+
+[Try in JSFiddle](http://jsfiddle.net/H45b7/)
+
 ### Learn
 
 Read the [wiki](https://github.com/CascadeCanvas/CascadeCanvas/wiki) and the [first steps guide](https://github.com/CascadeCanvas/CascadeCanvas/wiki/First-Steps) and see how much CascadeCanvas has to offer.
