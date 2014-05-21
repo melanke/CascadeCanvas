@@ -1277,74 +1277,88 @@ eventEnvironmentBuilder(CC);
 
 	};
 
-	/**
-     {
-           hidden: true, //make the layer invisible
-           alpha: 0.5, //semi transparent by 50%
-           zIndex: 3, //the less zIndex is most visible it is (in in front of other layers)
-           offsetX: 10, //layer will be 10 to the right
-           offsetY: 10, //10 to the bottom
-           w: 10, 
-           h: 10, 
-           shape: "rect", //could be 'circle' or an array of points to form a polygon [ [0,0], [50, 50], [0, 50] ]
-           flip: "xy", //flip layer horizontally and vertically
-           angle: 30, //rotated 30 degrees
-           anchor: { //point where the rotation will anchor
-               x: 10, //x and y from element x and y
-               y: 10
-           },
-           scale: {
-               x: 2, //will strech horizontaly
-               y: 0.5 //will squeeze vertically
-           },
-           stroke: {
-               color: "#330099",
-               thickness: 5,
-               cap: "butt", //style of the ends of the line
-               join: "bevel" //style of the curves of the line
-           },
-           fill: {
-               linearGradient: {
-                   start: [0, 0], //percentage of start point
-                   end: [100, 100], //percentage of the end point
-                   "0": "rgba(200, 100, 100, 0.8)", //color stops (beginning)
-                   "0.5": "#f00", //(middle)
-                   "1": "#0000dd" //(end)
-               },
-               radialGradient: {
-                   innerCircle: {
-                       centerX: 25, //percentage of the position of the inner circle
-                       centerY: 25, //percentage of the position of the inner circle
-                       radius: 20 //percentage of the radius of the inner circle
-                   },
-                   outerCircle: {
-                       centerX: 75, //percentage of the position of the inner circle
-                       centerY: 75, //percentage of the position of the inner circle
-                       radius: 50 //percentage of the radius of the inner circle
-                   },
-                   "0": "rgba(200, 100, 100, 0.8)", //color stops (beginning)
-                   "0.5": "#f00", //(middle)
-                   "1": "#0000dd" //(end)
-               }
-           },
-           shadow: {
-               x: 0,
-               y: 3,
-               blur: 3,
-               color: "#000000"
-           },
-           sprite: {
-               url: "res/player.png", //image url
-               x: 160, //x position of the sprite in the image
-               y: 48, //y position of the sprite in the image
-               w: 16, //width of consideration
-               h: 24, //height of consideration
-               repeat: "xy", //if the string contain x - repeat horizontaly; if the string contain y - repeat verticaly
-               frames: 5, //how many frames of the animation,
-               delay: 10 //how many loops until the next frame
-           }
-     }
-    */
+/**
+zIndex (number) default: 0
+hidden (bool) default: false
+shape ('rect', 'circle', 'text', number[]) default: 'rect'
+text (string) default: null
+font
+	size (number) default: 10
+	baseline ('alphabetic', 'top', 'hanging', 'middle', 'ideographic', 'bottom') default: 'top'
+	style ('normal', 'italic', 'oblique') default: 'normal'
+	weight ('normal', 'bold', 'bolder', 'lighter', '100', '200', '300', '400', '500', '600', '700', '800', '900') default: normal
+	family (string) default: 'sans-serif'
+offsetX (number) default: 0
+offsetY (number) default: 0
+w (number) default: element w
+h (number) default: element h
+angle (number) default: 0
+anchor
+	x (number) default: center of the element
+	y (number) default: center of the element
+flip ('', 'x', 'y', 'xy') default: ''
+scale
+	x (number) default: 1
+	y (number) default: 1
+alpha (number) default: 1
+shadow
+	blur (number) default: 0
+	color (color) default: 'black'
+	x (number) default: 0
+	y (number) default: 0
+fill
+	color (color) default: 'black'
+	linearGradient
+		start (number[]) default: [0, 0]
+		end (number[]) default: [100, 0]
+		--map<int, color>
+	radialGradient
+		innerCircle
+			centerX (number) default: 50
+			centerY (number) default: 50
+			radius (number) default: 0
+		outerCircle
+			centerX (number) default: 50
+			centerY (number) default: 50
+			radius (number) default: 100
+		--map<int, color>
+roundedBorderRadius (number) default: 0
+stroke
+	color (color) default: 'black'
+	linearGradient
+		start (number[]) default: [0, 0]
+		end (number[]) default: [100, 0]
+		--map<int, color>
+	radialGradient
+		innerCircle
+			centerX (number) default: 50
+			centerY (number) default: 50
+			radius (number) default: 0
+		outerCircle
+			centerX (number) default: 50
+			centerY (number) default: 50
+			radius (number) default: 100
+		--map<int, color>
+	thickness (number) default: 1
+	cap ('butt', 'round', 'square') default: 'butt'
+	join ('round','bevel', 'miter') default: 'miter'
+	dash (number, number[]) default: null
+sprite
+	url (string) default: null
+	x (number) default: 0
+	y (number) default: 0
+	w (number) default: lower value between the layer w and file w
+	h (number) default: lower value between the layer h and file h
+	delay (number) default: 1
+	frames (number) default: 1
+	vertical (bool) default: false
+	repeat ('', 'x', 'y', 'xy') default: ''
+tileSize
+	w (number) default: 16
+	h (humber) default: 16	
+tiles (string[][]) OBS.: The string is the name of the tile
+*/
+
 	var drawLayer = function(el, layr, scr) {
 
 		/** PRE VERIFICATIONS AND INICIALIZATION BEFORE DRAW **/
@@ -1791,15 +1805,11 @@ eventEnvironmentBuilder(CC);
         
         limitSprite(layr, config, scr);
 
-        var tw, th;
-
-        if (layr.tileSize) {
-            tw = layr.tileSize.w;
-            th = layr.tileSize.h;
-        } else {
-            tw = 16;
-            th = 16;
-        }
+        var tileSize = layr.tileSize || {};
+            
+        var tw = tileSize.w || 16;
+        var th = tileSize.h || 16;
+        
 
         var startY = 0;
 
