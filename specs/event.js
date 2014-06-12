@@ -189,7 +189,7 @@ describe("event.js", function(){
 
 			expect(timesTriggeredWhenBinded).toBe(0);
 
-			CC.bind("eventname.namespace");
+			CC.unbind("eventname.namespace");
 			CC.trigger("eventname");
 
 			expect(timesTriggeredWhenBinded).toBe(1);

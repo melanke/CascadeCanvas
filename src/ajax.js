@@ -92,7 +92,7 @@
                 clearTimeout(tid);
             }
             if (xhr.readyState === 4) {
-                var success = xhr.status && ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304);
+                var success = ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304);
                 p.done(success, xhr.responseText, xhr);
             }
         };

@@ -1,6 +1,6 @@
 /***** RESOURCE *****/
 
-//have no dependency
+//depends on promise
 //is dependency of element
 
 (function(){
@@ -12,8 +12,10 @@
     * @param srcs an array of strings with the path of file
     * @param callback function called when all resources are loaded
     */
-    CC.loadResources = function(srcs, callback){
+    CC.loadResources = function(srcs){
         
+        var p = new CC.Promise();
+
         var loadRecursively = function(index) {
             var img = new Image();
             img.src = srcs[index];
@@ -23,14 +25,16 @@
 
                 if (index < srcs.length - 1) {
                     loadRecursively(index+1);
-                } else if (callback) {
-                    callback();
+                } else {
+                    p.done();
                 }
 
             };
         };
 
         loadRecursively(0);
+
+        return p;
 
     };
 

@@ -1063,7 +1063,7 @@ eventEnvironmentBuilder(CC);
                 clearTimeout(tid);
             }
             if (xhr.readyState === 4) {
-                var success = xhr.status && ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304);
+                var success = ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304);
                 p.done(success, xhr.responseText, xhr);
             }
         };
@@ -1080,7 +1080,7 @@ eventEnvironmentBuilder(CC);
 
 /***** RESOURCE *****/
 
-//have no dependency
+//depends on promise
 //is dependency of element
 
 (function(){
@@ -1092,8 +1092,10 @@ eventEnvironmentBuilder(CC);
     * @param srcs an array of strings with the path of file
     * @param callback function called when all resources are loaded
     */
-    CC.loadResources = function(srcs, callback){
+    CC.loadResources = function(srcs){
         
+        var p = new CC.Promise();
+
         var loadRecursively = function(index) {
             var img = new Image();
             img.src = srcs[index];
@@ -1103,14 +1105,16 @@ eventEnvironmentBuilder(CC);
 
                 if (index < srcs.length - 1) {
                     loadRecursively(index+1);
-                } else if (callback) {
-                    callback();
+                } else {
+                    p.done();
                 }
 
             };
         };
 
         loadRecursively(0);
+
+        return p;
 
     };
 
