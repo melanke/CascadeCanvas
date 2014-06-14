@@ -2115,7 +2115,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
     */
     CC.stopLoop = function(){
 
-        isRunning = false;
+        running = false;
 
         if (requestAnimId) {
             var cancelFrame = window.cancelAnimationFrame ||

@@ -53,7 +53,7 @@
     */
     CC.stopLoop = function(){
 
-        isRunning = false;
+        running = false;
 
         if (requestAnimId) {
             var cancelFrame = window.cancelAnimationFrame ||
