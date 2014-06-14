@@ -183,16 +183,16 @@
     <h1>Code coverage report for <span class="entity">src/loop.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">67.65% <small>(23 / 34)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">70% <small>(21 / 30)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Branches: <span class="metric">45.45% <small>(10 / 22)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">45% <small>(9 / 20)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">62.5% <small>(5 / 8)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">66.67% <small>(4 / 6)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">67.65% <small>(23 / 34)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">70% <small>(21 / 30)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
     </h2>
     <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">src/</a> &#187; loop.js</div>
@@ -283,21 +283,7 @@
 82
 83
 84
-85
-86
-87
-88
-89
-90
-91
-92
-93
-94
-95
-96
-97
-98
-99</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+85</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -317,9 +303,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">104</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">104</span>
 <span class="cline-any cline-yes">104</span>
@@ -353,6 +337,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -378,21 +365,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">292</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/***** LOOP *****/
@@ -401,7 +373,7 @@
 //is not a internal dependency
 &nbsp;
 (function(){
-    var running = true;
+    var running = false;
     var requestAnimId;
     var intervalAnimId;
     
@@ -411,13 +383,11 @@
     */
     CC.startLoop = function(){
 &nbsp;
+        running = true;
+&nbsp;
         CC.loadScreens();
 &nbsp;
-        var mainloop = function(){   
-&nbsp;
-            <span class="missing-if-branch" title="if path not taken"" >I</span>if (!running) {
-<span class="cstat-no" title="statement not covered" >                return;</span>
-            }
+        var mainloop = function(){
 &nbsp;
             CC.trigger("enterframe");
             CC.draw();
@@ -451,6 +421,9 @@
     * stop the gameloop
     */
     CC.stopLoop = function(){
+&nbsp;
+        isRunning = false;
+&nbsp;
         <span class="missing-if-branch" title="if path not taken"" >I</span>if (requestAnimId) {
 <span class="cstat-no" title="statement not covered" >            var cancelFrame = window.cancelAnimationFrame ||</span>
                 window.webkitCancelAnimationFrame ||
@@ -472,25 +445,10 @@
     };
 &nbsp;
     /**
-    * make the triggers and the gameloop to be ignored
-    */
-    CC.pause = <span class="fstat-no" title="function not covered" >function(){</span>
-<span class="cstat-no" title="statement not covered" >        running = false;</span>
-    };
-&nbsp;
-&nbsp;
-    /**
-    * make the triggers and the gameloop to be considered again
-    */
-    CC.play = <span class="fstat-no" title="function not covered" >function(){</span>
-<span class="cstat-no" title="statement not covered" >        running = true;</span>
-    };
-&nbsp;
-    /**
     * check if loop is enabled. Important: "stopLoop" will not disable the loop, only "pause" will do it
     */
-    CC.isRunning = function(){
-        return running;
+    CC.isRunning = <span class="fstat-no" title="function not covered" >function(){</span>
+<span class="cstat-no" title="statement not covered" >        return running;</span>
     };
     
 })();</pre></td></tr>
@@ -498,7 +456,7 @@
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Jun 12 2014 11:16:21 GMT-0300 (BRT)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Jun 14 2014 16:32:49 GMT-0300 (BRT)</div>
 </div>
 
 <script src="../prettify.js"></script>
