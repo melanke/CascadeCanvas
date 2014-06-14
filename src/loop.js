@@ -4,7 +4,7 @@
 //is not a internal dependency
 
 (function(){
-    var running = true;
+    var running = false;
     var requestAnimId;
     var intervalAnimId;
     
@@ -14,13 +14,11 @@
     */
     CC.startLoop = function(){
 
+        running = true;
+
         CC.loadScreens();
 
-        var mainloop = function(){   
-
-            if (!running) {
-                return;
-            }
+        var mainloop = function(){
 
             CC.trigger("enterframe");
             CC.draw();
@@ -54,6 +52,9 @@
     * stop the gameloop
     */
     CC.stopLoop = function(){
+
+        isRunning = false;
+
         if (requestAnimId) {
             var cancelFrame = window.cancelAnimationFrame ||
                 window.webkitCancelAnimationFrame ||
@@ -72,21 +73,6 @@
             clearInterval(intervalAnimId);
             intervalAnimId = null;
         }
-    };
-
-    /**
-    * make the triggers and the gameloop to be ignored
-    */
-    CC.pause = function(){
-        running = false;
-    };
-
-
-    /**
-    * make the triggers and the gameloop to be considered again
-    */
-    CC.play = function(){
-        running = true;
     };
 
     /**

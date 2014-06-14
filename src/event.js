@@ -127,7 +127,7 @@ var eventEnvironmentBuilder = function(owner, shouldTrigger){
     */
     owner.trigger = function(eventsStr){
 
-        if (!CC.isRunning() || (shouldTrigger && !shouldTrigger())) {
+        if (shouldTrigger && !shouldTrigger()) {
             return;
         }
 
