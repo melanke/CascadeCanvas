@@ -51,9 +51,9 @@ The Games and Rich Internet Applications API made for who already Loves Javascri
 /*** HTML ***/                           |  
                                          |
 <div class=”subClass1></div>			   |  CC.new(“subClass1”);
-<div class=”subClass2”></div>			 |	CC.new(“subClass2”);
-<div 									 |
-    class=”subClass1 subClass2”>         |	CC.new(“subClass1 subClas2”);
+<div class=”subClass2” 					 |	CC.new(“subClass2”).x = 160;
+    style="left: 160px"></div>           |
+<div class=”subClass1 subClass2”>        |	CC.new(“subClass1 subClass2”);
 </div>									 |
 <div class=”subClass1” 					 |	CC.new(“subClass1”, {
     style=”left: 30px; top: 10px”>       |      x: 30,
@@ -69,7 +69,7 @@ $(“.subClass1”).eq(0).css({				 |	CC(“subClass1”).e(0).merge({
 										 |  CC.startLoop();
 ```
 
-[Try in JSFiddle](http://jsfiddle.net/H45b7/)
+[Try in JSFiddle](http://jsfiddle.net/8Yw2G/)
 
 ### Learn
 
