@@ -17,7 +17,7 @@ The Games and Rich Internet Applications API made for who already Loves Javascri
     width: 50px;                         |      this.w = 50;
     height: 50px;                        |      this.h = 50;
     background: #ff0000;                 |      //creating a layer called “base”
-    position: absolute;                  |      this.layers[“base”] = {
+    position: absolute;                  |      this.layers.base = {
     border: 1px solid;                   |          shape: “rect”,
 }										 |          fill: { color: “#ff0000” }
 										 |      };
@@ -69,7 +69,7 @@ $(“.subClass1”).eq(0).css({				 |	CC(“subClass1”).e(0).merge({
 										 |  CC.startLoop();
 ```
 
-[Try in JSFiddle](http://jsfiddle.net/8Yw2G/)
+[Try in JSFiddle](http://jsfiddle.net/585rX/)
 
 ### Learn
 
