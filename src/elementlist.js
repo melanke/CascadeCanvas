@@ -38,7 +38,12 @@ var ElementList = function(elements, selection){
 
         for (var i in elements) {
 
-            action.call(elements[i]);
+            var quitIfFalse = action.call(elements[i]);
+
+            if (quitIfFalse === false)
+            {
+                break;
+            }
 
         }
 

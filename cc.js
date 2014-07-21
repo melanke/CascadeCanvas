@@ -667,8 +667,62 @@ eventEnvironmentBuilder(CC);
 
 /***** MOUSE *****/
 
-//TODO touchscreen
 
+
+var mouseEnvironmentBuilder = function(canvas, screen) {
+
+    canvas.onselectstart = function() { 
+    	return false; 
+    };
+
+    canvas.onclick = function(event){ 
+    	event.screen = screen;
+        CC.trigger("click", event);
+    };
+
+    canvas.oncontextmenu = function (event) { 
+    	event.screen = screen;
+        CC.trigger("rightclick", event); 
+        return false; 
+    };
+
+    var findFirstClickableElementInArea = function(x, y) {
+
+    	var result = null;
+
+    	CC("*").sort("zIndex").each(function(){
+
+	        if (this.clickable === true
+	         && x >= this.x 
+             && x <= this.x + this.w
+             && y >= this.y
+             && y <= this.y + this.h) {
+                result = this;
+                return false;
+            }
+
+	    });
+
+	    return result;
+
+    };
+
+    CC.bind("click", function(event){
+
+    	if (!event.screen || event.screen.htmlId != screen.htmlId)
+    	{
+    		return;
+    	}
+
+        var clicked = findFirstClickableElementInArea(event.offsetX, event.offsetY);
+
+        if (clicked && clicked.trigger)
+        {
+        	clicked.trigger("click", event);
+        }
+    });
+
+};
 
 
 
@@ -1163,11 +1217,8 @@ eventEnvironmentBuilder(CC);
             var canvas = document.getElementById('CascadeCanvas');
 
             if (canvas  && canvas.getContext) {
-                canvas.onselectstart = canvasOnSelectStart;
-                canvas.onclick = canvasOnClick;
-                canvas.oncontextmenu = canvasOnContextMenu;
 
-                CC.screens = [{
+                var s = {
                     htmlId: "CascadeCanvas",
                     context: canvas.getContext("2d"),
                     x: 0,
@@ -1175,7 +1226,11 @@ eventEnvironmentBuilder(CC);
                     w: canvas.offsetWidth,
                     h: canvas.offsetHeight,
                     setCenter: setCenter
-                }];
+                };
+
+                mouseEnvironmentBuilder(canvas, s);
+
+                CC.screens = [s];
             }
 
         } else {
@@ -1195,9 +1250,7 @@ eventEnvironmentBuilder(CC);
                     continue;
                 }
 
-                canvas.onselectstart = canvasOnSelectStart;
-                canvas.onclick = canvasOnClick;
-                canvas.oncontextmenu = canvasOnContextMenu;
+                mouseEnvironmentBuilder(canvas, s);
 
                 if (!s.context) {
 
@@ -1253,10 +1306,6 @@ eventEnvironmentBuilder(CC);
         this.x = fx;
         this.y = fy;
     };
-
-    var canvasOnSelectStart = function() { return false; };
-    var canvasOnClick = function(event){ CC.trigger("click", event); };
-    var canvasOnContextMenu = function (event) { CC.trigger("rightclick", event); return false; };
 
 
 
@@ -2195,6 +2244,7 @@ var Element = function(specs, opts){
             el.hidden = opts.hidden;
             el.zIndex = opts.zIndex;
             el.fixedOnScreen = opts.fixedOnScreen;
+            el.clickable = opts.clickable;
         }
 
         eventEnvironmentBuilder(el, function(){ return !removed; }); 
@@ -2401,17 +2451,9 @@ var Element = function(specs, opts){
     * trigger the action when the element is clicked
     */
     this.onClick = function(action){
+        this.clickable = true;
 
-        return CC.bind("click", function(event){
-            var x = event.offsetX;
-            var y = event.offsetY;
-            if (x >= el.x 
-             && x <= el.x + el.w
-             && y >= el.y
-             && y <= el.y + el.h) {
-                action.call(el);
-            }
-        });
+        return this.bind("click", action);
 
     };
 
@@ -2473,7 +2515,12 @@ var ElementList = function(elements, selection){
 
         for (var i in elements) {
 
-            action.call(elements[i]);
+            var quitIfFalse = action.call(elements[i]);
+
+            if (quitIfFalse === false)
+            {
+                break;
+            }
 
         }
 

@@ -34,11 +34,8 @@
             var canvas = document.getElementById('CascadeCanvas');
 
             if (canvas  && canvas.getContext) {
-                canvas.onselectstart = canvasOnSelectStart;
-                canvas.onclick = canvasOnClick;
-                canvas.oncontextmenu = canvasOnContextMenu;
 
-                CC.screens = [{
+                var s = {
                     htmlId: "CascadeCanvas",
                     context: canvas.getContext("2d"),
                     x: 0,
@@ -46,7 +43,11 @@
                     w: canvas.offsetWidth,
                     h: canvas.offsetHeight,
                     setCenter: setCenter
-                }];
+                };
+
+                mouseEnvironmentBuilder(canvas, s);
+
+                CC.screens = [s];
             }
 
         } else {
@@ -66,9 +67,7 @@
                     continue;
                 }
 
-                canvas.onselectstart = canvasOnSelectStart;
-                canvas.onclick = canvasOnClick;
-                canvas.oncontextmenu = canvasOnContextMenu;
+                mouseEnvironmentBuilder(canvas, s);
 
                 if (!s.context) {
 
@@ -124,10 +123,6 @@
         this.x = fx;
         this.y = fy;
     };
-
-    var canvasOnSelectStart = function() { return false; };
-    var canvasOnClick = function(event){ CC.trigger("click", event); };
-    var canvasOnContextMenu = function (event) { CC.trigger("rightclick", event); return false; };
 
 
 

@@ -453,41 +453,6 @@ describe("element.js", function(){
 
 	});
 
-	describe("onClick", function(){
-
-		it("only triggers if it is clicked in the right place", function(){
-			var triggeredTimes = 0;
-
-			var el = CC.new("#El", {
-				x: 60,
-				y: 90,
-				w: 30,
-				h: 30
-			});
-
-			el.onClick(function(){
-				triggeredTimes++;
-			});
-
-			expect(triggeredTimes).toBe(0);
-
-			CC.trigger("click", {
-				offsetX: 70,
-				offsetY: 100
-			});
-
-			expect(triggeredTimes).toBe(1);
-
-			CC.trigger("click", {
-				offsetX: 50,
-				offsetY: 100
-			});
-
-			expect(triggeredTimes).toBe(1);
-		});
-
-	});
-
 	describe("hideAllLayers", function(){
 
 		it("hides all layers", function(){

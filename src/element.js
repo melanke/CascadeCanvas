@@ -44,6 +44,7 @@ var Element = function(specs, opts){
             el.hidden = opts.hidden;
             el.zIndex = opts.zIndex;
             el.fixedOnScreen = opts.fixedOnScreen;
+            el.clickable = opts.clickable;
         }
 
         eventEnvironmentBuilder(el, function(){ return !removed; }); 
@@ -250,17 +251,9 @@ var Element = function(specs, opts){
     * trigger the action when the element is clicked
     */
     this.onClick = function(action){
+        this.clickable = true;
 
-        return CC.bind("click", function(event){
-            var x = event.offsetX;
-            var y = event.offsetY;
-            if (x >= el.x 
-             && x <= el.x + el.w
-             && y >= el.y
-             && y <= el.y + el.h) {
-                action.call(el);
-            }
-        });
+        return this.bind("click", action);
 
     };
 

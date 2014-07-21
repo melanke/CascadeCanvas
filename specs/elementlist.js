@@ -503,48 +503,6 @@ describe("elementlist", function () {
 
 	});
 
-	it("onClick", function(){
-		CC.clear();
-
-		var triggeredTimes = 0;
-
-		var el1 = CC.new("#El1 Class1", {
-			x: 60,
-			y: 90,
-			w: 30,
-			h: 30
-		});
-
-		var el2 = CC.new("#El2 Class1", {
-			x: 60,
-			y: 90,
-			w: 30,
-			h: 30
-		});
-
-		var ccevt = CC("Class1").onClick(function(){
-			triggeredTimes++;
-		});
-
-		expect(triggeredTimes).toBe(0);
-
-		CC.trigger("click", {
-			offsetX: 70,
-			offsetY: 100
-		});
-
-		expect(triggeredTimes).toBe(2);
-
-		CC.trigger("click", {
-			offsetX: 50,
-			offsetY: 100
-		});
-
-		expect(triggeredTimes).toBe(2);
-
-		ccevt.unbind();
-	});
-
 	it("hideAllLayers", function(){
 
 		CC.clear();
