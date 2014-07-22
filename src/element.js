@@ -3,13 +3,17 @@
 //depends on typeChecker, objectTools, event, resource
 //is dependency of elementlist
 
+var creationCount = 0;
+
 /**
 * the base element, all elements inherit this
 */
 var Element = function(specs, opts){
 
     var el = this,
-        removed = false; //an extra protection to ignore removed elements
+        removed = false, //an extra protection to ignore removed elements
+        creationTime = new Date().getTime(),
+        creationOrder = creationCount++;
 
     this.classes = {}; //classes this inherits
     this.layers = {}; //a Map of layers or functions by name to be draw
@@ -266,6 +270,14 @@ var Element = function(specs, opts){
     this.toggleLayers = function(toHide, toShow) {
         this.layers[toHide].hidden = true;
         this.layers[toShow].hidden = false;
+    };
+
+    this.getCreationTime = function() {
+        return creationTime;
+    };
+
+    this.getCreationOrder = function() {
+        return creationOrder;
     };
 
     init();

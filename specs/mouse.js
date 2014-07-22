@@ -90,7 +90,7 @@ describe("mouse", function(){
 				w: 30,
 				h: 30,
 				clickable: true,
-				zIndex: 1
+				zIndex: 1 //is behind
 			});
 
 			el.onClick(function(){
@@ -135,8 +135,7 @@ describe("mouse", function(){
 				y: 90,
 				w: 30,
 				h: 30,
-				clickable: true,
-				zIndex: -1
+				clickable: true
 			});
 
 			el.onClick(function(){

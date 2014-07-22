@@ -48,14 +48,26 @@
     };
 
     /**
-    * sort the items of an array by property
-    * @param elements array to be sorted
-    * @param prop the property to compare
-    * @param invert if you want the reverse order
+    * sort the items of an array by properties and order
     */
-    CC.sort = function(elements, prop, invert){
+    CC.sort = function(){
+
+        if (arguments.length < 2)
+        {
+            return;
+        }
+
+        var elements = arguments[0];
+
+        var props = [].splice.call(arguments, 1); //all arguments except the first (elements)
 
         if (!CC.isArray(elements)) {
+
+            if (!CC.isObject(elements))
+            {
+                return elements;
+            }
+
             var asArray = [];
             for (var e in elements) {
                 asArray.push(elements[e]);
@@ -63,36 +75,68 @@
             elements = asArray;
         }
 
-        return elements.sort(function(a, b){
-            if (a[prop] > b[prop]) {
-                return invert ? -1 : 1;
+        if (!CC.isArray(props[0]) || props[0].length < 2)
+        {
+            return elements;
+        }
+
+        var sortOrderChecker = function(a, b, index){
+            var prop = props[index][0];
+            var order = props[index][1];
+
+            var aprop = a[prop];
+            var bprop = b[prop];
+
+            if (CC.isFunction(aprop)) {
+                aprop = aprop.call(a);
             }
 
-            if (a[prop] < b[prop]) {
-                return invert ? 1 : -1;
+            if (CC.isFunction(bprop)) {
+                bprop = bprop.call(b);
             }
 
-            if (a[prop] == undefined) {
-                if (b[prop] < 0) {
-                    return invert ? -1 : 1;
-                }
-
-                if (b[prop] > 0) {
-                    return invert ? 1 : -1;
+            if (aprop == bprop) {
+                var nextIndex = index +1;
+                if (props.length > nextIndex && props[nextIndex].length > 1) {
+                    return sortOrderChecker(a, b, nextIndex);
+                } else {
+                    return 0;
                 }
             }
 
-            if (b[prop] == undefined) {
-                if (a[prop] < 0) {
-                    return invert ? 1 : -1;
+            if (aprop > bprop) {
+                return order !== "ASC" ? -1 : 1;
+            }
+
+            if (aprop < bprop) {
+                return order !== "ASC" ? 1 : -1;
+            }
+
+            if (aprop == undefined) {
+                if (bprop < 0) {
+                    return order !== "ASC" ? -1 : 1;
                 }
 
-                if (a[prop] > 0) {
-                    return invert ? -1 : 1;
+                if (bprop > 0) {
+                    return order !== "ASC" ? 1 : -1;
+                }
+            }
+
+            if (bprop == undefined) {
+                if (aprop < 0) {
+                    return order !== "ASC" ? 1 : -1;
+                }
+
+                if (aprop > 0) {
+                    return order !== "ASC" ? -1 : 1;
                 }
             }
 
             return 0;
+        };
+
+        return elements.sort(function(a, b){
+            return sortOrderChecker(a, b, 0);
         });
     };
 

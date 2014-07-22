@@ -68,9 +68,12 @@ var ElementList = function(elements, selection){
     /**
     * autosort the collection by the attribute
     */
-    this.sort = function(prop, invert){
+    this.sort = function(){
 
-        elements = CC.sort(elements, prop, invert);
+        var args = [].slice.call(arguments, 0); //copy
+        args.unshift(elements);
+
+        elements = CC.sort.apply(null, args);
 
         return this;
 

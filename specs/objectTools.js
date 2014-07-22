@@ -216,7 +216,7 @@ describe("objectTools.js", function(){
 				b: 1
 			}];
 
-			var result = CC.sort(entry, "a");
+			var result = CC.sort(entry, ["a", "ASC"]);
 			var expected = [{
 				a: -2,
 				b: 9
@@ -262,7 +262,7 @@ describe("objectTools.js", function(){
 				b: 1
 			}];
 
-			var result = CC.sort(entry, "a", true);
+			var result = CC.sort(entry, ["a", "DESC"]);
 			var expected = [{
 				a: 9,
 				b: 2
@@ -309,7 +309,7 @@ describe("objectTools.js", function(){
 				b: 1
 			}];
 
-			var result = CC.sort(entry, "a");
+			var result = CC.sort(entry, ["a", "ASC"]);
 			var expected = [{
 				a: "abacaxi",
 				b: 9
@@ -356,7 +356,7 @@ describe("objectTools.js", function(){
 				b: 1
 			}];
 
-			var result = CC.sort(entry, "a");
+			var result = CC.sort(entry, ["a", "ASC"]);
 			var expected = [{
 				a: new Date(2008, 11, 30),
 				b: 9
@@ -415,7 +415,7 @@ describe("objectTools.js", function(){
 				}
 			};
 
-			var result = CC.sort(entry, "a");
+			var result = CC.sort(entry, ["a", "ASC"]);
 			var expected = [{
 				a: 3,
 				b: 9
@@ -433,6 +433,108 @@ describe("objectTools.js", function(){
 				b: 3
 			},{
 				a: 9,
+				b: 2
+			}];
+
+			expect(result).toEqual(expected);
+
+		});
+
+		it("sort with multiple clauses", function(){
+
+			var entry = [{
+				b: 8
+			},{
+				a: 3,
+				b: 7
+			},{
+				a: 3,
+				b: 9
+			},{
+				a: 7,
+				b: 3
+			},{
+				a: 9,
+				b: 2
+			},{
+				a: -2,
+				b: 9
+			},{
+				a: 3,
+				b: 1
+			}];
+
+			var result = CC.sort(entry, ["a", "ASC"], ["b", "DESC"]);
+			var expected = [{
+				a: -2,
+				b: 9
+			},{
+				b: 8
+			},{
+				a: 3,
+				b: 9
+			},{
+				a: 3,
+				b: 7
+			},{
+				a: 3,
+				b: 1
+			},{
+				a: 7,
+				b: 3
+			},{
+				a: 9,
+				b: 2
+			}];
+
+			expect(result).toEqual(expected);
+
+		});
+
+		it("sort array with function", function(){
+
+			var fun3 = function(){ return 3; },
+				fun7 = function(){ return 7; },
+				fun9 = function(){ return 9; },
+				fun_2 = function(){ return -2; },
+				fun3b = function(){ return 3; };
+			
+			var entry = [{
+				b: 8
+			},{
+				a: fun3,
+				b: 9
+			},{
+				a: fun7,
+				b: 3
+			},{
+				a: fun9,
+				b: 2
+			},{
+				a: fun_2,
+				b: 9
+			},{
+				a: fun3b,
+				b: 1
+			}];
+
+			var result = CC.sort(entry, ["a", "ASC"]);
+			var expected = [{
+				a: fun_2,
+				b: 9
+			},{
+				b: 8
+			},{
+				a: fun3,
+				b: 9
+			},{
+				a: fun3b,
+				b: 1
+			},{
+				a: fun7,
+				b: 3
+			},{
+				a: fun9,
 				b: 2
 			}];
 

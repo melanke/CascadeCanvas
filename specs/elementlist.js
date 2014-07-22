@@ -56,7 +56,7 @@ describe("elementlist", function () {
 		CC.new("#El3").indexA = 2;
 		CC.new("#El4").indexA = 6;
 		var list = CC("*");
-		list.sort("indexA");
+		list.sort(["indexA", "ASC"]);
 
 		expect(list.e(0).id).toBe("#El3");
 		expect(list.e(1).id).toBe("#El1");

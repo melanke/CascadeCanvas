@@ -21,8 +21,7 @@
 				y: 90,
 				w: 30,
 				h: 30,
-				clickable: true,
-				zIndex: -1
+				clickable: true
 			});
 
 			el.onClick(function(){
@@ -33,16 +32,6 @@
 
 			CC.trigger("click", {
 				offsetX: 70,
-				offsetY: 100,
-				screen: {
-					htmlId: "CascadeCanvas"
-				}
-			});
-
-			console.log(triggeredTimes);
-
-			CC.trigger("click", {
-				offsetX: 50,
 				offsetY: 100,
 				screen: {
 					htmlId: "CascadeCanvas"

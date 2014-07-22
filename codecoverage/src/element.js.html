@@ -183,16 +183,16 @@
     <h1>Code coverage report for <span class="entity">src/element.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">97.12% <small>(101 / 104)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">96.33% <small>(105 / 109)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
         Branches: <span class="metric">92.42% <small>(61 / 66)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(18 / 18)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">95% <small>(19 / 20)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">97.09% <small>(100 / 103)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">96.3% <small>(104 / 108)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
     </h2>
     <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">src/</a> &#187; element.js</div>
@@ -471,10 +471,24 @@
 270
 271
 272
-273</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -482,6 +496,8 @@
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">265</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">265</span>
@@ -591,16 +607,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">212</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">50</span>
+<span class="cline-any cline-yes">49</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">162</span>
+<span class="cline-any cline-yes">163</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">158</span>
+<span class="cline-any cline-yes">159</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">10</span>
@@ -623,7 +639,7 @@
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">148</span>
+<span class="cline-any cline-yes">149</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">60</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -631,7 +647,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">64</span>
+<span class="cline-any cline-yes">65</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -742,11 +758,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">265</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">265</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">265</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/***** ELEMENT *****/
 &nbsp;
 //depends on typeChecker, objectTools, event, resource
 //is dependency of elementlist
+&nbsp;
+var creationCount = 0;
 &nbsp;
 /**
 * the base element, all elements inherit this
@@ -754,7 +780,9 @@
 var Element = function(specs, opts){
 &nbsp;
     var el = this,
-        removed = false; //an extra protection to ignore removed elements
+        removed = false, //an extra protection to ignore removed elements
+        creationTime = new Date().getTime(),
+        creationOrder = creationCount++;
 &nbsp;
     this.classes = {}; //classes this inherits
     this.layers = {}; //a Map of layers or functions by name to be draw
@@ -1013,6 +1041,14 @@ var Element = function(specs, opts){
         this.layers[toShow].hidden = false;
     };
 &nbsp;
+    this.getCreationTime = <span class="fstat-no" title="function not covered" >function() {</span>
+<span class="cstat-no" title="statement not covered" >        return creationTime;</span>
+    };
+&nbsp;
+    this.getCreationOrder = function() {
+        return creationOrder;
+    };
+&nbsp;
     init();
 &nbsp;
 };</pre></td></tr>
@@ -1020,7 +1056,7 @@ var Element = function(specs, opts){
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun Jul 20 2014 23:01:58 GMT-0300 (BRT)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Jul 22 2014 20:13:20 GMT-0300 (BRT)</div>
 </div>
 
 <script src="../prettify.js"></script>

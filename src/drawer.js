@@ -16,7 +16,7 @@
 
     	    scr.context.clearRect(0, 0 , scr.w, scr.h);
 
-    	    CC("*").sort("zIndex", true).each(function(){
+    	    CC("*").sort(["zIndex", "DESC"], ["getCreationOrder", "ASC"]).each(function(){
 
     	        drawElement(this, scr);
 

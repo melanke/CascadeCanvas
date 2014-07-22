@@ -452,14 +452,26 @@ eventEnvironmentBuilder(CC);
     };
 
     /**
-    * sort the items of an array by property
-    * @param elements array to be sorted
-    * @param prop the property to compare
-    * @param invert if you want the reverse order
+    * sort the items of an array by properties and order
     */
-    CC.sort = function(elements, prop, invert){
+    CC.sort = function(){
+
+        if (arguments.length < 2)
+        {
+            return;
+        }
+
+        var elements = arguments[0];
+
+        var props = [].splice.call(arguments, 1); //all arguments except the first (elements)
 
         if (!CC.isArray(elements)) {
+
+            if (!CC.isObject(elements))
+            {
+                return elements;
+            }
+
             var asArray = [];
             for (var e in elements) {
                 asArray.push(elements[e]);
@@ -467,36 +479,68 @@ eventEnvironmentBuilder(CC);
             elements = asArray;
         }
 
-        return elements.sort(function(a, b){
-            if (a[prop] > b[prop]) {
-                return invert ? -1 : 1;
+        if (!CC.isArray(props[0]) || props[0].length < 2)
+        {
+            return elements;
+        }
+
+        var sortOrderChecker = function(a, b, index){
+            var prop = props[index][0];
+            var order = props[index][1];
+
+            var aprop = a[prop];
+            var bprop = b[prop];
+
+            if (CC.isFunction(aprop)) {
+                aprop = aprop.call(a);
             }
 
-            if (a[prop] < b[prop]) {
-                return invert ? 1 : -1;
+            if (CC.isFunction(bprop)) {
+                bprop = bprop.call(b);
             }
 
-            if (a[prop] == undefined) {
-                if (b[prop] < 0) {
-                    return invert ? -1 : 1;
-                }
-
-                if (b[prop] > 0) {
-                    return invert ? 1 : -1;
+            if (aprop == bprop) {
+                var nextIndex = index +1;
+                if (props.length > nextIndex && props[nextIndex].length > 1) {
+                    return sortOrderChecker(a, b, nextIndex);
+                } else {
+                    return 0;
                 }
             }
 
-            if (b[prop] == undefined) {
-                if (a[prop] < 0) {
-                    return invert ? 1 : -1;
+            if (aprop > bprop) {
+                return order !== "ASC" ? -1 : 1;
+            }
+
+            if (aprop < bprop) {
+                return order !== "ASC" ? 1 : -1;
+            }
+
+            if (aprop == undefined) {
+                if (bprop < 0) {
+                    return order !== "ASC" ? -1 : 1;
                 }
 
-                if (a[prop] > 0) {
-                    return invert ? -1 : 1;
+                if (bprop > 0) {
+                    return order !== "ASC" ? 1 : -1;
+                }
+            }
+
+            if (bprop == undefined) {
+                if (aprop < 0) {
+                    return order !== "ASC" ? 1 : -1;
+                }
+
+                if (aprop > 0) {
+                    return order !== "ASC" ? -1 : 1;
                 }
             }
 
             return 0;
+        };
+
+        return elements.sort(function(a, b){
+            return sortOrderChecker(a, b, 0);
         });
     };
 
@@ -690,7 +734,7 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
     	var result = null;
 
-    	CC("*").sort("zIndex").each(function(){
+    	CC("*").sort(["zIndex", "ASC"], ["getCreationOrder", "DESC"]).each(function(){
 
 	        if (this.clickable === true
 	         && x >= this.x 
@@ -1199,7 +1243,7 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
     	    scr.context.clearRect(0, 0 , scr.w, scr.h);
 
-    	    CC("*").sort("zIndex", true).each(function(){
+    	    CC("*").sort(["zIndex", "DESC"], ["getCreationOrder", "ASC"]).each(function(){
 
     	        drawElement(this, scr);
 
@@ -2203,13 +2247,17 @@ tiles (string[][]) OBS.: The string is the name of the tile
 //depends on typeChecker, objectTools, event, resource
 //is dependency of elementlist
 
+var creationCount = 0;
+
 /**
 * the base element, all elements inherit this
 */
 var Element = function(specs, opts){
 
     var el = this,
-        removed = false; //an extra protection to ignore removed elements
+        removed = false, //an extra protection to ignore removed elements
+        creationTime = new Date().getTime(),
+        creationOrder = creationCount++;
 
     this.classes = {}; //classes this inherits
     this.layers = {}; //a Map of layers or functions by name to be draw
@@ -2468,6 +2516,14 @@ var Element = function(specs, opts){
         this.layers[toShow].hidden = false;
     };
 
+    this.getCreationTime = function() {
+        return creationTime;
+    };
+
+    this.getCreationOrder = function() {
+        return creationOrder;
+    };
+
     init();
 
 };
@@ -2545,9 +2601,12 @@ var ElementList = function(elements, selection){
     /**
     * autosort the collection by the attribute
     */
-    this.sort = function(prop, invert){
+    this.sort = function(){
 
-        elements = CC.sort(elements, prop, invert);
+        var args = [].slice.call(arguments, 0); //copy
+        args.unshift(elements);
+
+        elements = CC.sort.apply(null, args);
 
         return this;
 

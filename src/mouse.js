@@ -23,7 +23,7 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
     	var result = null;
 
-    	CC("*").sort("zIndex").each(function(){
+    	CC("*").sort(["zIndex", "ASC"], ["getCreationOrder", "DESC"]).each(function(){
 
 	        if (this.clickable === true
 	         && x >= this.x 
