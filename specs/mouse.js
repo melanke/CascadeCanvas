@@ -50,7 +50,10 @@ describe("mouse", function(){
 			triggered = true;
 		});
 
-		canvas.onclick({});
+		expect(triggered).toBe(false);
+
+		canvas.onmousedown({});
+		canvas.onmouseup({});
 
 		expect(triggered).toBe(true);
 
@@ -64,6 +67,8 @@ describe("mouse", function(){
 			triggered = true;
 		});
 
+		expect(triggered).toBe(false);
+
 		canvas.oncontextmenu({});
 
 		expect(triggered).toBe(true);
@@ -71,6 +76,45 @@ describe("mouse", function(){
 		removeCanvas();
 
 	});
+
+	it("binds OnMouseMove", function(){
+
+		var triggered = false;
+
+		CC.bind("mousemove", function(){
+			triggered = true;
+		});
+
+		expect(triggered).toBe(false);
+
+		canvas.onmousemove({});
+
+		expect(triggered).toBe(true);
+
+		removeCanvas();
+
+	});
+
+	//TODO: UNIT TEST TOUCH EVENTS - problem: mock touch events
+
+	// it("binds TouchStart", function(){
+
+	// 	var triggered = false;
+
+	// 	CC.bind("touchstart", function(){
+	// 		triggered = true;
+	// 	});
+
+	// 	expect(triggered).toBe(false);
+
+
+	// 	createTouchEvent(canvas, "touchstart", [0, 0]);
+
+	// 	expect(triggered).toBe(true);
+
+	// 	removeCanvas();
+
+	// });
 
 	describe("at the element", function(){
 
@@ -93,7 +137,7 @@ describe("mouse", function(){
 				zIndex: 1 //is behind
 			});
 
-			el.onClick(function(){
+			el.bind("click", function(){
 				triggeredTimes++;
 			});
 
@@ -138,7 +182,7 @@ describe("mouse", function(){
 				clickable: true
 			});
 
-			el.onClick(function(){
+			el.bind("click", function(){
 				triggeredTimes++;
 			});
 
@@ -177,7 +221,7 @@ describe("mouse", function(){
 				h: 30
 			});
 
-			var ccevt = CC("Class1").onClick(function(){
+			var ccevt = CC("Class1").bind("click", function(){
 				triggeredTimes++;
 			});
 

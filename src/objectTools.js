@@ -140,45 +140,4 @@
         });
     };
 
-    /**
-    * rotate a point
-    * @param p the point to be rotated
-    * @param anchor the anchor point
-    * @param angle the angle of the rotation
-    */
-    CC.rotatePoint = function(p, anchor, angle){
-
-        var px = p.x;
-        if (px == undefined && p.length > 1) {
-            px = p[0];
-        }
-
-        var py = p.y;
-        if (py == undefined && p.length > 1) {
-            py = p[1];
-        }
-
-        var ax = anchor.x;
-        if (ax == undefined && anchor.length > 1) {
-            ax = anchor[0];
-        }
-
-        var ay = anchor.y;
-        if (ay == undefined && anchor.length > 1) {
-            ay = anchor[1];
-        }
-
-        var teta = angle * Math.PI / -180.0;
-        var diffX = px - ax;
-        var diffY = py - ay;
-        var cos = Math.cos(teta);
-        var sin = Math.sin(teta);
-
-        return {
-            x: Math.round(cos * diffX - sin * diffY + ax),
-            y: Math.round(sin * diffX + cos * diffY + ay)
-        };
-
-    };
-
 })();

@@ -48,7 +48,8 @@ var Element = function(specs, opts){
             el.hidden = opts.hidden;
             el.zIndex = opts.zIndex;
             el.fixedOnScreen = opts.fixedOnScreen;
-            el.clickable = opts.clickable;
+
+            el.clickable = opts.clickable !== false;
         }
 
         eventEnvironmentBuilder(el, function(){ return !removed; }); 
@@ -248,16 +249,6 @@ var Element = function(specs, opts){
             }
 
         });
-
-    };
-
-    /**
-    * trigger the action when the element is clicked
-    */
-    this.onClick = function(action){
-        this.clickable = true;
-
-        return this.bind("click", action);
 
     };
 

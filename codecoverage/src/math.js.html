@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>Code coverage report for src/typeChecker.js</title>
+    <title>Code coverage report for src/math.js</title>
     <meta charset="utf-8">
 
     <link rel="stylesheet" href="../prettify.css">
@@ -180,22 +180,22 @@
 </head>
 <body>
 <div class="header high">
-    <h1>Code coverage report for <span class="entity">src/typeChecker.js</span></h1>
+    <h1>Code coverage report for <span class="entity">src/math.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">100% <small>(11 / 11)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(52 / 52)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Branches: <span class="metric">100% <small>(14 / 14)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">100% <small>(8 / 8)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(6 / 6)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(9 / 9)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">100% <small>(11 / 11)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(52 / 52)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
     </h2>
-    <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">src/</a> &#187; typeChecker.js</div>
+    <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">src/</a> &#187; math.js</div>
 </div>
 <div class="body">
 <pre><table class="coverage">
@@ -246,7 +246,98 @@
 45
 46
 47
-48</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -257,87 +348,269 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">575</span>
+<span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">867</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">128</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">340</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">256</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/***** TYPE CHECKER *****/
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/***** MATH *****/
 &nbsp;
-//have no dependency
-//is dependency of objectTools, element, promise
+//doesnt have any dependency
+//is dependency of mouse
 &nbsp;
 (function(){
 &nbsp;
     /**
-    * check if param is a function
+    * normalize the point, if it is an array transform it in an object
     */
-    CC.isFunction = function(functionToCheck){
-        return functionToCheck != null &amp;&amp; {}.toString.call(functionToCheck) === '[object Function]';
-    }
+    CC.normalizePoint = function(p) {
+        var result = {
+            x: p.x,
+            y: p.y
+        };
 &nbsp;
-    /**
-    * check if param is a string
-    */
-    CC.isString = function(stringToCheck){
-        return typeof stringToCheck == 'string' || stringToCheck instanceof String;
+        if (result.x == undefined &amp;&amp; p.length &gt; 1)
+        {
+            result.x = p[0];
+        }
+&nbsp;
+        if (result.y == undefined &amp;&amp; p.length &gt; 1)
+        {
+            result.y = p[1];
+        }
+&nbsp;
+        return result;
     };
 &nbsp;
     /**
-    * check if param is a number
+    * rotate a point
+    * @param p the point to be rotated
+    * @param anchor the anchor point
+    * @param angle the angle of the rotation
     */
-    CC.isNumber = function(numberToCheck) {
-    	return !isNaN(parseFloat(numberToCheck)) &amp;&amp; isFinite(numberToCheck);
+    CC.rotatePoint = function(p, anchor, angle){
+&nbsp;
+        p = CC.normalizePoint(p);
+        anchor = CC.normalizePoint(anchor);
+&nbsp;
+        var teta = angle * Math.PI / -180.0;
+        var diffX = p.x - anchor.x;
+        var diffY = p.y - anchor.y;
+        var cos = Math.cos(teta);
+        var sin = Math.sin(teta);
+&nbsp;
+        return {
+            x: Math.round(cos * diffX - sin * diffY + anchor.x),
+            y: Math.round(sin * diffX + cos * diffY + anchor.y)
+        };
+&nbsp;
+    };
+&nbsp;
+&nbsp;
+    
+    /** 
+    * calculates the distance between two points
+    */
+    
+    CC.calcDistance = function(p1, p2) {
+&nbsp;
+        p1 = CC.normalizePoint(p1);
+        p2 = CC.normalizePoint(p2);
+&nbsp;
+        var xs = 0;
+        var ys = 0;
+&nbsp;
+        xs = p2.x - p1.x;
+        xs = xs * xs;
+&nbsp;
+        ys = p2.y - p1.y;
+        ys = ys * ys;
+&nbsp;
+        return Math.sqrt(xs + ys);
+&nbsp;
     };
 &nbsp;
     /**
-    * check if param is an array
+    * calculates the angle in a line of two points in radians
     */
-    CC.isArray = function(arrayToCheck){
-        return arrayToCheck != null &amp;&amp; {}.toString.call(arrayToCheck) === '[object Array]';
+    CC.calcAngleRadians = function(p1, p2) {
+&nbsp;
+        p1 = CC.normalizePoint(p1);
+        p2 = CC.normalizePoint(p2);
+&nbsp;
+        return Math.atan2(p2.y - p1.y, p2.x - p1.x);
+&nbsp;
     };
 &nbsp;
     /**
-    * check if param is an object and not a function, string or array
+    * calculates the angle in a line of two points in radians
     */
-    CC.isObject = function(objectToCheck){
-        return objectToCheck != null 
-        &amp;&amp; typeof objectToCheck === 'object' 
-        &amp;&amp; !CC.isFunction(objectToCheck) 
-        &amp;&amp; !CC.isString(objectToCheck)
-        &amp;&amp; !CC.isNumber(objectToCheck)
-        &amp;&amp; !CC.isArray(objectToCheck);
+    CC.calcAngleDegrees = function(p1, p2) {
+&nbsp;
+        return CC.calcAngleRadians(p1, p2) * -180 / Math.PI;
+&nbsp;
+    };
+&nbsp;
+    CC.generalFormEqOfLine = function (p1, p2){
+        var p1 = CC.normalizePoint(p1);
+        var p2 = CC.normalizePoint(p2);
+&nbsp;
+        return {
+            a: p1.y - p2.y,
+            b: p2.x - p1.x,
+            c: (p1.x - p2.x) * p1.y + (p2.y - p1.y) * p1.x
+        };
+    };
+&nbsp;
+    CC.calcLineDistance = function(line, p) {
+        p = CC.normalizePoint(p);
+&nbsp;
+        return Math.abs(line.a * p.x + line.b * p.y + line.c) / Math.sqrt(line.a * line.a + line.b * line.b);
+    };
+&nbsp;
+    CC.calcCenterOfPoints = function(points) {
+&nbsp;
+        var minX = Number.MAX_VALUE;
+        var minY = Number.MAX_VALUE;
+        var maxX = Number.MIN_VALUE;
+        var maxY = Number.MIN_VALUE;
+&nbsp;
+        for (var i in points) {
+            var p = CC.normalizePoint(points[i]);
+&nbsp;
+            minX = Math.min(minX, p.x);
+            minY = Math.min(minY, p.y);
+            maxX = Math.max(maxX, p.x);
+            maxY = Math.max(maxY, p.y);
+        }
+&nbsp;
+        return {
+            x: minX + ((maxX - minX) / 2),
+            y: minY + ((maxY - minY) / 2)
+        }
+&nbsp;
     };
 &nbsp;
 })();</pre></td></tr>

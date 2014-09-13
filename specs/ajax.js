@@ -1,5 +1,7 @@
 describe("ajax.js", function(){
 
+	var realXMLHttpRequest = window.XMLHttpRequest;
+
 	it("abort on timeout", function(){
 
 	    var isAborted = false;
@@ -138,5 +140,69 @@ describe("ajax.js", function(){
 		});
 
 	});
+
+	it("makes a real request", function(){
+
+		window.XMLHttpRequest = realXMLHttpRequest;
+		CC.ajaxTimeout = 0;
+
+		var success, response, xhr;
+
+		runs(function(){
+			CC.ajax("GET",
+	        	"http://www.reddit.com/r/javascript.json", 
+	        	{
+	        		t: "all"
+	        	})
+			.then(function(_success, _response, _xhr){
+			    
+				success = _success;
+				response = _response;
+				xhr = _xhr;
+			    
+			});
+		});
+
+		waits(2000);
+
+		runs(function() {
+			expect(success).toBe(true);
+			expect(response).not.toBe(null);
+			expect(xhr).not.toBe(null);
+		});
+
+	});
+
+	it("makes request with ActiveXObject and json string", function(){
+
+		window.XMLHttpRequest = null;
+		window.ActiveXObject = realXMLHttpRequest;
+
+		var success, response, xhr;
+
+		runs(function(){
+			CC.ajax("GET",
+	        	"http://www.reddit.com/r/javascript.json", 
+	        	"{ t: 'all' }")
+			.then(function(_success, _response, _xhr){
+			    
+				success = _success;
+				response = _response;
+				xhr = _xhr;
+			    
+			});
+		});
+
+		waits(2000);
+
+		runs(function() {
+			expect(success).toBe(true);
+			expect(response).not.toBe(null);
+			expect(xhr).not.toBe(null);
+		});
+
+	});
+
+	window.XMLHttpRequest = realXMLHttpRequest;
 
 });

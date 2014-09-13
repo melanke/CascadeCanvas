@@ -7,6 +7,7 @@ module.exports = function(grunt) {
 	        'src/event.js', 
 	        'src/typeChecker.js', 
 	        'src/objectTools.js',
+	        'src/math.js',
 	        'src/promise.js',
 	        'src/mouse.js',
 	        'src/keyboard.js', 

@@ -271,28 +271,6 @@ var ElementList = function(elements, selection){
 
     };
 
-    this.onClick = function(){
-
-
-        var args = arguments;
-        var listOfEvents = [];
-
-        this.each(function(){
-            listOfEvents.push(
-                this.onClick.apply(this, args)
-            );
-        });
-
-        return {
-            unbind: function() {
-                for (var i in listOfEvents) {
-                    listOfEvents[i].unbind();
-                }
-            }
-        };
-
-    };
-
 
     this.hideAllLayers = function(){
 

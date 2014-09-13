@@ -179,20 +179,20 @@
     </style>
 </head>
 <body>
-<div class="header high">
+<div class="header low">
     <h1>Code coverage report for <span class="entity">src/mouse.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">95.65% <small>(22 / 23)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">42.63% <small>(107 / 251)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Branches: <span class="metric">93.33% <small>(14 / 15)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">28.28% <small>(28 / 99)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(7 / 7)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">54.55% <small>(18 / 33)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">95.65% <small>(22 / 23)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">42.63% <small>(107 / 251)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
     </h2>
     <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">src/</a> &#187; mouse.js</div>
@@ -256,32 +256,1051 @@
 55
 56
 57
-58</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559
+560</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">67</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">67</span>
+<span class="cline-any cline-yes">68</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">67</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">67</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">680</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">68</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">7</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -294,22 +1313,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">67</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">8</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -319,13 +1323,39 @@
 &nbsp;
 var mouseEnvironmentBuilder = function(canvas, screen) {
 &nbsp;
+    var mouseHistory = []; //current mouse interaction, movement while it is pressed
+    var touchHistory = {}; //current finger interaction, movement while it is touching (separated by an identifier)
+    var fingersPositionWhenFingerAmountChange = {};
+    var currentFingerCount = 0;
+    var lastClickOrTapTime = 0;
+&nbsp;
+    var longPressOrClickTimeout = 1000; //1 second
+    var longPressTimeout = null;
+    var tapOrClickDistance = 32; //32 px
+    var swipeMinSpeed = 0.5;
+    var swipeMinDistance = 200;
+    var swipeMaxDeviation = 100;
+    var doubleClickOrTapTime = 200;
+&nbsp;
+    /******** SIMPLE EVENTS ********/
+&nbsp;
     canvas.onselectstart = function() { 
     	return false; 
     };
 &nbsp;
-    canvas.onclick = function(event){ 
-    	event.screen = screen;
-        CC.trigger("click", event);
+    canvas.onmousedown = function(event){
+        event.screen = screen;
+        CC.trigger("mousedown", event);
+    };
+&nbsp;
+    canvas.onmouseup = function(event){
+        event.screen = screen;
+        CC.trigger("mouseup", event);
+    };
+&nbsp;
+    canvas.onmousemove = function(event){
+        event.screen = screen;
+        CC.trigger("mousemove", event);
     };
 &nbsp;
     canvas.oncontextmenu = function (event) { 
@@ -334,14 +1364,505 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
         return false; 
     };
 &nbsp;
-    var findFirstClickableElementInArea = function(x, y) {
+    canvas.addEventListener("touchstart", <span class="fstat-no" title="function not covered" >function(event) {</span>
+<span class="cstat-no" title="statement not covered" >        event.preventDefault();</span>
+<span class="cstat-no" title="statement not covered" >        event.screen = screen;</span>
+<span class="cstat-no" title="statement not covered" >        CC.trigger("touchstart", event);</span>
+    }, false);
 &nbsp;
-    	var result = null;
+    canvas.addEventListener("touchend", <span class="fstat-no" title="function not covered" >function(event) {</span>
+<span class="cstat-no" title="statement not covered" >        event.preventDefault();</span>
+<span class="cstat-no" title="statement not covered" >        event.screen = screen;</span>
+<span class="cstat-no" title="statement not covered" >        CC.trigger("touchend", event);</span>
+    }, false);
 &nbsp;
-    	CC("*").sort(["zIndex", "ASC"], ["getCreationOrder", "DESC"]).each(function(){
+    canvas.addEventListener("touchmove", <span class="fstat-no" title="function not covered" >function(event) {</span>
+<span class="cstat-no" title="statement not covered" >        event.preventDefault();</span>
+<span class="cstat-no" title="statement not covered" >        event.screen = screen;</span>
+<span class="cstat-no" title="statement not covered" >        CC.trigger("touchmove", event);</span>
+    }, false);
 &nbsp;
-	        if (this.clickable === true
-	         &amp;&amp; x &gt;= this.x 
+&nbsp;
+    /********** COMPLEX EVENTS ***********/
+&nbsp;
+    CC.bind("mousedown", function(event){
+&nbsp;
+        mouseHistory.push({
+            type: "start",
+            x: event.offsetX,
+            y: event.offsetY,
+            when: new Date().getTime()
+        });
+&nbsp;
+        identifyAndTriggerLongClickOrPress(true, mouseHistory, event);
+&nbsp;
+    });
+&nbsp;
+    CC.bind("mousemove", function(event){
+        
+        <span class="missing-if-branch" title="if path not taken"" >I</span>if (mouseHistory.length) {
+<span class="cstat-no" title="statement not covered" >            CC.trigger("mousedrag", event);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            mouseHistory.push({</span>
+                type: "move",
+                x: event.offsetX,
+                y: event.offsetY,
+                when: new Date().getTime()
+            });
+        }
+    });
+&nbsp;
+    CC.bind("mouseup", function(event){
+&nbsp;
+        for (var a in mouseHistory) {
+            <span class="missing-if-branch" title="if path not taken"" >I</span>if (mouseHistory[a].type === "move") {
+<span class="cstat-no" title="statement not covered" >                CC.trigger("mousedragend", event);</span>
+<span class="cstat-no" title="statement not covered" >                break;</span>
+            }
+        }
+&nbsp;
+        identifyAndTriggerClickOrTap(true, mouseHistory, event);
+&nbsp;
+        clearHistory(mouseHistory);
+        clearTimeout(longPressTimeout);
+    });
+&nbsp;
+&nbsp;
+&nbsp;
+    CC.bind("touchstart", <span class="fstat-no" title="function not covered" >function(event){</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var touches = event.changedTouches;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        for (var i = 0; i &lt; touches.length; i++) {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            currentFingerCount++;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            var touch = touches[i];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            if (!touchHistory[touch.identifier]) {</span>
+<span class="cstat-no" title="statement not covered" >                touchHistory[touch.identifier] = [];</span>
+            }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            touchHistory[touch.identifier].push({</span>
+                type: "start",
+                x: touch.pageX,
+                y: touch.pageY,
+                when: new Date().getTime()
+            });
+&nbsp;
+            //register the current position of all fingers touching
+<span class="cstat-no" title="statement not covered" >            fingersPositionWhenFingerAmountChange = {};</span>
+<span class="cstat-no" title="statement not covered" >            for (var i in touchHistory) {</span>
+<span class="cstat-no" title="statement not covered" >                fingersPositionWhenFingerAmountChange[i] = touchHistory[i][touchHistory[i].length-1];</span>
+            }
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (!touches.length)</span>
+        {
+<span class="cstat-no" title="statement not covered" >            identifyAndTriggerLongClickOrPress(false, touchHistory[touches[0].identifier], event);</span>
+        }
+&nbsp;
+    });
+&nbsp;
+    CC.bind("touchmove", <span class="fstat-no" title="function not covered" >function(event){</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var touches = event.changedTouches;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        for (var i = 0; i &lt; touches.length; i++) {</span>
+<span class="cstat-no" title="statement not covered" >            var touch = touches[i];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            if (touchHistory[touch.identifier] </span>
+                &amp;&amp; touchHistory[touch.identifier].length) 
+            {
+<span class="cstat-no" title="statement not covered" >                touchHistory[touch.identifier].push({</span>
+                    type: "move",
+                    x: touch.pageX,
+                    y: touch.pageY,
+                    when: new Date().getTime()
+                });
+            }
+&nbsp;
+        }
+    });
+&nbsp;
+    CC.bind("touchend", <span class="fstat-no" title="function not covered" >function(event){</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var touches = event.changedTouches;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (touches.length)</span>
+        {
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            for (var i = 0; i &lt; touches.length; i++) {</span>
+<span class="cstat-no" title="statement not covered" >                currentFingerCount--;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                var touch = touches[i];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                if (currentFingerCount == 0) {</span>
+<span class="cstat-no" title="statement not covered" >                    identifyAndTriggerClickOrTap(false, touchHistory[touch.identifier], event);</span>
+                }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                clearHistory(touchHistory[touch.identifier]);</span>
+<span class="cstat-no" title="statement not covered" >                delete touchHistory[touch.identifier];</span>
+<span class="cstat-no" title="statement not covered" >                clearTimeout(longPressTimeout);</span>
+&nbsp;
+                //register the current position of all fingers touching
+<span class="cstat-no" title="statement not covered" >                fingersPositionWhenFingerAmountChange = {};</span>
+<span class="cstat-no" title="statement not covered" >                for (var i in touchHistory) {</span>
+<span class="cstat-no" title="statement not covered" >                    fingersPositionWhenFingerAmountChange[i] = touchHistory[i][touchHistory[i].length-1];</span>
+                }
+&nbsp;
+            }
+        }
+    });
+&nbsp;
+    /******** IDENTIFY GESTURES ***********/
+&nbsp;
+    CC.identifyMouseSwipe = <span class="fstat-no" title="function not covered" >function() {</span>
+<span class="cstat-no" title="statement not covered" >        return identifySwipe(true, mouseHistory);</span>
+    };
+&nbsp;
+    CC.identifyTouchSwipe = <span class="fstat-no" title="function not covered" >function() {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var uniqueItem = null;</span>
+        //getting the unique item in touchHistory (or null)
+<span class="cstat-no" title="statement not covered" >        for (var a in touchHistory) {</span>
+<span class="cstat-no" title="statement not covered" >            if (!uniqueItem) {</span>
+<span class="cstat-no" title="statement not covered" >                uniqueItem = a;</span>
+            } else {
+<span class="cstat-no" title="statement not covered" >                uniqueItem = null;</span>
+<span class="cstat-no" title="statement not covered" >                break;</span>
+            }
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (!uniqueItem)</span>
+        {
+<span class="cstat-no" title="statement not covered" >            return null;</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        return identifySwipe(false, uniqueItem);</span>
+    };
+&nbsp;
+    CC.identifyTouchPinchOrSpread = <span class="fstat-no" title="function not covered" >function() {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (currentFingerCount &lt; 2) {</span>
+<span class="cstat-no" title="statement not covered" >            return null;</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var actualPositions = {};</span>
+<span class="cstat-no" title="statement not covered" >        for (var i in touchHistory) {</span>
+<span class="cstat-no" title="statement not covered" >            actualPositions[i] = touchHistory[i][touchHistory[i].length-1];</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var actualDistanceSum = distanceSum(actualPositions);</span>
+<span class="cstat-no" title="statement not covered" >        var firstDistanceSum = distanceSum(fingersPositionWhenFingerAmountChange);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var distance = actualDistanceSum - firstDistanceSum;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        return {</span>
+            history: touchHistory,
+            distance: distance,
+            fingerCount: currentFingerCount
+        };
+&nbsp;
+    };
+&nbsp;
+    CC.identifyTouchPanOffset = <span class="fstat-no" title="function not covered" >function() {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (currentFingerCount &lt; 2) {</span>
+<span class="cstat-no" title="statement not covered" >            return null;</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var actualPositions = {};</span>
+<span class="cstat-no" title="statement not covered" >        for (var i in touchHistory) {</span>
+<span class="cstat-no" title="statement not covered" >            actualPositions[i] = touchHistory[i][touchHistory[i].length-1];</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var actualCenter = CC.calcCenterOfPoints(actualPositions);</span>
+<span class="cstat-no" title="statement not covered" >        var firstCenter = CC.calcCenterOfPoints(fingersPositionWhenFingerAmountChange);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        return {</span>
+            x: actualCenter.x - firstCenter.x,
+            y: actualCenter.y - firstCenter.y,
+            fingerCount: currentFingerCount
+        };
+    };
+&nbsp;
+    CC.identifyTouchRotate = <span class="fstat-no" title="function not covered" >function() {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (currentFingerCount &lt; 2) {</span>
+<span class="cstat-no" title="statement not covered" >            return null;</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var actualPositions = {};</span>
+<span class="cstat-no" title="statement not covered" >        for (var i in touchHistory) {</span>
+<span class="cstat-no" title="statement not covered" >            actualPositions[i] = touchHistory[i][touchHistory[i].length-1];</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var actualCenter = CC.calcCenterOfPoints(actualPositions);</span>
+<span class="cstat-no" title="statement not covered" >        var firstCenter = CC.calcCenterOfPoints(fingersPositionWhenFingerAmountChange);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var angles = [];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        for (var i in fingersPositionWhenFingerAmountChange) {</span>
+<span class="cstat-no" title="statement not covered" >            var actualAngle = 360 + CC.calcAngleDegrees(actualPositions[i], actualCenter);</span>
+<span class="cstat-no" title="statement not covered" >            var firstAngle = 360 + CC.calcAngleDegrees(fingersPositionWhenFingerAmountChange[i], firstCenter);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            var angleOffset = (actualAngle - firstAngle) % 360;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            angles.push(angleOffset);</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        angles = angles.sort(<span class="fstat-no" title="function not covered" >function(a, b){</span></span>
+<span class="cstat-no" title="statement not covered" >            return b - a;</span>
+        });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var angle = angles[Math.floor(angles.length / 2)];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        return {</span>
+            angle: angle,
+            fingerCount: currentFingerCount
+        };
+&nbsp;
+    };
+&nbsp;
+    /******* HELPING METHODS *******/
+&nbsp;
+    var identifySwipe = <span class="fstat-no" title="function not covered" >function(isMouse, history){</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (history.length &lt; 2) {</span>
+<span class="cstat-no" title="statement not covered" >            return null;</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var p1 = history[0];</span>
+<span class="cstat-no" title="statement not covered" >        var p2 = history[history.length-1];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var distance = CC.calcDistance(p1, p2);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (distance &lt; swipeMinDistance) {</span>
+<span class="cstat-no" title="statement not covered" >            return null;</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var speed = distance / (p2.when - p1.when);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (speed &lt; swipeMinSpeed) {</span>
+<span class="cstat-no" title="statement not covered" >            return null;</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var line = CC.generalFormEqOfLine(p1, p2);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        for (var i = 1; i &lt; history.length-1; i++)</span>
+        {
+<span class="cstat-no" title="statement not covered" >            var deviation = CC.calcLineDistance(line, history[i]);</span>
+<span class="cstat-no" title="statement not covered" >            if (deviation &gt; swipeMaxDeviation)</span>
+            {
+<span class="cstat-no" title="statement not covered" >                return null;</span>
+            }
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var angle = CC.calcAngleDegrees(p1, p2);</span>
+<span class="cstat-no" title="statement not covered" >        var direction = null;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (angle &gt; -20 &amp;&amp; angle &lt; 20) {</span>
+<span class="cstat-no" title="statement not covered" >            direction = "left";</span>
+        } else <span class="cstat-no" title="statement not covered" >if (angle &gt; 70 &amp;&amp; angle &lt; 110) {</span>
+<span class="cstat-no" title="statement not covered" >            direction = "down";</span>
+        } else <span class="cstat-no" title="statement not covered" >if (angle &gt; 160 || angle &lt; -160) {</span>
+<span class="cstat-no" title="statement not covered" >            direction = "right";</span>
+        } else <span class="cstat-no" title="statement not covered" >if (angle &gt; -110 &amp;&amp; angle &lt; -70) {</span>
+<span class="cstat-no" title="statement not covered" >            direction = "up";</span>
+        }
+&nbsp;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        return {</span>
+            history: history,
+            isMouse: isMouse,
+            distance: distance,
+            speed: speed,
+            line: line,
+            angle: angle,
+            direction: direction
+        };
+&nbsp;
+    };
+&nbsp;
+    var identifyAndTriggerClickOrTap = function(isMouse, history, event) {
+&nbsp;
+        <span class="missing-if-branch" title="if path not taken"" >I</span>if (history.length &amp;&amp; history[0].type === "startafterlong") {
+<span class="cstat-no" title="statement not covered" >            return;</span>
+        }
+&nbsp;
+        var distance = longestDistance(history);
+&nbsp;
+        <span class="missing-if-branch" title="if path not taken"" >I</span>if (distance &gt; tapOrClickDistance) {
+<span class="cstat-no" title="statement not covered" >            return;</span>
+        }
+&nbsp;
+        var eventName = "tap";
+        <span class="missing-if-branch" title="else path not taken"" >E</span>if (isMouse) {
+            eventName = "click";
+        }
+&nbsp;
+        var time = new Date().getTime();
+        <span class="missing-if-branch" title="if path not taken"" >I</span>if (time - lastClickOrTapTime &lt; doubleClickOrTapTime) {
+<span class="cstat-no" title="statement not covered" >            eventName = "double" + eventName;</span>
+        } else {
+            lastClickOrTapTime = time;
+        }
+&nbsp;
+        <span class="missing-if-branch" title="if path not taken"" >I</span>if (!isMouse) {
+<span class="cstat-no" title="statement not covered" >            event.fingerCount = currentFingerCount;</span>
+        }
+&nbsp;
+        CC.trigger(eventName, event);
+        
+    };
+&nbsp;
+    var identifyAndTriggerLongClickOrPress = function(isMouse, history, event){
+&nbsp;
+        longPressTimeout = setTimeout(<span class="fstat-no" title="function not covered" >function(){</span>
+<span class="cstat-no" title="statement not covered" >            if (!history.length) {</span>
+<span class="cstat-no" title="statement not covered" >                return;</span>
+            }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            var distance = longestDistance(history);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            if (distance &lt;= tapOrClickDistance) {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                var eventName = "longpress";</span>
+<span class="cstat-no" title="statement not covered" >                if (isMouse) {</span>
+<span class="cstat-no" title="statement not covered" >                    eventName = "longclick";</span>
+                }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                if (!isMouse) {</span>
+<span class="cstat-no" title="statement not covered" >                    event.fingerCount = currentFingerCount;</span>
+                }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                CC.trigger(eventName, event);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                clearHistory(history);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                history.push({</span>
+                    type: "startafterlong",
+                    x: event.offsetX,
+                    y: event.offsetY,
+                    when: new Date().getTime()
+                });
+            }
+&nbsp;
+        }, longPressOrClickTimeout);
+    };
+&nbsp;
+    var longestDistance = function(history) {
+        var result = 0;
+&nbsp;
+        <span class="missing-if-branch" title="if path not taken"" >I</span>if (history.length &gt; 1)
+        {
+<span class="cstat-no" title="statement not covered" >            for (var i = 1; i &lt; history.length; i++)</span>
+            {
+<span class="cstat-no" title="statement not covered" >                result = Math.max(result, CC.calcDistance(history[0], history[i]));</span>
+            }
+        }
+&nbsp;
+        return result;
+    };
+&nbsp;
+    var distanceSum = <span class="fstat-no" title="function not covered" >function(fingers) {</span>
+        
+<span class="cstat-no" title="statement not covered" >        var distanceSum = 0;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        for (var i in fingers) {</span>
+<span class="cstat-no" title="statement not covered" >            var passedI = false;</span>
+<span class="cstat-no" title="statement not covered" >            for (var j in fingers) {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                if (passedI) {</span>
+<span class="cstat-no" title="statement not covered" >                    distanceSum += CC.calcDistance(fingers[i], fingers[j]);</span>
+                }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                if (i === j) {</span>
+<span class="cstat-no" title="statement not covered" >                    passedI = true;</span>
+                }
+            }
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        return distanceSum;</span>
+&nbsp;
+    };
+&nbsp;
+    var clearHistory = function(history) {
+        while (history.length) {
+            history.pop();
+        }
+    };
+&nbsp;
+    /******* ELEMENTS ********/
+&nbsp;
+    var elclickbinder = function(eventname, nickname){
+&nbsp;
+        CC.bind(eventname, function(event){
+&nbsp;
+            var pos = getEventScreenPosition(event);
+&nbsp;
+            <span class="missing-if-branch" title="if path not taken"" >I</span>if (!pos) {
+<span class="cstat-no" title="statement not covered" >                return;</span>
+            }
+&nbsp;
+            var clicked = CC.findFirstClickableElementInArea(pos.x, pos.y);
+&nbsp;
+            if (clicked &amp;&amp; clicked.trigger)
+            {
+                <span class="missing-if-branch" title="else path not taken"" >E</span>if (!nickname) {
+                    nickname = eventname;
+                }
+&nbsp;
+                clicked.trigger(nickname, event);
+            }
+        });
+    };
+&nbsp;
+    elclickbinder("click");
+    elclickbinder("doubleclick");
+    elclickbinder("longclick");
+    elclickbinder("rightclick");
+    elclickbinder("tap");
+    elclickbinder("doubletap");
+    elclickbinder("longpress");
+    elclickbinder("mousemove", "mousemoveover");
+    elclickbinder("mousedrag", "mousedragover");
+    elclickbinder("touchmove", "touchmoveover");
+&nbsp;
+    var getEventScreenPosition = function(event) {
+        <span class="missing-if-branch" title="if path not taken"" >I</span>if (!event.screen || event.screen.htmlId != screen.htmlId)
+        {
+<span class="cstat-no" title="statement not covered" >            return null;</span>
+        }
+&nbsp;
+        var resp = {};
+&nbsp;
+        resp.x = event.offsetX;
+&nbsp;
+        <span class="missing-if-branch" title="if path not taken"" >I</span>if (event.screen.x)
+        {
+<span class="cstat-no" title="statement not covered" >            resp.x += event.screen.x;</span>
+        }
+&nbsp;
+        resp.y = event.offsetY;
+&nbsp;
+        <span class="missing-if-branch" title="if path not taken"" >I</span>if (event.screen.y)
+        {
+<span class="cstat-no" title="statement not covered" >            resp.y += event.screen.y;</span>
+        }
+&nbsp;
+        return resp;
+    };
+&nbsp;
+    CC.findFirstClickableElementInArea = function(x, y) {
+&nbsp;
+        var result = null;
+&nbsp;
+        CC("*").sort(["zIndex", "ASC"], ["getCreationOrder", "DESC"]).each(function(){
+&nbsp;
+            if (this.clickable === true
+             &amp;&amp; x &gt;= this.x 
              &amp;&amp; x &lt;= this.x + this.w
              &amp;&amp; y &gt;= this.y
              &amp;&amp; y &lt;= this.y + this.h) {
@@ -349,33 +1870,18 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
                 return false;
             }
 &nbsp;
-	    });
+        });
 &nbsp;
-	    return result;
+        return result;
 &nbsp;
     };
-&nbsp;
-    CC.bind("click", function(event){
-&nbsp;
-    	<span class="missing-if-branch" title="if path not taken"" >I</span>if (!event.screen || event.screen.htmlId != screen.htmlId)
-    	{
-<span class="cstat-no" title="statement not covered" >    		return;</span>
-    	}
-&nbsp;
-        var clicked = findFirstClickableElementInArea(event.offsetX, event.offsetY);
-&nbsp;
-        if (clicked &amp;&amp; clicked.trigger)
-        {
-        	clicked.trigger("click", event);
-        }
-    });
 &nbsp;
 };</pre></td></tr>
 </table></pre>
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Jul 22 2014 20:13:20 GMT-0300 (BRT)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Sep 13 2014 11:58:48 GMT-0300 (BRT)</div>
 </div>
 
 <script src="../prettify.js"></script>

@@ -179,20 +179,20 @@
     </style>
 </head>
 <body>
-<div class="header low">
+<div class="header high">
     <h1>Code coverage report for <span class="entity">src/resource.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">25% <small>(4 / 16)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(16 / 16)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Branches: <span class="metric">0% <small>(0 / 2)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">100% <small>(2 / 2)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">20% <small>(1 / 5)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(5 / 5)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">25% <small>(4 / 16)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(16 / 16)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
     </h2>
     <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">src/</a> &#187; resource.js</div>
@@ -259,32 +259,32 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/***** RESOURCE *****/
@@ -301,34 +301,34 @@
     * @param srcs an array of strings with the path of file
     * @param callback function called when all resources are loaded
     */
-    CC.loadResources = <span class="fstat-no" title="function not covered" >function(srcs){</span>
+    CC.loadResources = function(srcs){
         
-<span class="cstat-no" title="statement not covered" >        var p = new CC.Promise();</span>
+        var p = new CC.Promise();
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        var loadRecursively = <span class="fstat-no" title="function not covered" >function(index) {</span></span>
-<span class="cstat-no" title="statement not covered" >            var img = new Image();</span>
-<span class="cstat-no" title="statement not covered" >            img.src = srcs[index];</span>
-<span class="cstat-no" title="statement not covered" >            img.onload = <span class="fstat-no" title="function not covered" >function(){</span></span>
+        var loadRecursively = function(index) {
+            var img = new Image();
+            img.src = srcs[index];
+            img.onload = function(){
 &nbsp;
-<span class="cstat-no" title="statement not covered" >                sprites[srcs[index]] = this;</span>
+                sprites[srcs[index]] = this;
 &nbsp;
-<span class="cstat-no" title="statement not covered" >                if (index &lt; srcs.length - 1) {</span>
-<span class="cstat-no" title="statement not covered" >                    loadRecursively(index+1);</span>
+                if (index &lt; srcs.length - 1) {
+                    loadRecursively(index+1);
                 } else {
-<span class="cstat-no" title="statement not covered" >                    p.done();</span>
+                    p.done();
                 }
 &nbsp;
             };
         };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        loadRecursively(0);</span>
+        loadRecursively(0);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        return p;</span>
+        return p;
 &nbsp;
     };
 &nbsp;
-    CC.useResource = <span class="fstat-no" title="function not covered" >function(src){</span>
-<span class="cstat-no" title="statement not covered" >        return sprites[src];</span>
+    CC.useResource = function(src){
+        return sprites[src];
     };
 &nbsp;
 })();</pre></td></tr>
@@ -336,7 +336,7 @@
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Jul 22 2014 20:13:20 GMT-0300 (BRT)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Sep 13 2014 11:58:48 GMT-0300 (BRT)</div>
 </div>
 
 <script src="../prettify.js"></script>
