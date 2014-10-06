@@ -310,4 +310,110 @@ describe("core.js", function() {
 
 	});
 
+	describe("lazy elements", function(){
+
+		it("instantiate, find and remove lazy elements and not lazy elements", function(){
+
+			CC.clear();
+
+			expect(CC.areaSearch({x: 5, y: 5, w: 200, h: 200 }).length).toBe(0);
+			expect(CC.areaSearch({x: 5, y: 5, w: 900, h: 900 }).length).toBe(0);
+
+			var l1 = CC.new("#Lazy1", {
+				x: 10,
+				y: 10,
+				w: 10,
+				h: 10,
+				lazy: true
+			});
+
+			CC.new("#Lazy2", {
+				x: 810,
+				y: 10,
+				w: 10,
+				h: 10,
+				lazy: true
+			});
+
+			var nl1 = CC.new("#NotLazy1", {
+				x: 30,
+				y: 30,
+				w: 10,
+				h: 10
+			});
+
+			CC.new("#NotLazy1", {
+				x: 30,
+				y: 830,
+				w: 10,
+				h: 10
+			});
+
+			CC.new("#Lazy3", {
+				x: 20,
+				y: 20,
+				w: 10,
+				h: 10,
+				lazy: true
+			});
+
+			CC.new("#Lazy4", {
+				x: 820,
+				y: 820,
+				w: 10,
+				h: 10,
+				lazy: true
+			});
+
+			CC.new("#LazyAndFixed", {
+				x: 3000,
+				y: 3000,
+				w: 10,
+				h: 10,
+				lazy: true,
+				fixedOnScreen: "scr"
+			});
+
+			var nlf = CC.new("#NotLazyAndFixed", {
+				x: 3000,
+				y: 3000,
+				w: 10,
+				h: 10,
+				lazy: true,
+				fixedOnScreen: "scr"
+			});
+
+			CC.new("#LazyStartsInAnotherChunk", {
+				x: -10,
+				y: -10,
+				w: 40,
+				h: 40,
+				lazy: true
+			});
+
+			expect(CC.areaSearch({x: 5, y: 5, w: 200, h: 200 }).length).toBe(4);
+			expect(CC.areaSearch({x: 5, y: 5, w: 900, h: 900 }).length).toBe(7);
+			
+			expect(CC.areaSearch({x: 5, y: 5, w: 200, h: 200, includeFixedOnScreen: "scr" }).length).toBe(6);
+			expect(CC.areaSearch({x: 5, y: 5, w: 900, h: 900, includeFixedOnScreen: "scr" }).length).toBe(9);
+
+			CC.remove(l1);
+			CC.remove(nl1);
+			CC.remove(nlf);
+
+			expect(CC.areaSearch({x: 5, y: 5, w: 200, h: 200 }).length).toBe(2);
+			expect(CC.areaSearch({x: 5, y: 5, w: 900, h: 900 }).length).toBe(5);
+
+			expect(CC.areaSearch({x: 5, y: 5, w: 200, h: 200, includeFixedOnScreen: "scr" }).length).toBe(3);
+			expect(CC.areaSearch({x: 5, y: 5, w: 900, h: 900, includeFixedOnScreen: "scr" }).length).toBe(6);
+
+			CC.clear();	
+
+			expect(CC.areaSearch({x: 5, y: 5, w: 200, h: 200 }).length).toBe(0);
+			expect(CC.areaSearch({x: 5, y: 5, w: 900, h: 900 }).length).toBe(0);		
+
+		});
+
+	});
+
 });

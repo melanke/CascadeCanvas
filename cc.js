@@ -31,7 +31,10 @@ var CC;
 (function(){
     
     var elementMap = {}, //elements stored by id
-        elementsSize = 0;
+        elementsSize = 0,
+        lazyElements = [], //used to find elements of area faster
+        notLazyElements = [], //elements that will be searched everytime
+        chunkSize = 800; //size of the chunk of area search
 
 
 
@@ -111,8 +114,30 @@ var CC;
     */
     CC.new = function(specs, opts){
 
+        if (opts && opts.lazy === true && opts.fixedOnScreen) {
+            delete opts.lazy;
+            console && console.warn("fixedOnScreen elements should not be lazy!");
+        }
+
         var element = new Element(specs, opts);
         elementMap[element.id ? element.id : elementsSize++] = element;
+
+        if (opts && opts.lazy === true && element.x !== undefined && element.y !== undefined) {
+            var cX = parseInt(element.x / chunkSize);
+            var cY = parseInt(element.y / chunkSize);
+
+            if (!lazyElements[cX]) {
+                lazyElements[cX] = [];
+            }
+
+            if (!lazyElements[cX][cY]) {
+                lazyElements[cX][cY] = [];
+            }
+
+            lazyElements[cX][cY].push(element);
+        } else {
+            notLazyElements.push(element);
+        }
 
         return element;
     };
@@ -153,6 +178,8 @@ var CC;
         CC.classes = {};
         elementMap = {};
         elementsSize = 0;
+        lazyElements = [];
+        notLazyElements = [];
         CC.clearEvents();
 
     };
@@ -169,6 +196,86 @@ var CC;
                 delete elementMap[i];
             }
         }
+
+        for (var j in notLazyElements) {
+            if (notLazyElements[j] == el) {
+                delete notLazyElements[j];
+            }
+        }
+
+        var cX = parseInt(el.x / chunkSize);
+        var cY = parseInt(el.y / chunkSize);   
+
+        if (lazyElements[cX] && lazyElements[cX][cY]) {
+            for (var k in lazyElements) {
+                if (lazyElements[cX][cY][k] == el) {
+                    delete lazyElements[cX][cY][k];
+                }
+            }
+        }     
+
+    };
+
+    CC.areaSearch = function(area) {
+
+        if (area == null || area.x === undefined || area.y === undefined || area.w === undefined || area.h == undefined) {
+            return null;
+        }
+
+        var selecteds = [];
+
+        //LAZY ELEMENTS
+        var fromCX = parseInt(area.x / chunkSize) -1;
+        var fromCY = parseInt(area.y / chunkSize) -1;
+        var toCX = parseInt((area.x + area.w) / chunkSize) +1;
+        var toCY = parseInt((area.y + area.h) / chunkSize) +1;
+        
+        for (var cX = fromCX; cX <= toCX; cX++) {
+            for (var cY = fromCY; cY <= toCY; cY++) {
+                if (lazyElements[cX] && lazyElements[cX][cY]) {
+                    var c = lazyElements[cX][cY];
+
+                    populateElementsInsideArea(c, selecteds, area);
+                }
+            }
+        }
+
+        //NOT LAZY
+        populateElementsInsideArea(notLazyElements, selecteds, area);
+
+        return new ElementList(selecteds, "area: "+JSON.stringify(area));
+
+    };
+
+    var populateElementsInsideArea = function(from, to, area) {
+
+        for (var i in from) {
+            var el = from[i];
+
+//TODO: TEM ALGUM PROBLEMA COM O CLICK DO MOUSE, PRECISO DEBBUGAR
+            if (area.includeFixedOnScreen)
+            { 
+                if (area.includeFixedOnScreen === el.fixedOnScreen) {
+                    to.push(el);
+                    continue;
+                } else if (el.fixedOnScreen){
+                    continue;
+                }
+
+            }
+
+            var w = el.w || 0;
+            var h = el.h || 0;
+            
+            if (!(el.x > area.x + area.w || 
+                   el.x + w < area.x || 
+                   el.y > area.y + area.w ||
+                   el.y + h < area.y))
+            {
+                to.push(el);
+            }
+        }
+        
 
     };
 
@@ -1327,7 +1434,7 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
     var getEventScreenPosition = function(event) {
         if (!event.screen || event.screen.htmlId != screen.htmlId)
         {
-            return null;
+            return {x: 0, y: 0};
         }
 
         var resp = {};
@@ -1351,22 +1458,20 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
     CC.findFirstClickableElementInArea = function(x, y) {
 
-        var result = null;
-
-        CC("*").sort(["zIndex", "ASC"], ["getCreationOrder", "DESC"]).each(function(){
-
-            if (this.clickable === true
-             && x >= this.x 
-             && x <= this.x + this.w
-             && y >= this.y
-             && y <= this.y + this.h) {
-                result = this;
-                return false;
-            }
-
+        var list = CC.areaSearch({
+            x: x,
+            y: y,
+            w: 0,
+            h: 0
         });
 
-        return result;
+        if (!list || !list.length) {
+            return null;
+        }
+
+        var sorted = list.sort(["zIndex", "ASC"], ["getCreationOrder", "DESC"]);
+
+        return sorted.e(0);
 
     };
 
@@ -1847,7 +1952,14 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
     	    scr.context.clearRect(0, 0 , scr.w, scr.h);
 
-    	    CC("*").sort(["zIndex", "DESC"], ["getCreationOrder", "ASC"]).each(function(){
+            CC.areaSearch({
+                x: scr.x,
+                y: scr.y,
+                w: scr.w,
+                h: scr.h,
+                includeFixedOnScreen: scr.htmlId
+
+            }).sort(["zIndex", "DESC"], ["getCreationOrder", "ASC"]).each(function(){
 
     	        drawElement(this, scr);
 
@@ -2071,11 +2183,6 @@ tiles (string[][]) OBS.: The string is the name of the tile
 
         var config = configDrawing(el, layr, scr);
 
-        //dont draw if it isn't in screen range
-        if (!isElementInScreenRange(el, config, scr)) {
-            return;
-        }
-
         //save context to be able to restore to this state
         scr.context.save();
 
@@ -2150,22 +2257,6 @@ tiles (string[][]) OBS.: The string is the name of the tile
         return config;
 
 	};
-
-    var isElementInScreenRange = function(el, config, scr) {
-
-        var sX = scr.x;
-        var sY = scr.y;
-        
-        if (el.fixedOnScreen === true || el.fixedOnScreen === scr.htmlId) {
-            sX = 0;
-            sY = 0;
-        }
-
-        return (el.x + config.offsetX + config.FW >= sX
-        && el.x + config.offsetX - config.FW <= sX + scr.w
-        && el.y + config.offsetY + config.FH >= sY
-        && el.y + config.offsetY - config.FH <= sY + scr.h);
-    };
 
 	var setElementRotation = function(el, config, scr) {
 		//element rotation

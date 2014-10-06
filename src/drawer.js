@@ -16,7 +16,14 @@
 
     	    scr.context.clearRect(0, 0 , scr.w, scr.h);
 
-    	    CC("*").sort(["zIndex", "DESC"], ["getCreationOrder", "ASC"]).each(function(){
+            CC.areaSearch({
+                x: scr.x,
+                y: scr.y,
+                w: scr.w,
+                h: scr.h,
+                includeFixedOnScreen: scr.htmlId
+
+            }).sort(["zIndex", "DESC"], ["getCreationOrder", "ASC"]).each(function(){
 
     	        drawElement(this, scr);
 
@@ -240,11 +247,6 @@ tiles (string[][]) OBS.: The string is the name of the tile
 
         var config = configDrawing(el, layr, scr);
 
-        //dont draw if it isn't in screen range
-        if (!isElementInScreenRange(el, config, scr)) {
-            return;
-        }
-
         //save context to be able to restore to this state
         scr.context.save();
 
@@ -319,22 +321,6 @@ tiles (string[][]) OBS.: The string is the name of the tile
         return config;
 
 	};
-
-    var isElementInScreenRange = function(el, config, scr) {
-
-        var sX = scr.x;
-        var sY = scr.y;
-        
-        if (el.fixedOnScreen === true || el.fixedOnScreen === scr.htmlId) {
-            sX = 0;
-            sY = 0;
-        }
-
-        return (el.x + config.offsetX + config.FW >= sX
-        && el.x + config.offsetX - config.FW <= sX + scr.w
-        && el.y + config.offsetY + config.FH >= sY
-        && el.y + config.offsetY - config.FH <= sY + scr.h);
-    };
 
 	var setElementRotation = function(el, config, scr) {
 		//element rotation

@@ -516,7 +516,7 @@ describe("drawer", function () {
 			it("draws if el is fixedOnScreen and the screen is far from origin", function(){
 
 				el.x = 10;
-				el.fixedOnScreen = true;
+				el.fixedOnScreen = "CascadeCanvas";
 
 				CC.screens[0].x = 300;
 

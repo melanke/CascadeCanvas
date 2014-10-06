@@ -8,7 +8,10 @@ var CC;
 (function(){
     
     var elementMap = {}, //elements stored by id
-        elementsSize = 0;
+        elementsSize = 0,
+        lazyElements = [], //used to find elements of area faster
+        notLazyElements = [], //elements that will be searched everytime
+        chunkSize = 800; //size of the chunk of area search
 
 
 
@@ -88,8 +91,30 @@ var CC;
     */
     CC.new = function(specs, opts){
 
+        if (opts && opts.lazy === true && opts.fixedOnScreen) {
+            delete opts.lazy;
+            console && console.warn("fixedOnScreen elements should not be lazy!");
+        }
+
         var element = new Element(specs, opts);
         elementMap[element.id ? element.id : elementsSize++] = element;
+
+        if (opts && opts.lazy === true && element.x !== undefined && element.y !== undefined) {
+            var cX = parseInt(element.x / chunkSize);
+            var cY = parseInt(element.y / chunkSize);
+
+            if (!lazyElements[cX]) {
+                lazyElements[cX] = [];
+            }
+
+            if (!lazyElements[cX][cY]) {
+                lazyElements[cX][cY] = [];
+            }
+
+            lazyElements[cX][cY].push(element);
+        } else {
+            notLazyElements.push(element);
+        }
 
         return element;
     };
@@ -130,6 +155,8 @@ var CC;
         CC.classes = {};
         elementMap = {};
         elementsSize = 0;
+        lazyElements = [];
+        notLazyElements = [];
         CC.clearEvents();
 
     };
@@ -146,6 +173,85 @@ var CC;
                 delete elementMap[i];
             }
         }
+
+        for (var j in notLazyElements) {
+            if (notLazyElements[j] == el) {
+                delete notLazyElements[j];
+            }
+        }
+
+        var cX = parseInt(el.x / chunkSize);
+        var cY = parseInt(el.y / chunkSize);   
+
+        if (lazyElements[cX] && lazyElements[cX][cY]) {
+            for (var k in lazyElements) {
+                if (lazyElements[cX][cY][k] == el) {
+                    delete lazyElements[cX][cY][k];
+                }
+            }
+        }     
+
+    };
+
+    CC.areaSearch = function(area) {
+
+        if (area == null || area.x === undefined || area.y === undefined || area.w === undefined || area.h == undefined) {
+            return null;
+        }
+
+        var selecteds = [];
+
+        //LAZY ELEMENTS
+        var fromCX = parseInt(area.x / chunkSize) -1;
+        var fromCY = parseInt(area.y / chunkSize) -1;
+        var toCX = parseInt((area.x + area.w) / chunkSize) +1;
+        var toCY = parseInt((area.y + area.h) / chunkSize) +1;
+        
+        for (var cX = fromCX; cX <= toCX; cX++) {
+            for (var cY = fromCY; cY <= toCY; cY++) {
+                if (lazyElements[cX] && lazyElements[cX][cY]) {
+                    var c = lazyElements[cX][cY];
+
+                    populateElementsInsideArea(c, selecteds, area);
+                }
+            }
+        }
+
+        //NOT LAZY
+        populateElementsInsideArea(notLazyElements, selecteds, area);
+
+        return new ElementList(selecteds, "area: "+JSON.stringify(area));
+
+    };
+
+    var populateElementsInsideArea = function(from, to, area) {
+
+        for (var i in from) {
+            var el = from[i];
+
+            if (area.includeFixedOnScreen)
+            { 
+                if (area.includeFixedOnScreen === el.fixedOnScreen) {
+                    to.push(el);
+                    continue;
+                } else if (el.fixedOnScreen){
+                    continue;
+                }
+
+            }
+
+            var w = el.w || 0;
+            var h = el.h || 0;
+            
+            if (!(el.x > area.x + area.w || 
+                   el.x + w < area.x || 
+                   el.y > area.y + area.w ||
+                   el.y + h < area.y))
+            {
+                to.push(el);
+            }
+        }
+        
 
     };
 

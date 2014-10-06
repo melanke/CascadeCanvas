@@ -514,7 +514,7 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
     var getEventScreenPosition = function(event) {
         if (!event.screen || event.screen.htmlId != screen.htmlId)
         {
-            return null;
+            return {x: 0, y: 0};
         }
 
         var resp = {};
@@ -538,22 +538,20 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
     CC.findFirstClickableElementInArea = function(x, y) {
 
-        var result = null;
-
-        CC("*").sort(["zIndex", "ASC"], ["getCreationOrder", "DESC"]).each(function(){
-
-            if (this.clickable === true
-             && x >= this.x 
-             && x <= this.x + this.w
-             && y >= this.y
-             && y <= this.y + this.h) {
-                result = this;
-                return false;
-            }
-
+        var list = CC.areaSearch({
+            x: x,
+            y: y,
+            w: 0,
+            h: 0
         });
 
-        return result;
+        if (!list || !list.length) {
+            return null;
+        }
+
+        var sorted = list.sort(["zIndex", "ASC"], ["getCreationOrder", "DESC"]);
+
+        return sorted.e(0);
 
     };
 

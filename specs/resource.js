@@ -13,7 +13,7 @@ describe("resource", function(){
 			});
 		});
 
-		waits(3000);
+		waits(6000);
 
 		runs(function(){
 			expect(image1).not.toBe(null);
