@@ -251,7 +251,52 @@ var CC;
                 to.push(el);
             }
         }
-        
+
+    };
+
+    CC.level = function(description, startX, startY, tileW, tileH) {
+
+        if (CC.isObject(description)) {
+
+            for (var specs in description) {
+                var optsArr = description[specs];
+
+                for (var i in optsArr) {
+                    CC.new(specs, optsArr[i]);
+                }
+            }
+
+        } else if (CC.isArray(description)) {
+            
+            if (startX === undefined
+             || startY === undefined
+              || tileW === undefined
+              || tileH === undefined)
+            {
+                return;
+            }
+
+            var y = startY;
+            for (var l in description) {
+                var line = description[l];
+                var x = startX;
+
+                for (var i in line) {
+
+                    CC.new(line[i], {
+                        x: x,
+                        y: y,
+                        w: tileW,
+                        h: tileH
+                    });
+
+                    x += tileW;
+                }
+
+                y += tileH;
+            }
+
+        }
 
     };
 

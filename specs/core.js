@@ -416,4 +416,108 @@ describe("core.js", function() {
 
 	});
 
+	describe("level", function(){
+
+		it("declares a level with constructor params", function(){
+
+			CC.clear();
+
+			CC.level({
+				"Class1 Class2": [{
+					x: 10,
+					y: 10,
+					w: 10,
+					h: 10
+				},{
+					x: 20,
+					y: 10,
+					w: 10,
+					h: 10
+				}],
+				"Class3": [{
+					x: 10,
+					y: 20,
+					w: 10,
+					h: 10
+				}],
+				"Class4 Class5": [{}]
+			});
+
+			var all = CC("*");
+
+			expect(all.length).toBe(4);
+
+			expect(all.e(0).classes["Class1"]).toBeDefined();
+			expect(all.e(0).classes["Class2"]).toBeDefined();
+			expect(all.e(0).x).toBe(10);
+			expect(all.e(0).y).toBe(10);
+			expect(all.e(0).w).toBe(10);
+			expect(all.e(0).h).toBe(10);
+
+			expect(all.e(1).classes["Class1"]).toBeDefined();
+			expect(all.e(1).classes["Class2"]).toBeDefined();
+			expect(all.e(1).x).toBe(20);
+			expect(all.e(1).y).toBe(10);
+			expect(all.e(1).w).toBe(10);
+			expect(all.e(1).h).toBe(10);
+			
+			expect(all.e(2).classes["Class3"]).toBeDefined();
+			expect(all.e(2).x).toBe(10);
+			expect(all.e(2).y).toBe(20);
+			expect(all.e(2).w).toBe(10);
+			expect(all.e(2).h).toBe(10);
+			
+			expect(all.e(3).classes["Class4"]).toBeDefined();
+			expect(all.e(3).classes["Class5"]).toBeDefined();
+			expect(all.e(3).x).not.toBeDefined();
+			expect(all.e(3).y).not.toBeDefined();
+			expect(all.e(3).w).not.toBeDefined();
+			expect(all.e(3).h).not.toBeDefined();
+
+		});
+
+		it("declares a tile based level", function(){
+
+			CC.clear();
+
+			CC.level([
+				["Class1 Class2"	, "Class1 Class2"],
+				["Class3"			, "Class4 Class5"]
+			], 8, 8, 32, 32);
+
+			var all = CC("*");
+
+			expect(all.length).toBe(4);
+
+			expect(all.e(0).classes["Class1"]).toBeDefined();
+			expect(all.e(0).classes["Class2"]).toBeDefined();
+			expect(all.e(0).x).toBe(8);
+			expect(all.e(0).y).toBe(8);
+			expect(all.e(0).w).toBe(32);
+			expect(all.e(0).h).toBe(32);
+
+			expect(all.e(1).classes["Class1"]).toBeDefined();
+			expect(all.e(1).classes["Class2"]).toBeDefined();
+			expect(all.e(1).x).toBe(40);
+			expect(all.e(1).y).toBe(8);
+			expect(all.e(1).w).toBe(32);
+			expect(all.e(1).h).toBe(32);
+			
+			expect(all.e(2).classes["Class3"]).toBeDefined();
+			expect(all.e(2).x).toBe(8);
+			expect(all.e(2).y).toBe(40);
+			expect(all.e(2).w).toBe(32);
+			expect(all.e(2).h).toBe(32);
+
+			expect(all.e(3).classes["Class4"]).toBeDefined();
+			expect(all.e(3).classes["Class5"]).toBeDefined();
+			expect(all.e(3).x).toBe(40);
+			expect(all.e(3).y).toBe(40);
+			expect(all.e(3).w).toBe(32);
+			expect(all.e(3).h).toBe(32);
+
+		});
+
+	});
+
 });
