@@ -1,4 +1,4 @@
-# CascadeCanvas 1.1.0 Beta [![Build Status](https://travis-ci.org/CascadeCanvas/CascadeCanvas.png)](https://travis-ci.org/CascadeCanvas/CascadeCanvas) [![Stories in Ready](https://badge.waffle.io/CascadeCanvas/CascadeCanvas.png?label=ready)](http://waffle.io/CascadeCanvas/CascadeCanvas)
+# CascadeCanvas 1.1.0 Beta [![Build Status](https://travis-ci.org/CascadeCanvas/CascadeCanvas.png)](https://travis-ci.org/CascadeCanvas/CascadeCanvas) [![Stories in Ready](https://badge.waffle.io/CascadeCanvas/CascadeCanvas.png?label=ready)](http://waffle.io/CascadeCanvas/CascadeCanvas) [![Bountysource](https://www.bountysource.com/badge/tracker?tracker_id=2390002)](https://www.bountysource.com/trackers/2390002-cascadecanvas?utm_source=2390002&utm_medium=shield&utm_campaign=TRACKER_BADGE)
 
 CascadeCanvas is not just a good way to declare how to draw in HTML5 Canvas. CC takes OOP to a next level with multi-inheritance, allow you to use the flexibility of Javascript and the design patterns you already learn with JS.
 
