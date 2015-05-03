@@ -268,7 +268,7 @@ var CC;
             
             if (!(el.x > area.x + area.w || 
                    el.x + w < area.x || 
-                   el.y > area.y + area.w ||
+                   el.y > area.y + area.h ||
                    el.y + h < area.y))
             {
                 to.push(el);
@@ -600,6 +600,12 @@ eventEnvironmentBuilder(CC);
 
         return arguments[0];
 
+    };
+
+    CC.empty = function(obj) {
+        for (var p in obj) {
+            delete obj[p];
+        }
     };
 
     /**
@@ -1515,7 +1521,15 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
         var sorted = list.sort(["zIndex", "ASC"], ["getCreationOrder", "DESC"]);
 
-        return sorted.e(0);
+        var result = null;
+        sorted.each(function(){
+            if (this.clickable) {
+                result = this;
+                return false;
+            }
+        });
+
+        return result;
 
     };
 
@@ -1949,6 +1963,7 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
         var loadRecursively = function(index) {
             var img = new Image();
+            img.crossOrigin = "Anonymous";
             img.src = srcs[index];
             img.onload = function(){
 
@@ -1978,9 +1993,163 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
 
 
+/***** PROMISE *****/
+
+//depends on drawer, typeChecker
+//is dependency of drawer
+
+(function(){
+
+    CC.Color = function(arg) {
+
+        var self = this;
+        
+        var init = function() {
+
+            if (CC.isString(arg)) {
+                self.str = arg;
+                self.rgba = strToColor(self.str);
+                self.cmyka = rgbaToCmyka(self.rgba);
+            } else if (CC.isArray(arg) && arg.length <= 5) {
+
+                if (arg.length == 3) {
+                    self.rgba = [arg[0], arg[1], arg[2], 1];
+                    self.cmyka = rgbaToCmyka(self.rgba);
+                } else if (arg.length == 4) {
+                    self.rgba = [arg[0], arg[1], arg[2], arg[3]];
+                    self.cmyka = rgbaToCmyka(self.rgba);
+                } else {
+                    self.cmyka = [arg[0], arg[1], arg[2], arg[3], arg[4]];
+                    self.rgba = cmykaToRgba(self.cmyka);
+                }
+
+                self.str = rgbaToStr(self.rgba);
+            }
+            else
+            {
+                self.valid = false;
+                return;
+            }
+
+            self.valid = true;
+            self.R = self.rgba[0];
+            self.G = self.rgba[1];
+            self.B = self.rgba[2];
+            self.A = self.rgba[3];
+            self.C = self.cmyka[0];
+            self.M = self.cmyka[1];
+            self.Y = self.cmyka[2];
+            self.K = self.cmyka[3];
+        };
+
+        var strToColor = function(str) {
+            var rgbaRegex = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/;
+
+            if (str.indexOf("rgb") > -1) {
+                //if str contains 'rgb' or 'rgba' we will parse it
+                //it is faster than using the other methods and canvas method can't find alpha correctly
+
+                var values = rgbaRegex.exec(str);
+
+                return [
+                    Math.round(parseFloat(values[1])), 
+                    Math.round(parseFloat(values[2])), 
+                    Math.round(parseFloat(values[3])), 
+                    Math.round(parseFloat(values[4] || "1"))
+                ];
+
+            } else if (CC.screens[0] && CC.screens[0].context) {
+                //if we have a canvas context we will use it to find our color
+
+                var ctx = CC.screens[0].context;
+                ctx.fillStyle = str;
+                ctx.fillRect(0, 0, 1, 1);
+                var rgba = ctx.getImageData(0, 0, 1, 1).data;
+                return [rgba[0], rgba[1], rgba[2], rgba[3]/255];
+            } else {
+                //if we don't have a canvas context yet, we will create a html tag to find the color
+
+                var tempDiv = document.createElement("div");
+                tempDiv.style.color = str;
+                document.body.appendChild(tempDiv);
+                var rgbStr = getComputedStyle(tempDiv).color;
+                document.body.removeChild(tempDiv);
+                
+                var values = rgbaRegex.exec(rgbStr);
+
+                return [
+                    Math.round(parseFloat(values[1])), 
+                    Math.round(parseFloat(values[2])), 
+                    Math.round(parseFloat(values[3])), 
+                    1
+                ];
+            }
+
+        };
+
+        var rgbaToCmyka = function(rgba) {
+            if (rgba[0] === 0 && rgba[1] === 0 && rgba[2] === 0)
+            {
+                return [0, 0, 0, 1, 1];
+            }
+            else
+            {
+                var c = 1 - (rgba[0] / 255),
+                    m = 1 - (rgba[1] / 255),
+                    y = 1 - (rgba[2] / 255),
+                    k = Math.min(c, m, y);
+
+                
+                c = ((c - k) / (1 - k));
+                m = ((m - k) / (1 - k));
+                y = ((y  - k) / (1 - k));
+
+                return [c, m, y, k, rgba[3]];
+            }
+        };
+
+        var cmykaToRgba = function(cmyka) {
+            var R = cmyka[0] * (1.0 - cmyka[3]) + cmyka[3], 
+                G = cmyka[1] * (1.0 - cmyka[3]) + cmyka[3],
+                B = cmyka[2] * (1.0 - cmyka[3]) + cmyka[3];
+
+            R = Math.round((1.0 - R) * 255.0 + 0.5);
+            G = Math.round((1.0 - G) * 255.0 + 0.5);
+            B = Math.round((1.0 - B) * 255.0 + 0.5);
+
+            return [R, G, B, cmyka[4]];
+        };
+
+        var rgbaToStr = function(rgba) {
+            return "rgba("+rgba[0]+", "+rgba[1]+", "+rgba[2]+", "+rgba[3]+")";
+        };
+
+        this.mixWith = function(other, pct) {
+            if (!CC.isNumber(pct)) {
+                pct = 50;
+            }
+            var dif = 100 - pct;
+
+            return new CC.Color([
+                (this.C*dif + other.C*pct) / 100,
+                (this.M*dif + other.M*pct) / 100,
+                (this.Y*dif + other.Y*pct) / 100,
+                (this.K*dif + other.K*pct) / 100,
+                (this.A*dif + other.A*pct) / 100
+            ]);
+        };
+
+        init();
+    };
+
+})();
+
+
+
+
 /***** DRAWER *****/
 
-//depends on typeChecker, event, objectTools, resource
+//depends on typeChecker, event, objectTools, resource, color
 //is dependency of loop
 
 (function(){
@@ -2110,10 +2279,6 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
         this.x = fx;
         this.y = fy;
     };
-
-
-
-
 
 	var drawElement = function(el, scr) {
 
@@ -2247,10 +2412,21 @@ tiles (string[][]) OBS.: The string is the name of the tile
         setLayerFlip(layr, config, scr);
         setLayerScale(layr, config, scr);
         setLayerAlpha(layr, scr);
+
         setLayerShadow(layr, scr);
+
         setLayerFill(layr, config, scr);
         setLayerStroke(layr, config, scr);
         setLayerSpriteOrTile(layr, config, scr);
+
+        if (layr.shadow) {
+            //if we did draw the shadow, we need to clean it and draw the main content on top of it
+            clearShadow(scr);
+
+            setLayerFill(layr, config, scr);
+            setLayerStroke(layr, config, scr);
+            setLayerSpriteOrTile(layr, config, scr);
+        }
 
         scr.context.restore();
 
@@ -2266,7 +2442,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
         config.EH = el.h;
 
         //if it is a text, config the font
-        if (layr.shape === "text" && CC.isString(layr.text)) {
+        if (scr && layr.shape === "text" && CC.isString(layr.text)) {
             config.font = createFont(layr, scr);
         }
 
@@ -2285,10 +2461,15 @@ tiles (string[][]) OBS.: The string is the name of the tile
 
             } else if (layr.shape === "text" && CC.isString(layr.text)) {
 
-                scr.context.font = config.font;
+                var measuredW = 50;
 
-                config.EW = el.w || scr.context.measureText(layr.text).width;
+                if (scr) {
+                    scr.context.font = config.font;
+                    measuredW = scr.context.measureText(layr.text).width;
+                }
+
                 config.EH = el.h || layr.font.size * 1.5;
+                config.EW = el.w || measuredW;
             }
 
         }
@@ -2297,6 +2478,10 @@ tiles (string[][]) OBS.: The string is the name of the tile
         config.offsetY = layr.offsetY || 0,
         config.FW = layr.w || config.EW, //final W
         config.FH = layr.h || config.EH; //final H
+
+        if (layr.shape === "circle") {
+            config.FH = config.FW;
+        }
 
         return config;
 
@@ -2347,8 +2532,8 @@ tiles (string[][]) OBS.: The string is the name of the tile
 	var setLayerOffset = function(config, scr) {
 		//translate to the chosen offset
         scr.context.translate(
-            config.offsetX - ((config.FW - config.EW) / 2), 
-            config.offsetY - ((config.FH - config.EH) / 2)
+            config.offsetX, 
+            config.offsetY
         );
 	};
 
@@ -2384,12 +2569,14 @@ tiles (string[][]) OBS.: The string is the name of the tile
 
 	var setLayerScale = function(layr, config, scr) {
 		//scale - if want to stretch or squeeze the layer
-        if (layr.scale && (layr.scale.x || layr.scale.y)) {
+        if (layr.scale && (CC.isNumber(layr.scale.x) || CC.isNumber(layr.scale.y))) {
 
             //translate to the center
             scr.context.translate(config.FW/2, config.FH/2);
             //scale
-            scr.context.scale(layr.scale.x || 1, layr.scale.y || 1);
+            scr.context.scale(
+                CC.isNumber(layr.scale.x) ? layr.scale.x : 1, 
+                CC.isNumber(layr.scale.y) ? layr.scale.y : 1);
             //translate back to 0, 0
             scr.context.translate(-config.FW/2, -config.FH/2);
         }
@@ -2428,9 +2615,19 @@ tiles (string[][]) OBS.: The string is the name of the tile
 
     };
 
+    var clearShadow = function(scr) {
+        scr.context.shadowColor = 0;
+        scr.context.shadowOffsetX = 0; 
+        scr.context.shadowOffsetY = 0;
+        scr.context.shadowBlur = 0;
+    };
+
 	var setLayerFill = function(layr, config, scr) {
 		
-		if (!layr.fill) {
+		if (!layr.fill || (
+            !layr.fill.color && 
+            !layr.fill.linearGradient && 
+            !layr.fill.radialGradient)) {
 			return;
 		} 
 
@@ -2457,7 +2654,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
 
             scr.context.font = config.font;
             scr.context.textBaseline = layr.font.baseline;
-            scr.context.fillText(layr.text, 0, 0);
+            drawText(layr, config, scr, function(line, x, y) { scr.context.fillText(line, x, y); });
 
         //draw a polygon
         } else if (CC.isArray(layr.shape)) {
@@ -2470,7 +2667,14 @@ tiles (string[][]) OBS.: The string is the name of the tile
 
 	var setLayerStroke = function(layr, config, scr) {
 		//stroke
-        if (!layr.stroke) {
+        if (!layr.stroke || (
+            !layr.stroke.color && 
+            !layr.stroke.linearGradient && 
+            !layr.stroke.radialGradient && 
+            layr.stroke.thickness === undefined && 
+            !layr.stroke.cap && 
+            !layr.stroke.join && 
+            !layr.stroke.dash)) {
         	return;
         }
 
@@ -2498,7 +2702,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
 
             scr.context.font = config.font;
             scr.context.textBaseline = layr.font.baseline;
-            scr.context.strokeText(layr.text, 0, 0);
+            drawText(layr, config, scr, function(line, x, y) { scr.context.strokeText(line, x, y); });
 
         //draw a polygon
         } else if (CC.isArray(layr.shape)) {
@@ -2534,7 +2738,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
     /***********************                                         ************************/
     /****************************************************************************************/
     /****************************************************************************************/
-    /* @melanke - 13/11/2013                                                                */
+    /* @melanke - 13/11/2013 ****************************************************************/
 
 
 	var setLayerFillStyle = function(layr, config, scr) {
@@ -2546,12 +2750,14 @@ tiles (string[][]) OBS.: The string is the name of the tile
         //by linear gradient
         } else if (layr.fill.linearGradient) {
 
-            scr.context.fillStyle = createLinearGradient(layr.fill.linearGradient, config.FW, config.FH, scr);
+            scr.context.fillStyle = createLinearGradient(
+                layr.fill.linearGradient, config.FW, config.FH, scr);
         
         //by radial gradient    
         } else if (layr.fill.radialGradient) {
 
-            scr.context.fillStyle = createRadialGradient(layr.fill.radialGradient, config.FW, config.FH, scr);
+            scr.context.fillStyle = createRadialGradient(
+                layr.fill.radialGradient, config.FW, config.FH, scr);
 
         }
 
@@ -2566,12 +2772,14 @@ tiles (string[][]) OBS.: The string is the name of the tile
         //by linearGradient
         } else if (layr.stroke.linearGradient) {
 
-            scr.context.strokeStyle = createLinearGradient(layr.stroke.linearGradient, config.FW, config.FH, scr);
+            scr.context.strokeStyle = createLinearGradient(
+                layr.stroke.linearGradient, config.FW, config.FH, scr);
             
         //by radial gradient 
         } else if (layr.stroke.radialGradient) {
 
-            scr.context.strokeStyle = createRadialGradient(layr.stroke.radialGradient, config.FW, config.FH, scr);
+            scr.context.strokeStyle = createRadialGradient(
+                layr.stroke.radialGradient, config.FW, config.FH, scr);
 
         }
 
@@ -2613,6 +2821,10 @@ tiles (string[][]) OBS.: The string is the name of the tile
         limitSprite(layr, config, scr);
         var sprite = createSprite(layr.sprite, config.FW, config.FH);
 
+        if (!sprite.w || !sprite.h) {
+        	return;
+        }
+
         var startX = 0;
         var startY = 0;
         var repeatX = layr.sprite.repeat && layr.sprite.repeat.indexOf("x") != -1;
@@ -2623,7 +2835,16 @@ tiles (string[][]) OBS.: The string is the name of the tile
             startY = 0;
             do {
 
-                scr.context.drawImage(sprite.res, sprite.x, sprite.y, sprite.w, sprite.h, startX, startY, sprite.w, sprite.h);
+                scr.context.drawImage(
+                    sprite.res, 
+                    sprite.x, 
+                    sprite.y, 
+                    sprite.w, 
+                    sprite.h, 
+                    startX, 
+                    startY, 
+                    sprite.w, 
+                    sprite.h);
                 
                 if (repeatY) {
                     startY += sprite.h;
@@ -2659,7 +2880,20 @@ tiles (string[][]) OBS.: The string is the name of the tile
                 tile.h = th;
 
                 var sprite = createSprite(tile, config.FW, config.FH);
-                scr.context.drawImage(sprite.res, sprite.x, sprite.y, sprite.w, sprite.h, startX, startY, sprite.w, sprite.h);
+
+		        if (sprite.w && sprite.h) {
+
+	                scr.context.drawImage(
+	                    sprite.res, 
+	                    sprite.x, 
+	                    sprite.y, 
+	                    sprite.w, 
+	                    sprite.h, 
+	                    startX, 
+	                    startY, 
+	                    sprite.w, 
+	                    sprite.h);
+	            }
 
                 startX += tw;
             }
@@ -2800,14 +3034,10 @@ tiles (string[][]) OBS.: The string is the name of the tile
     var createRoundedBorder = function(FW, FH, radius, scr){
         scr.context.beginPath();
         scr.context.moveTo(radius, 0);
-        scr.context.lineTo(FW-radius, 0);
-        scr.context.quadraticCurveTo(FW, 0, FW, radius);
-        scr.context.lineTo(FW, FH-radius);
-        scr.context.quadraticCurveTo(FW, FH, FW-radius, FH);
-        scr.context.lineTo(radius, FH);
-        scr.context.quadraticCurveTo(0, FH, 0, FH-radius);
-        scr.context.lineTo(0, radius);
-        scr.context.quadraticCurveTo(0, 0, radius, 0);
+        scr.context.arcTo(FW, 0, FW, FH, radius);
+        scr.context.arcTo(FW, FH, 0, FH, radius);
+        scr.context.arcTo(0, FH, 0, 0, radius);
+        scr.context.arcTo(0, 0, FW, 0, radius);
         scr.context.closePath();
     };
 
@@ -2848,7 +3078,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
                 null;
 
             if (pathText !== null) {
-                pathText(layr.text, 0, 0);
+            	drawText(layr, config, scr, function(line, x, y) { pathText(line, x, y); });
                 scr.context.clip();
             }
 
@@ -2870,21 +3100,578 @@ tiles (string[][]) OBS.: The string is the name of the tile
             y: sprite.y || 0,
         };
 
-        response.w = sprite.w || Math.min(FW, response.res.width);
-        response.h = sprite.h || Math.min(FH, response.res.height);
+        if (response.res) {
 
-        var delay = sprite.delay || 1;
+	        response.w = sprite.w || Math.min(FW, response.res.width);
+	        response.h = sprite.h || Math.min(FH, response.res.height);
 
-        if (sprite.frames && sprite.frames > 1) {
-            if (sprite.vertical) {
-                response.y += (parseInt(CC.step / delay) % sprite.frames) * response.h;
-            } else {
-                response.x += (parseInt(CC.step / delay) % sprite.frames) * response.w;
-            }
-        }
+	        var delay = sprite.delay || 1;
+
+	        if (sprite.frames && sprite.frames > 1) {
+	            if (sprite.vertical) {
+	                response.y += (parseInt(CC.step / delay) % sprite.frames) * response.h;
+	            } else {
+	                response.x += (parseInt(CC.step / delay) % sprite.frames) * response.w;
+	            }
+	        }
+	    } else {
+	    	response.w = 0;
+	    	response.h = 0;
+	    }
 
         return response;
 
+    };
+
+    var drawText = function(layr, config, scr, drawMethod) {
+    	var lineHeight = config.font.lineHeight || layr.font.size;
+
+    	var prelines = layr.text.split("\n");
+        var y = 0;
+
+    	for (var i = 0; i < prelines.length; i++) {
+
+	        var words = prelines[i].split(' ');
+	        var line = '';
+
+	        for (var n = 0; n < words.length; n++) {
+				var testLine = line + words[n] + ' ';
+				var metrics = scr.context.measureText(testLine);
+				var testWidth = metrics.width;
+
+				if (testWidth > config.FW && n > 0) {
+					drawMethod(line, 0, y);
+					line = words[n] + ' ';
+					y += lineHeight;
+				} else {
+					line = testLine;
+				}
+	        }
+
+        	drawMethod(line, 0, y);
+        	y += lineHeight;
+        }
+    };
+
+    /****************************************************************************************/
+    /**      ************************************************************************      **/
+    /******      ****************************************************************      ******/
+    /**********      ********************************************************      **********/
+    /**************      ************************************************      **************/
+    /*******                *****************************************                ********/
+    /**************      ************************************************      **************/
+    /**********      ********************************************************      **********/
+    /******      ****************************************************************      ******/
+    /**     ****************************                  ***************************      **/
+    /*********************************    ***************    ********************************/
+    /****************************************************************************************/
+    /* @melanke - 30/11/2014 ****************************************************************/
+
+    /**
+    * creates a transition step between origin and destination and put it on target
+    */
+    CC.transformLayer = function (element, opt, percentage) {
+
+        var config = configDrawing(element, opt.origin);
+
+        opt.target.zIndex = transformNumber(opt.origin.zIndex, opt.destination.zIndex, percentage, 0);
+
+        transformShapeWidthHeightAndRoundedB(opt.target, opt.origin, opt.destination, percentage, config);
+
+        opt.target.text = transformNoTween(opt.origin.text, opt.destination.text, percentage);
+
+        transformFont(opt.target, opt.origin, opt.destination, percentage, config);
+
+        opt.target.offsetX = transformNumber(opt.origin.offsetX, opt.destination.offsetX, percentage, 0);
+        opt.target.offsetY = transformNumber(opt.origin.offsetY, opt.destination.offsetY, percentage, 0);
+        opt.target.angle = transformNumber(opt.origin.angle, opt.destination.angle, percentage, 0);
+
+        transformAnchor(opt.target, opt.origin, opt.destination, percentage, config, element);
+        transformFlipAndScale(opt.target, opt.origin, opt.destination, percentage, config);
+        opt.target.alpha = transformNumber(opt.origin.alpha, opt.destination.alpha, percentage, 1);
+        transformShadow(opt.target, opt.origin, opt.destination, percentage, config);
+        transformFill(opt.target, opt.origin, opt.destination, percentage, config);
+        transformStroke(opt.target, opt.origin, opt.destination, percentage, config);
+        transformSprite(opt.target, opt.origin, opt.destination, percentage, config);
+        transformTiles(opt.target, opt.origin, opt.destination, percentage, config);
+
+
+    };
+
+    var pctCalc = function(originVal, destVal, pct) {
+        var diff = destVal - originVal;
+
+        return !diff ? originVal : originVal + (diff / 100 * pct);
+    };
+
+    var transformNumber = function(originVal, destVal, pct, defaultV) {
+
+        if (originVal === destVal) 
+        {
+            return originVal;
+        }
+
+        var originVal = !CC.isNumber(originVal) ? defaultV 
+            : originVal;
+        var destVal = !CC.isNumber(destVal) ? defaultV 
+            : destVal;
+        return pctCalc(originVal, destVal, pct);
+    };
+
+    var transformColor = function(originVal, destVal, pct, defaultV) {
+
+        if (originVal === destVal) 
+        {
+            return originVal;
+        }
+
+        var defaultVC = new CC.Color(defaultV);
+        var originValC = new CC.Color(originVal);
+        var destValC = new CC.Color(destVal);
+
+        if (!defaultVC.valid) {
+            if (originValC.valid) {
+                defaultVC = new CC.Color([ originValC.C, originValC.M, originValC.Y, originValC.K, 0]);
+            } else if (destValC.valid) {
+                defaultVC = new CC.Color([ destValC.C, destValC.M, destValC.Y, destValC.K, 0]);
+            } else {
+                defaultVC = new CC.Color([ 0, 0, 0, 0, 0]);
+            }
+        }
+
+        if (!originValC.valid) {
+            originValC = defaultVC;
+        }
+
+        if (!destValC.valid) {
+            destValC = defaultVC;
+        }
+
+        return originValC.mixWith(destValC, pct).str;
+    };
+
+    var transformNoTween = function(originVal, destVal, pct) {
+
+        if (originVal == destVal) {
+            return originVal;
+        } else if (pct < 50) {
+            return originVal;
+        } else {
+            return destVal;
+        }
+
+    };
+
+    var createSolidGradient = function(color, gradient) {
+        var resp = {};
+
+        for (var g in gradient) {
+            if (g === "start" || g === "end" || g === "innerCircle" || g === "outerCircle") {
+                resp[g] = gradient[g];
+            } else {
+                resp[g] = color;
+            }
+        }
+
+        return resp;
+    };
+
+    var transformLinearGradient = function(olinearg, dlinearg, percentage) {
+        if (!olinearg && !dlinearg) {
+            return;
+        }
+
+        var olinearg = olinearg || {};
+        var dlinearg = dlinearg || {};
+
+        var linearGradient = {};
+
+        if (olinearg.start || dlinearg.start) {
+            var ostart = olinearg.start || [];
+            var dstart = dlinearg.start || [];
+
+            linearGradient.start = [
+                transformNumber(ostart[0], dstart[0], percentage, 0),
+                transformNumber(ostart[1], dstart[1], percentage, 0)
+            ];
+        }
+
+        if (olinearg.end || dlinearg.end) {
+            var oend = olinearg.end || [];
+            var dend = dlinearg.end || [];
+
+            linearGradient.end = [
+                transformNumber(oend[0], dend[0], percentage, 100),
+                transformNumber(oend[1], dend[1], percentage, 0)
+            ];
+        }
+
+        for (var ol in olinearg) {
+            if (ol === "start" || ol === "end") {
+                continue;
+            }
+
+            if (dlinearg[ol]){
+                linearGradient[ol] = transformColor(olinearg[ol], dlinearg[ol], percentage, "black");
+            } else if (percentage < 50) {
+                linearGradient[ol] = olinearg[ol];
+            }
+        }
+
+        for (var dl in dlinearg) {
+            if (dl !== "start" && dl !== "end" && !olinearg[dl] && percentage >= 50) {
+                linearGradient[dl] = dlinearg[dl];
+            }
+        }
+
+        return linearGradient;
+    };
+
+    var transformRadialGradient = function(oradg, dradg, percentage) {
+        if (!oradg && !dradg) {
+            return;
+        }
+
+        var oradg = oradg || {};
+        var dradg = dradg || {};
+
+        var radialGradient = {};
+
+        if (oradg.innerCircle || dradg.innerCircle) {
+            var oinner = oradg.innerCircle || {};
+            var dinner = dradg.innerCircle || {};
+
+            radialGradient.innerCircle = {
+                centerX: transformNumber(oinner.centerX, dinner.centerX, percentage, 50),
+                centerY: transformNumber(oinner.centerY, dinner.centerY, percentage, 50),
+                radius: transformNumber(oinner.radius, dinner.radius, percentage, 0)
+            };
+        }
+
+        if (oradg.outerCircle || dradg.outerCircle) {
+            var oouter = oradg.outerCircle || {};
+            var douter = dradg.outerCircle || {};
+
+            radialGradient.outerCircle = {
+                centerX: transformNumber(oouter.centerX, douter.centerX, percentage, 50),
+                centerY: transformNumber(oouter.centerY, douter.centerY, percentage, 50),
+                radius: transformNumber(oouter.radius, douter.radius, percentage, 100),
+            };
+        }
+
+        for (var ol in oradg) {
+            if (ol === "innerCircle" || ol === "outerCircle") {
+                continue;
+            }
+
+            if (dradg[ol]) {
+                radialGradient[ol] = transformColor(oradg[ol], dradg[ol], percentage, "black");
+            } else if (percentage < 50) {
+                radialGradient[ol] = oradg[ol];
+            }
+        }
+
+        for (var dl in dradg) {
+            if (dl !== "innerCircle" && dl !== "outerCircle" && !oradg[dl] && percentage >= 50) {
+                radialGradient[dl] = dradg[dl];
+            }
+        }
+
+        return radialGradient;
+    };
+
+    var transformShapeWidthHeightAndRoundedB = function(target, origin, destination, percentage, config) {
+
+        target.w = transformNumber(origin.w, destination.w, percentage, config.FW);
+        target.h = transformNumber(origin.h, destination.h, percentage, config.FH);
+
+        var oshape = !CC.isString(origin.shape) ? "rect" : origin.shape;
+        var dshape = !CC.isString(destination.shape) ? "rect" : destination.shape;
+        if (oshape !== dshape) 
+        {
+            if (oshape === "rect" && dshape === "circle") 
+            {
+                target.h = transformNumber(origin.h, destination.w, percentage, config.FH);
+
+                var oroundedBorderRadius = !CC.isNumber(origin.roundedBorderRadius) ? 0 
+                    : origin.roundedBorderRadius;
+                var droundedBorderRadius = (Math.min(target.w, target.h) / 2);
+                target.shape = "rect";
+                target.roundedBorderRadius = pctCalc(oroundedBorderRadius, droundedBorderRadius, percentage);
+            } 
+            else if (oshape === "circle" && dshape === "rect") 
+            {
+                var droundedBorderRadius = !CC.isNumber(destination.roundedBorderRadius) ? 0 
+                    : destination.roundedBorderRadius;
+                var oroundedBorderRadius = target.w / 2;
+                target.shape = "rect";
+                target.roundedBorderRadius = pctCalc(oroundedBorderRadius, droundedBorderRadius, percentage);
+            } 
+            else
+            {
+                if (percentage < 50) {
+                    target.shape = origin.shape;
+                } else {
+                    target.shape = destination.shape;
+                }
+            }
+        } else {
+            target.shape = origin.shape;
+
+            target.roundedBorderRadius = transformNumber(
+                origin.roundedBorderRadius, 
+                destination.roundedBorderRadius, 
+                percentage, 0);
+        }
+    };
+
+    var transformFont = function(target, origin, destination, percentage, config) {
+        //size
+        target.font = {};
+        var ofont = origin.font || {};
+        var dfont = destination.font || {};
+
+        target.font.size = transformNumber(ofont.size, dfont.size, percentage, 0);
+
+        //baseline
+        var obaseline = !CC.isString(ofont.baseline) ? "top" : ofont.baseline;
+        var dbaseline = !CC.isString(dfont.baseline) ? "top" : dfont.baseline;
+        if (obaseline !== dbaseline) {
+            if (percentage < 50) {
+                target.font.baseline = ofont.baseline;
+            } else {
+                target.font.baseline = dfont.baseline;
+            }
+        }
+        else
+        {
+            target.font.baseline = ofont.baseline;
+        }
+
+        //style
+        var ostyle = !CC.isString(ofont.style) ? "normal" : ofont.style;
+        var dstyle = !CC.isString(dfont.style) ? "normal" : dfont.style;
+        if (ostyle !== dstyle) {
+            if (percentage < 50) {
+                target.font.style = ofont.style;
+            } else {
+                target.font.style = dfont.style;
+            }
+        }
+        else
+        {
+            target.font.style = ofont.style;
+        }
+
+        //weight
+        var oweight = !ofont.weight ? "normal" : ofont.weight;
+        var dweight = !dfont.weight ? "normal" : dfont.weight;
+        if (oweight !== dweight) {
+            if (percentage < 50) {
+                target.font.weight = ofont.weight;
+            } else {
+                target.font.weight = dfont.weight;
+            }
+        }
+        else
+        {
+            target.font.weight = ofont.weight;
+        }
+
+        //family
+        var ofamily = !CC.isString(ofont.family) ? "sans-serif" : ofont.family;
+        var dfamily = !CC.isString(dfont.family) ? "sans-serif" : dfont.family;
+        if (ofamily !== dfamily) {
+            if (percentage < 50) {
+                target.font.family = ofont.family;
+            } else {
+                target.font.family = dfont.family;
+            }
+        }
+        else
+        {
+            target.font.family = ofont.family;
+        }
+        
+    };
+
+    var transformAnchor = function(target, origin, destination, percentage, config, el) {
+        var oanchor = origin.anchor || el.anchor || {};
+        var danchor = destination.anchor || el.anchor || {};
+
+        target.anchor = {
+            x: transformNumber(oanchor.x, danchor.x, percentage, config.EW / 2),
+            y: transformNumber(oanchor.y, danchor.y, percentage, config.EH / 2)
+        };
+        
+    };
+
+    var transformFlipAndScale = function(target, origin, destination, percentage, config) {
+
+        var oscalex = origin.scale && CC.isNumber(origin.scale.x) ? origin.scale.x : 1;
+        var oscaley = origin.scale && CC.isNumber(origin.scale.y) ? origin.scale.y : 1;
+        var dscalex = destination.scale && CC.isNumber(destination.scale.x) ? destination.scale.x : 1;
+        var dscaley = destination.scale && CC.isNumber(destination.scale.y) ? destination.scale.y : 1;
+
+        if (CC.isString(origin.flip)){
+            if (origin.flip.indexOf("x") != -1) {
+                oscalex *= -1;
+            }
+
+            if (origin.flip.indexOf("y") != -1) {
+                oscaley *= -1;
+            }
+        }
+
+        if (CC.isString(destination.flip)){
+            if (destination.flip.indexOf("x") != -1) {
+                dscalex *= -1;
+            }
+
+            if (destination.flip.indexOf("y") != -1) {
+                dscaley *= -1;
+            }
+        }
+
+        target.scale = {
+            x: transformNumber(oscalex, dscalex, percentage, 1),
+            y: transformNumber(oscaley, dscaley, percentage, 1)
+        };
+
+    };
+
+    var transformShadow = function(target, origin, destination, percentage, config) {
+
+        var oshadow = origin.shadow || {};
+        var dshadow = destination.shadow || {};
+
+        target.shadow = {
+            blur: transformNumber(oshadow.blur, dshadow.blur, percentage, 0),
+            color: transformColor(oshadow.color, dshadow.color, percentage, "black"),
+            x: transformNumber(oshadow.x, dshadow.x, percentage, 0),
+            y: transformNumber(oshadow.y, dshadow.y, percentage, 0)
+        };
+    };
+
+    var transformFill = function(target, origin, destination, percentage, config) {
+        var ofill = origin.fill || {};
+        var dfill = destination.fill || {};
+
+        target.fill = {};
+
+        var ocolor = ofill.color;
+        var dcolor = dfill.color;
+        var olinearg = ofill.linearGradient;
+        var dlinearg = dfill.linearGradient;
+        var oradialg = ofill.radialGradient;
+        var dradialg = dfill.radialGradient;
+
+        //let the color transform to gradient
+        if (ocolor && !dcolor) {
+            if (olinearg) {
+                ocolor = undefined;
+            } else if (dlinearg) {
+                olinearg = createSolidGradient(ocolor, dlinearg);
+                ocolor = undefined;
+            } else if (dradialg) {
+                oradialg = createSolidGradient(ocolor, dradialg);
+                ocolor = undefined;
+            }
+        } else if (!ocolor && dcolor) {
+            if (dlinearg) {
+                dcolor = undefined;
+            } else if (olinearg) {
+                dlinearg = createSolidGradient(dcolor, olinearg);
+                dcolor = undefined;
+            } else if (oradialg) {
+                dradialg = createSolidGradient(dcolor, oradialg);
+                dcolor = undefined;
+            }
+        }
+
+        target.fill.color = transformColor(ocolor, dcolor, percentage, undefined);
+        target.fill.linearGradient = transformLinearGradient(olinearg, dlinearg, percentage);
+        target.fill.radialGradient = transformRadialGradient(oradialg, dradialg, percentage);
+        
+    };
+
+    var transformStroke = function(target, origin, destination, percentage, config) {
+        var ostroke = origin.stroke || {};
+        var dstroke = destination.stroke || {};
+
+        target.stroke = {};
+
+        var ocolor = ostroke.color;
+        var dcolor = dstroke.color;
+        var olinearg = ostroke.linearGradient;
+        var dlinearg = dstroke.linearGradient;
+        var oradialg = ostroke.radialGradient;
+        var dradialg = dstroke.radialGradient;
+
+        //let the color transform to gradient
+        if (ocolor && !dcolor) {
+            if (olinearg) {
+                ocolor = undefined;
+            } else if (dlinearg) {
+                olinearg = createSolidGradient(ocolor, dlinearg);
+                ocolor = undefined;
+            } else if (dradialg) {
+                oradialg = createSolidGradient(ocolor, dradialg);
+                ocolor = undefined;
+            }
+        } else if (!ocolor && dcolor) {
+            if (dlinearg) {
+                dcolor = undefined;
+            } else if (olinearg) {
+                dlinearg = createSolidGradient(dcolor, olinearg);
+                dcolor = undefined;
+            } else if (oradialg) {
+                dradialg = createSolidGradient(dcolor, oradialg);
+                dcolor = undefined;
+            }
+        }
+
+        target.stroke.color = transformColor(ocolor, dcolor, percentage, undefined);
+        target.stroke.linearGradient = transformLinearGradient(olinearg, dlinearg, percentage);
+        target.stroke.radialGradient = transformRadialGradient(oradialg, dradialg, percentage);
+        
+        target.stroke.thickness = transformNumber(ostroke.thickness, dstroke.thickness, percentage, 0);
+        target.stroke.cap = transformNoTween(ostroke.cap, dstroke.cap, percentage);
+        target.stroke.join = transformNoTween(ostroke.join, dstroke.join, percentage);
+        target.stroke.dash = transformNoTween(ostroke.dash, dstroke.dash, percentage);
+    };
+
+    var transformSprite = function(target, origin, destination, percentage, config) {
+        var osprite = origin.sprite || {};
+        var dsprite = destination.sprite || {};
+
+        target.sprite = {};
+        target.sprite.url = transformNoTween(osprite.url, dsprite.url, percentage);
+        target.stroke.x = transformNumber(osprite.x, dsprite.x, percentage, 0);
+        target.stroke.y = transformNumber(osprite.y, dsprite.y, percentage, 0);
+
+        if (target.sprite.url && target.sprite.url.length) { 
+            var res = CC.useResource(target.sprite.url);
+            target.sprite.w = transformNumber(osprite.w, dsprite.w, percentage, Math.min(config.FW, res.width));
+            target.sprite.h = transformNumber(osprite.h, dsprite.h, percentage, Math.min(config.FH, res.height));
+        }
+
+        target.stroke.delay = transformNumber(osprite.delay, dsprite.delay, percentage, 1);
+        target.stroke.frames = transformNumber(osprite.frames, dsprite.frames, percentage, 1);
+        target.sprite.vertical = transformNoTween(osprite.vertical, dsprite.vertical, percentage);
+        target.sprite.repeat = transformNoTween(osprite.repeat, dsprite.repeat, percentage);
+
+    };
+
+    var transformTiles = function(target, origin, destination, percentage, config) {
+        var otileSize = origin.tileSize || {};
+        var dtileSize = destination.tileSize || {};
+
+        target.tileSize = {};
+        target.tileSize.w = transformNumber(otileSize.w, dtileSize.w, percentage, 16);
+        target.tileSize.h = transformNumber(otileSize.h, dtileSize.h, percentage, 16);
+
+        target.tiles = transformNoTween(origin.tiles, destination.tiles, percentage);
     };
 
 })();
@@ -3241,9 +4028,71 @@ var Element = function(specs, opts){
         }
     };
 
-    this.toggleLayers = function(toHide, toShow) {
-        this.layers[toHide].hidden = true;
-        this.layers[toShow].hidden = false;
+    this.toggleLayers = function(toHide, toShow, steps, effect) {
+
+        if (!steps) {
+            this.layers[toHide].hidden = true;
+            this.layers[toShow].hidden = false;
+            return null;
+        } 
+
+        var opt = {
+            target: {},
+            origin: this.layers[toHide],
+            destination: this.layers[toShow],
+            steps: steps,
+            effect: effect
+        }
+
+        var anim = CC.layerAnimation(this, opt);
+
+        anim.beforeStart(function() {
+            opt.target = {};
+            el.layers["CCTemp-"+toHide+"-"+toShow] = opt.target;
+            opt.origin = el.layers[toHide];
+            opt.origin.hidden = true;
+            opt.destination = el.layers[toShow];
+        }); 
+
+        anim.then(function(){
+
+            delete el.layers["CCTemp-"+toHide+"-"+toShow];
+            el.layers[toShow].hidden = false;
+
+        });
+
+        return anim;
+    };
+
+    this.animateLayer = function(targetLayer, changes, steps, effect) {
+
+        var opt = {
+            target: {},
+            origin: this.layers[targetLayer],
+            destination: {},
+            steps: steps,
+            effect: effect
+        };
+
+        var anim = CC.layerAnimation(this, opt);
+
+        anim.beforeStart(function() {
+            opt.target = {};
+            el.layers["CCTemp-"+targetLayer] = opt.target;
+            opt.origin = el.layers[targetLayer];
+            opt.origin.hidden = true;
+            opt.destination = CC.merge({}, el.layers[targetLayer], changes);
+        });
+
+        anim.then(function(){
+
+            delete el.layers["CCTemp-"+targetLayer];
+            el.layers[targetLayer] = opt.destination;
+            el.layers[targetLayer].hidden = false;
+
+        });
+
+        return anim;
     };
 
     this.getCreationTime = function() {
@@ -3555,6 +4404,361 @@ var ElementList = function(elements, selection){
     init();
 
 };
+
+
+
+
+/***** ANIMATION *****/
+
+(function(){
+
+	CC.Animation = function() {
+
+		var self = this;
+
+		var args = [].splice.call(arguments, 0), //copy
+			loopers = args[0],
+			totalsteps = args[1],
+			effect = args[2],
+			params = args[args.length-1],
+			currentStep = 0,
+			finishedLoopers = 0,
+			pct = 0,
+			enderframe = undefined,
+			callbacks = [],
+			beforeStart = [];
+
+		if (!CC.isArray(loopers)) {
+			loopers = [loopers];
+		}
+
+		if (!CC.isNumber(totalsteps)) {
+			totalsteps = undefined;
+		}
+
+		if (!CC.isString(effect)) {
+			effect = undefined;
+		}
+
+		if (!CC.isObject(params)) {
+			params = undefined;
+		}
+
+		this.isPlaying = false;
+
+		this.then = function(cb) {
+			callbacks.push(cb);
+		};
+
+		this.beforeStart = function(bf) {
+			beforeStart.push(bf);
+		};
+
+		this.removeCallback = function(cb) {
+			for (var i in callbacks){
+				if (cb === callbacks[i]) {
+					callbacks.splice(i, 0);
+				}
+			}
+		};
+
+		this.done = function() {
+			this.pause();
+			currentStep = 0;
+			finishedLoopers = 0;
+			pct = 0;
+
+			for (var i in callbacks) {
+				var resp = callbacks[i]();
+				if (resp && CC.isFunction(resp.start) && resp.isPlaying === false) {
+					resp.start();
+				}
+			}
+		};
+
+		this.resume = function() {
+			this.isPlaying = true;
+
+			enterframe = CC.bind("enterframe", function(){
+				var keepGoing = undefined;
+
+				if (currentStep === 0) {
+					callBeforeStart();
+				}
+
+				if (totalsteps !== undefined) {
+					pct = CC.easing.linear(currentStep, 0, 100, totalsteps);
+					var showPct = pct;
+
+					if (CC.isFunction(CC.easing[effect])) {
+						showPct = CC.easing[effect](currentStep, 0, 100, totalsteps);
+					}
+
+					if (pct < 100) {
+						for (var i in loopers) {
+							keepGoing = loopers[i].apply(CC, [showPct, params]);
+						}
+					}
+				} else {
+					for (var i in loopers) {
+						keepGoing = loopers[i].apply(CC, [currentStep, params]);
+					}
+				}
+
+				if (keepGoing === false) {
+					finishedLoopers++;
+				}
+
+				currentStep++;
+
+				if (pct >= 100 || finishedLoopers >= loopers.length) {
+					self.done();
+				}
+			});
+		};
+
+		this.pause = function() {
+			this.isPlaying = false;
+			if (enterframe) {
+				enterframe.unbind();
+			}
+		};
+
+		this.togglePause = function() {
+			if (this.isPlaying) {
+				this.pause();
+			} else {
+				this.resume();
+			}
+		};
+
+		this.start = function() {
+			currentStep = 0;
+			this.resume();
+		};
+
+		var callBeforeStart = function() {
+			for (var i in beforeStart) {
+				beforeStart[i]();
+			}
+		};
+
+		this.loop = function() {
+			this.then(function(){
+				self.start();
+			});
+
+			this.start();
+		};
+
+	};
+
+
+
+	CC.animationChain = function(animations) {
+        
+        if (animations.length === 0) {
+            return null;
+        }
+        
+        var totalAn = new CC.Animation();
+
+        var currentPlaying = 0;
+
+        for (var i in animations) {
+
+	        if (CC.isNumber(animations[i])) {
+	        	//a delay
+	        	animations[i] = new CC.Animation(function(){}, animations[i]);
+	        }
+
+	        (function(){
+		        var index = parseInt(i);
+
+		        animations[i].then(function(){
+		        	if (animations.length > index+1) {
+		        		currentPlaying = index+1;
+		        		animations[currentPlaying].start();
+		        	} else {
+		        		totalAn.done();
+		        	}
+		        });
+		    })();
+        }
+
+        totalAn.start = function(){
+        	currentPlaying = 0;
+        	this.isPlaying = true;
+        	animations[currentPlaying].start();
+        };
+
+        totalAn.resume = function(){
+        	this.isPlaying = true;
+        	animations[currentPlaying].resume();
+        };
+
+        totalAn.pause = function() {
+        	this.isPlaying = false;
+        	animations[currentPlaying].pause();
+        };
+
+        return totalAn;
+    };
+
+	CC.layerAnimation = function(element, opt){
+
+		var animation = new CC.Animation(function(pct){
+			CC.transformLayer(element, opt, pct);
+		}, opt.steps, opt.effect);
+
+		animation.beforeStart(function(){
+
+			if (opt.target.zIndex !== opt.destination.zIndex) {
+				if (opt.target.zIndex === undefined) {
+					opt.target.zIndex = 0;
+				}
+
+				if (opt.destination.zIndex === undefined) {
+					opt.destination.zIndex = 0;
+				}
+			}
+		});
+
+		return animation;
+
+	};
+
+	CC.easing = {
+		linear: function (t, b, c, d) {
+			return c*t/d + b;
+		},
+		easeInQuad: function (t, b, c, d) {
+			return c*(t/=d)*t + b;
+		},
+		easeOutQuad: function (t, b, c, d) {
+			return -c *(t/=d)*(t-2) + b;
+		},
+		easeInOutQuad: function (t, b, c, d) {
+			if ((t/=d/2) < 1) return c/2*t*t + b;
+			return -c/2 * ((--t)*(t-2) - 1) + b;
+		},
+		easeInCubic: function (t, b, c, d) {
+			return c*(t/=d)*t*t + b;
+		},
+		easeOutCubic: function (t, b, c, d) {
+			return c*((t=t/d-1)*t*t + 1) + b;
+		},
+		easeInOutCubic: function (t, b, c, d) {
+			if ((t/=d/2) < 1) return c/2*t*t*t + b;
+			return c/2*((t-=2)*t*t + 2) + b;
+		},
+		easeInQuart: function (t, b, c, d) {
+			return c*(t/=d)*t*t*t + b;
+		},
+		easeOutQuart: function (t, b, c, d) {
+			return -c * ((t=t/d-1)*t*t*t - 1) + b;
+		},
+		easeInOutQuart: function (t, b, c, d) {
+			if ((t/=d/2) < 1) return c/2*t*t*t*t + b;
+			return -c/2 * ((t-=2)*t*t*t - 2) + b;
+		},
+		easeInQuint: function (t, b, c, d) {
+			return c*(t/=d)*t*t*t*t + b;
+		},
+		easeOutQuint: function (t, b, c, d) {
+			return c*((t=t/d-1)*t*t*t*t + 1) + b;
+		},
+		easeInOutQuint: function (t, b, c, d) {
+			if ((t/=d/2) < 1) return c/2*t*t*t*t*t + b;
+			return c/2*((t-=2)*t*t*t*t + 2) + b;
+		},
+		easeInSine: function (t, b, c, d) {
+			return -c * Math.cos(t/d * (Math.PI/2)) + c + b;
+		},
+		easeOutSine: function (t, b, c, d) {
+			return c * Math.sin(t/d * (Math.PI/2)) + b;
+		},
+		easeInOutSine: function (t, b, c, d) {
+			return -c/2 * (Math.cos(Math.PI*t/d) - 1) + b;
+		},
+		easeInExpo: function (t, b, c, d) {
+			return (t==0) ? b : c * Math.pow(2, 10 * (t/d - 1)) + b;
+		},
+		easeOutExpo: function (t, b, c, d) {
+			return (t==d) ? b+c : c * (-Math.pow(2, -10 * t/d) + 1) + b;
+		},
+		easeInOutExpo: function (t, b, c, d) {
+			if (t==0) return b;
+			if (t==d) return b+c;
+			if ((t/=d/2) < 1) return c/2 * Math.pow(2, 10 * (t - 1)) + b;
+			return c/2 * (-Math.pow(2, -10 * --t) + 2) + b;
+		},
+		easeInCirc: function (t, b, c, d) {
+			return -c * (Math.sqrt(1 - (t/=d)*t) - 1) + b;
+		},
+		easeOutCirc: function (t, b, c, d) {
+			return c * Math.sqrt(1 - (t=t/d-1)*t) + b;
+		},
+		easeInOutCirc: function (t, b, c, d) {
+			if ((t/=d/2) < 1) return -c/2 * (Math.sqrt(1 - t*t) - 1) + b;
+			return c/2 * (Math.sqrt(1 - (t-=2)*t) + 1) + b;
+		},
+		easeInElastic: function (t, b, c, d) {
+			var s=1.70158;var p=0;var a=c;
+			if (t==0) return b;  if ((t/=d)==1) return b+c;  if (!p) p=d*.3;
+			if (a < Math.abs(c)) { a=c; var s=p/4; }
+			else var s = p/(2*Math.PI) * Math.asin (c/a);
+			return -(a*Math.pow(2,10*(t-=1)) * Math.sin( (t*d-s)*(2*Math.PI)/p )) + b;
+		},
+		easeOutElastic: function (t, b, c, d) {
+			var s=1.70158;var p=0;var a=c;
+			if (t==0) return b;  if ((t/=d)==1) return b+c;  if (!p) p=d*.3;
+			if (a < Math.abs(c)) { a=c; var s=p/4; }
+			else var s = p/(2*Math.PI) * Math.asin (c/a);
+			return a*Math.pow(2,-10*t) * Math.sin( (t*d-s)*(2*Math.PI)/p ) + c + b;
+		},
+		easeInOutElastic: function (t, b, c, d) {
+			var s=1.70158;var p=0;var a=c;
+			if (t==0) return b;  if ((t/=d/2)==2) return b+c;  if (!p) p=d*(.3*1.5);
+			if (a < Math.abs(c)) { a=c; var s=p/4; }
+			else var s = p/(2*Math.PI) * Math.asin (c/a);
+			if (t < 1) return -.5*(a*Math.pow(2,10*(t-=1)) * Math.sin( (t*d-s)*(2*Math.PI)/p )) + b;
+			return a*Math.pow(2,-10*(t-=1)) * Math.sin( (t*d-s)*(2*Math.PI)/p )*.5 + c + b;
+		},
+		easeInBack: function (t, b, c, d, s) {
+			if (s == undefined) s = 1.70158;
+			return c*(t/=d)*t*((s+1)*t - s) + b;
+		},
+		easeOutBack: function (t, b, c, d, s) {
+			if (s == undefined) s = 1.70158;
+			return c*((t=t/d-1)*t*((s+1)*t + s) + 1) + b;
+		},
+		easeInOutBack: function (t, b, c, d, s) {
+			if (s == undefined) s = 1.70158; 
+			if ((t/=d/2) < 1) return c/2*(t*t*(((s*=(1.525))+1)*t - s)) + b;
+			return c/2*((t-=2)*t*(((s*=(1.525))+1)*t + s) + 2) + b;
+		},
+		easeInBounce: function (t, b, c, d) {
+			return c - CC.easing.easeOutBounce (d-t, 0, c, d) + b;
+		},
+		easeOutBounce: function (t, b, c, d) {
+			if ((t/=d) < (1/2.75)) {
+				return c*(7.5625*t*t) + b;
+			} else if (t < (2/2.75)) {
+				return c*(7.5625*(t-=(1.5/2.75))*t + .75) + b;
+			} else if (t < (2.5/2.75)) {
+				return c*(7.5625*(t-=(2.25/2.75))*t + .9375) + b;
+			} else {
+				return c*(7.5625*(t-=(2.625/2.75))*t + .984375) + b;
+			}
+		},
+		easeInOutBounce: function (t, b, c, d) {
+			if (t < d/2) return CC.easing.easeInBounce (t*2, 0, c, d) * .5 + b;
+			return CC.easing.easeOutBounce (t*2-d, 0, c, d) * .5 + c*.5 + b;
+		}
+	};
+
+})();
 
 
 

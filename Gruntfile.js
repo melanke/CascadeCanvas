@@ -13,10 +13,12 @@ module.exports = function(grunt) {
 	        'src/keyboard.js', 
 	        'src/ajax.js', 
 	        'src/resource.js',
+	        'src/color.js',
 	        'src/drawer.js',
 	        'src/loop.js',
 	        'src/element.js', 
 	        'src/elementlist.js', 
+	        'src/animation.js'
         ],
         concat: {
         	options: {

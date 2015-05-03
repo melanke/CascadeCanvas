@@ -551,7 +551,15 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
         var sorted = list.sort(["zIndex", "ASC"], ["getCreationOrder", "DESC"]);
 
-        return sorted.e(0);
+        var result = null;
+        sorted.each(function(){
+            if (this.clickable) {
+                result = this;
+                return false;
+            }
+        });
+
+        return result;
 
     };
 

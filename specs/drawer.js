@@ -1,4 +1,4 @@
-//I did not find a way to test CC.loadResource yet, so I could not test sprites and tiles
+//TODO: TEST SPRITES AND TILES
 
 describe("drawer", function () {
 
@@ -229,6 +229,160 @@ describe("drawer", function () {
 
 	});
 
+	describe("transform layers", function(){
+
+		it("transform by 20%", function(){
+
+			appendCanvas("CascadeCanvas");
+			CC.loadScreens();
+
+			var el = CC.new("#El", {
+				w: 100,
+				h: 100
+			});
+
+			var target = {};
+
+			CC.transformLayer(el, {
+				target: target, 
+				origin: {
+					zIndex: -5,
+					alpha: 0,
+					shape: "rect",
+					offsetX: 10,
+					offsetY: 4,
+					w: 80,
+					h: 80,
+					angle: 0,
+					anchor: { x: 15, y: 30 },
+					flip: '',
+					scale: { x:1, y: 2 },
+					shadow: { blur: 1, color: "blue", x: 2, y: 1 },
+					fill: { color: "black",  },
+					stroke: { 
+						linearGradient: { start: [0, 0], end: [100, 100], 0: "red", 1: "blue" },
+						thickness: 1,
+						cap: "round",
+						join: "bevel",
+						dash: 2
+					}
+					// ,
+					// sprite: {
+					// 	url: "firsturl.png",
+					// 	x: 2,
+					// 	y: 7,
+					// 	w: 16,
+					// 	h: 32,
+					// 	delay: 10,
+					// 	frames: 5,
+					// 	vertical: true,
+					// 	repeat: "xy"
+					// }
+				}, 
+				destination: {
+					zIndex: 5,
+					alpha: 1,
+					shape: "circle",
+					offsetX: -10,
+					offsetY: 8,
+					w: 70,
+					h: 70,
+					angle: 110,
+					anchor: { x: 30, y: 45 },
+					flip: 'xy',
+					scale: { x: 20, y: 1 },
+					shadow: { blur: 4, color: "#f0f", x: -3, y: 5 },
+					fill: { color: "rgba(123, 234, 134, 0.3)" },
+					stroke: { 
+						linearGradient: { start: [100, 0], end: [0, 100], 0: "blue", "0.5": "black", 1: "red" },
+						thickness: 6,
+						cap: "square",
+						join: "round",
+						dash: 6
+					}
+					// ,
+					// sprite: {
+					// 	url: "secondurl.png",
+					// 	x: 5,
+					// 	y: 2,
+					// 	w: 48,
+					// 	h: 8,
+					// 	delay: 4,
+					// 	frames: 10,
+					// 	vertical: false,
+					// 	repeat: ""
+					// }
+				} 
+			}, 20);
+
+
+			expect(target.zIndex).toBe(-3);
+			expect(target.alpha).toBe(0.2);
+			expect(target.shape).toBe("rect");
+			// expect(target.roundedBorderRadius).toBe(8);
+			expect(target.offsetX).toBe(6);
+			expect(target.offsetY).toBe(4.8);
+			expect(target.w).toBe(78);
+			expect(target.h).toBe(78);
+			expect(target.angle).toBe(22);
+			expect(target.anchor.x).toBe(18);
+			expect(target.anchor.y).toBe(33);
+			expect(target.scale.x).toBe(-3.2);
+			expect(target.scale.y).toBe(1.4);
+			expect(target.shadow.blur).toBe(1.6);
+			expect(target.shadow.color).toBe("rgba(51, 1, 256, 1)");
+			expect(target.shadow.x).toBe(1);
+			expect(target.shadow.y).toBe(1.8);
+			expect(target.fill.color).toBe("rgba(43, 47, 43, 0.8)");
+			expect(target.stroke.linearGradient.start[0]).toBe(20);
+			expect(target.stroke.linearGradient.start[1]).toBe(0);
+			expect(target.stroke.linearGradient.end[0]).toBe(80);
+			expect(target.stroke.linearGradient.end[1]).toBe(100);
+			expect(target.stroke.linearGradient[0]).toBe("rgba(205, 1, 51, 1)");
+			expect(target.stroke.linearGradient[0.5]).not.toBeDefined();
+			expect(target.stroke.linearGradient[1]).toBe("rgba(51, 1, 205, 1)");
+			expect(target.stroke.thickness).toBe(2);
+			expect(target.stroke.cap).toBe("round");
+			expect(target.stroke.join).toBe("bevel");
+			expect(target.stroke.dash).toBe(2);
+
+			removeCanvas();
+
+		});
+
+	});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	describe("draw", function(){
 
 		var ctx;
@@ -290,7 +444,7 @@ describe("drawer", function () {
 					.andReturn(gradient);
 				spyOn(ctx, "createRadialGradient")
 					.andReturn(gradient);
-				spyOn(ctx, "quadraticCurveTo");
+				spyOn(ctx, "arcTo");
 				spyOn(ctx, "clip");
 				spyOn(ctx, "restore");
 
@@ -368,10 +522,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -416,10 +569,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -454,10 +606,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -491,10 +642,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -540,10 +690,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -591,10 +740,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -629,10 +777,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -664,10 +811,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -699,10 +845,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -732,10 +877,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -765,10 +909,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -798,10 +941,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -831,10 +973,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -863,10 +1004,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -895,10 +1035,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -927,10 +1066,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -959,10 +1097,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -991,10 +1128,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1023,10 +1159,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1055,10 +1190,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1089,10 +1223,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1126,47 +1259,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
-				expect(ctx.clip).not.toHaveBeenCalled();
-
-				expect(ctx.restore).toHaveBeenCalled();
-
-			});
-
-			it("sets the context shadow", function(){
-
-				layers.uniq = { shape: "text", shadow: { x: 1, y: 3, blur: 3, color: "#000000" } };
-
-				CC.draw();
-
-				expect(ctx.shadowOffsetX).toBe(1);
-				expect(ctx.shadowOffsetY).toBe(3);
-				expect(ctx.shadowBlur).toBe(3);
-				expect(ctx.shadowColor).toBe("#000000");
-
-				expect(ctx.save).toHaveBeenCalled();
-
-				expect(ctx.rotate).not.toHaveBeenCalled();
-				expect(ctx.scale).not.toHaveBeenCalledWith();
-				expect(ctx.measureText).not.toHaveBeenCalled();
-				expect(ctx.fillRect).not.toHaveBeenCalled();
-				expect(ctx.fill).not.toHaveBeenCalled();
-				expect(ctx.fillText).not.toHaveBeenCalled();
-				expect(ctx.strokeRect).not.toHaveBeenCalled();
-				expect(ctx.stroke).not.toHaveBeenCalled();
-				expect(ctx.strokeText).not.toHaveBeenCalled();
-				expect(ctx.drawImage).not.toHaveBeenCalled();
-				expect(ctx.beginPath).not.toHaveBeenCalled();
-				expect(ctx.arc).not.toHaveBeenCalled();
-				expect(ctx.closePath).not.toHaveBeenCalled();
-				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
-				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
-				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1183,12 +1278,12 @@ describe("drawer", function () {
 
 				CC.draw();
 
-				expect(ctx.font).toBe("  10px sans-serif");
-	            expect(ctx.textBaseline).toBe("top");
+				expect(ctx.font).toBe("10px sans-serif");
+	            expect(ctx.textBaseline).toBe("alphabetic");
 
 				expect(ctx.save).toHaveBeenCalled();
 				expect(ctx.fillStyle).toBe("#000000");
-				expect(ctx.fillText).toHaveBeenCalledWith("heey!", 0, 0);
+				expect(ctx.fillText).not.toHaveBeenCalled();
 
 				expect(ctx.rotate).not.toHaveBeenCalled();
 				expect(ctx.scale).not.toHaveBeenCalledWith();
@@ -1203,10 +1298,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1228,11 +1322,11 @@ describe("drawer", function () {
 
 				expect(ctx.save).toHaveBeenCalled();
 				expect(ctx.fillStyle).toBe("#ff0000");
-				expect(ctx.fillText).toHaveBeenCalledWith("heey!", 0, 0);
+				expect(ctx.fillText).toHaveBeenCalledWith("heey! ", 0, 0);
+				expect(ctx.measureText).toHaveBeenCalled();
 
 				expect(ctx.rotate).not.toHaveBeenCalled();
 				expect(ctx.scale).not.toHaveBeenCalledWith();
-				expect(ctx.measureText).not.toHaveBeenCalled();
 				expect(ctx.fillRect).not.toHaveBeenCalled();
 				expect(ctx.fill).not.toHaveBeenCalled();
 				expect(ctx.strokeRect).not.toHaveBeenCalled();
@@ -1243,10 +1337,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1271,11 +1364,11 @@ describe("drawer", function () {
 				expect(ctx.save).toHaveBeenCalled();
 				expect(ctx.createLinearGradient).toHaveBeenCalledWith(0, 0, 10, 0);
 				expect(gradient.addColorStop).not.toHaveBeenCalled();
-				expect(ctx.fillText).toHaveBeenCalledWith("heey!", 0, 0);
+				expect(ctx.fillText).toHaveBeenCalledWith("heey! ", 0, 0);
+				expect(ctx.measureText).toHaveBeenCalled();
 
 				expect(ctx.rotate).not.toHaveBeenCalled();
 				expect(ctx.scale).not.toHaveBeenCalledWith();
-				expect(ctx.measureText).not.toHaveBeenCalled();
 				expect(ctx.fillRect).not.toHaveBeenCalled();
 				expect(ctx.fill).not.toHaveBeenCalled();
 				expect(ctx.strokeRect).not.toHaveBeenCalled();
@@ -1286,9 +1379,8 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1321,11 +1413,11 @@ describe("drawer", function () {
 				expect(gradient.addColorStop).toHaveBeenCalledWith(0, "#000000");
 				expect(gradient.addColorStop).toHaveBeenCalledWith(0.5, "rgb(255, 255, 255)");
 				expect(gradient.addColorStop).toHaveBeenCalledWith(1, "#ff0000");
-				expect(ctx.fillText).toHaveBeenCalledWith("heey!", 0, 0);
+				expect(ctx.fillText).toHaveBeenCalledWith("heey! ", 0, 0);
+				expect(ctx.measureText).toHaveBeenCalled();
 
 				expect(ctx.rotate).not.toHaveBeenCalled();
 				expect(ctx.scale).not.toHaveBeenCalledWith();
-				expect(ctx.measureText).not.toHaveBeenCalled();
 				expect(ctx.fillRect).not.toHaveBeenCalled();
 				expect(ctx.fill).not.toHaveBeenCalled();
 				expect(ctx.strokeRect).not.toHaveBeenCalled();
@@ -1336,9 +1428,8 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1363,11 +1454,11 @@ describe("drawer", function () {
 				expect(ctx.save).toHaveBeenCalled();
 				expect(ctx.createRadialGradient).toHaveBeenCalledWith(5, 5, 0, 5, 5, 10);
 				expect(gradient.addColorStop).not.toHaveBeenCalled();
-				expect(ctx.fillText).toHaveBeenCalledWith("heey!", 0, 0);
+				expect(ctx.fillText).toHaveBeenCalledWith("heey! ", 0, 0);
+				expect(ctx.measureText).toHaveBeenCalled();
 
 				expect(ctx.rotate).not.toHaveBeenCalled();
 				expect(ctx.scale).not.toHaveBeenCalledWith();
-				expect(ctx.measureText).not.toHaveBeenCalled();
 				expect(ctx.fillRect).not.toHaveBeenCalled();
 				expect(ctx.fill).not.toHaveBeenCalled();
 				expect(ctx.strokeRect).not.toHaveBeenCalled();
@@ -1378,9 +1469,8 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1421,11 +1511,11 @@ describe("drawer", function () {
 				expect(gradient.addColorStop).toHaveBeenCalledWith(0, "rgba(200, 100, 100, 0.8)");
 				expect(gradient.addColorStop).toHaveBeenCalledWith(0.5, "#f00");
 				expect(gradient.addColorStop).toHaveBeenCalledWith(1, "#0000dd");
-				expect(ctx.fillText).toHaveBeenCalledWith("heey!", 0, 0);
+				expect(ctx.fillText).toHaveBeenCalledWith("heey! ", 0, 0);
+				expect(ctx.measureText).toHaveBeenCalled();
 
 				expect(ctx.rotate).not.toHaveBeenCalled();
 				expect(ctx.scale).not.toHaveBeenCalledWith();
-				expect(ctx.measureText).not.toHaveBeenCalled();
 				expect(ctx.fillRect).not.toHaveBeenCalled();
 				expect(ctx.fill).not.toHaveBeenCalled();
 				expect(ctx.strokeRect).not.toHaveBeenCalled();
@@ -1436,9 +1526,8 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1455,12 +1544,12 @@ describe("drawer", function () {
 
 				CC.draw();
 
-				expect(ctx.font).toBe("  10px sans-serif");
-	            expect(ctx.textBaseline).toBe("top");
+				expect(ctx.font).toBe("10px sans-serif");
+	            expect(ctx.textBaseline).toBe("alphabetic");
 
 				expect(ctx.save).toHaveBeenCalled();
 				expect(ctx.strokeStyle).toBe("#000000");
-				expect(ctx.strokeText).toHaveBeenCalledWith("heey!", 0, 0);
+				expect(ctx.strokeText).not.toHaveBeenCalled();
 
 				expect(ctx.rotate).not.toHaveBeenCalled();
 				expect(ctx.scale).not.toHaveBeenCalledWith();
@@ -1475,10 +1564,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1500,11 +1588,11 @@ describe("drawer", function () {
 
 				expect(ctx.save).toHaveBeenCalled();
 				expect(ctx.strokeStyle).toBe("#ff0000");
-				expect(ctx.strokeText).toHaveBeenCalledWith("heey!", 0, 0);
+				expect(ctx.strokeText).toHaveBeenCalledWith("heey! ", 0, 0);
+				expect(ctx.measureText).toHaveBeenCalled();
 
 				expect(ctx.rotate).not.toHaveBeenCalled();
 				expect(ctx.scale).not.toHaveBeenCalledWith();
-				expect(ctx.measureText).not.toHaveBeenCalled();
 				expect(ctx.fillRect).not.toHaveBeenCalled();
 				expect(ctx.fill).not.toHaveBeenCalled();
 				expect(ctx.fillText).not.toHaveBeenCalled();
@@ -1515,10 +1603,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1550,11 +1637,11 @@ describe("drawer", function () {
 				expect(ctx.save).toHaveBeenCalled();
 				expect(ctx.createLinearGradient).toHaveBeenCalledWith(0, 0, 10, 0);
 				expect(gradient.addColorStop).not.toHaveBeenCalled();
-				expect(ctx.strokeText).toHaveBeenCalledWith("heey!", 0, 0);
+				expect(ctx.strokeText).toHaveBeenCalledWith("heey! ", 0, 0);
+				expect(ctx.measureText).toHaveBeenCalled();
 
 				expect(ctx.rotate).not.toHaveBeenCalled();
 				expect(ctx.scale).not.toHaveBeenCalledWith();
-				expect(ctx.measureText).not.toHaveBeenCalled();
 				expect(ctx.fillRect).not.toHaveBeenCalled();
 				expect(ctx.fill).not.toHaveBeenCalled();
 				expect(ctx.fillText).not.toHaveBeenCalled();
@@ -1565,9 +1652,8 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1601,11 +1687,11 @@ describe("drawer", function () {
 				expect(gradient.addColorStop).toHaveBeenCalledWith(0, "#000000");
 				expect(gradient.addColorStop).toHaveBeenCalledWith(0.5, "rgb(255, 255, 255)");
 				expect(gradient.addColorStop).toHaveBeenCalledWith(1, "#ff0000");
-				expect(ctx.strokeText).toHaveBeenCalledWith("heey!", 0, 0);
+				expect(ctx.strokeText).toHaveBeenCalledWith("heey! ", 0, 0);
+				expect(ctx.measureText).toHaveBeenCalled();
 
 				expect(ctx.rotate).not.toHaveBeenCalled();
 				expect(ctx.scale).not.toHaveBeenCalledWith();
-				expect(ctx.measureText).not.toHaveBeenCalled();
 				expect(ctx.fillRect).not.toHaveBeenCalled();
 				expect(ctx.fill).not.toHaveBeenCalled();
 				expect(ctx.fillText).not.toHaveBeenCalled();
@@ -1616,9 +1702,8 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1643,11 +1728,11 @@ describe("drawer", function () {
 				expect(ctx.save).toHaveBeenCalled();
 				expect(ctx.createRadialGradient).toHaveBeenCalledWith(5, 5, 0, 5, 5, 10);
 				expect(gradient.addColorStop).not.toHaveBeenCalled();
-				expect(ctx.strokeText).toHaveBeenCalledWith("heey!", 0, 0);
+				expect(ctx.strokeText).toHaveBeenCalledWith("heey! ", 0, 0);
+				expect(ctx.measureText).toHaveBeenCalled();
 
 				expect(ctx.rotate).not.toHaveBeenCalled();
 				expect(ctx.scale).not.toHaveBeenCalledWith();
-				expect(ctx.measureText).not.toHaveBeenCalled();
 				expect(ctx.fillRect).not.toHaveBeenCalled();
 				expect(ctx.fill).not.toHaveBeenCalled();
 				expect(ctx.fillText).not.toHaveBeenCalled();
@@ -1658,9 +1743,8 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1701,11 +1785,11 @@ describe("drawer", function () {
 				expect(gradient.addColorStop).toHaveBeenCalledWith(0, "rgba(200, 100, 100, 0.8)");
 				expect(gradient.addColorStop).toHaveBeenCalledWith(0.5, "#f00");
 				expect(gradient.addColorStop).toHaveBeenCalledWith(1, "#0000dd");
-				expect(ctx.strokeText).toHaveBeenCalledWith("heey!", 0, 0);
+				expect(ctx.strokeText).toHaveBeenCalledWith("heey! ", 0, 0);
+				expect(ctx.measureText).toHaveBeenCalled();
 
 				expect(ctx.rotate).not.toHaveBeenCalled();
 				expect(ctx.scale).not.toHaveBeenCalledWith();
-				expect(ctx.measureText).not.toHaveBeenCalled();
 				expect(ctx.fillRect).not.toHaveBeenCalled();
 				expect(ctx.fill).not.toHaveBeenCalled();
 				expect(ctx.fillText).not.toHaveBeenCalled();
@@ -1716,9 +1800,8 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1771,10 +1854,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1799,9 +1881,6 @@ describe("drawer", function () {
 
 				expect(ctx.beginPath).toHaveBeenCalled();
 				expect(ctx.moveTo).toHaveBeenCalledWith(40, 50);
-				expect(ctx.lineTo).toHaveBeenCalledWith(70, 60);
-				expect(ctx.lineTo).toHaveBeenCalledWith(20, 30);
-				expect(ctx.lineTo).toHaveBeenCalledWith(90, 80);
 				expect(ctx.closePath).toHaveBeenCalled();
 				expect(ctx.fill).toHaveBeenCalled();
 
@@ -1819,7 +1898,7 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1854,10 +1933,9 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1882,9 +1960,6 @@ describe("drawer", function () {
 
 				expect(ctx.beginPath).toHaveBeenCalled();
 				expect(ctx.moveTo).toHaveBeenCalledWith(40, 50);
-				expect(ctx.lineTo).toHaveBeenCalledWith(70, 60);
-				expect(ctx.lineTo).toHaveBeenCalledWith(20, 30);
-				expect(ctx.lineTo).toHaveBeenCalledWith(90, 80);
 				expect(ctx.closePath).toHaveBeenCalled();
 				expect(ctx.stroke).toHaveBeenCalled();
 
@@ -1902,7 +1977,7 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1925,7 +2000,6 @@ describe("drawer", function () {
 
 				expect(ctx.beginPath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.fill).not.toHaveBeenCalled();
 				expect(ctx.rotate).not.toHaveBeenCalled();
@@ -1939,7 +2013,7 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -1959,14 +2033,10 @@ describe("drawer", function () {
 				expect(ctx.fillStyle).toBe("#ff0000");
 				expect(ctx.beginPath).toHaveBeenCalled();
 		        expect(ctx.moveTo).toHaveBeenCalledWith(3, 0);
-		        expect(ctx.lineTo).toHaveBeenCalledWith(7, 0);
-		        expect(ctx.quadraticCurveTo).toHaveBeenCalledWith(10, 0, 10, 3);
-		        expect(ctx.lineTo).toHaveBeenCalledWith(10, 7);
-		        expect(ctx.quadraticCurveTo).toHaveBeenCalledWith(10, 10, 7, 10);
-		        expect(ctx.lineTo).toHaveBeenCalledWith(3, 10);
-		        expect(ctx.quadraticCurveTo).toHaveBeenCalledWith(0, 10, 0, 7);
-		        expect(ctx.lineTo).toHaveBeenCalledWith(0, 3);
-		        expect(ctx.quadraticCurveTo).toHaveBeenCalledWith(0, 0, 3, 0);
+		        expect(ctx.arcTo).toHaveBeenCalledWith(10, 0, 10, 10, 3);
+		        expect(ctx.arcTo).toHaveBeenCalledWith(10, 10, 0, 10, 3);
+		        expect(ctx.arcTo).toHaveBeenCalledWith(0, 10, 0, 0, 3);
+		        expect(ctx.arcTo).toHaveBeenCalledWith(0, 0, 10, 0, 3);
 		        expect(ctx.closePath).toHaveBeenCalled();
 				expect(ctx.fill).toHaveBeenCalled();
 
@@ -2006,7 +2076,6 @@ describe("drawer", function () {
 
 				expect(ctx.beginPath).not.toHaveBeenCalled();
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.closePath).not.toHaveBeenCalled();
 				expect(ctx.stroke).not.toHaveBeenCalled();
 				expect(ctx.rotate).not.toHaveBeenCalled();
@@ -2020,7 +2089,7 @@ describe("drawer", function () {
 				expect(ctx.arc).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -2040,14 +2109,10 @@ describe("drawer", function () {
 				expect(ctx.strokeStyle).toBe("#ff0000");
 				expect(ctx.beginPath).toHaveBeenCalled();
 		        expect(ctx.moveTo).toHaveBeenCalledWith(3, 0);
-		        expect(ctx.lineTo).toHaveBeenCalledWith(7, 0);
-		        expect(ctx.quadraticCurveTo).toHaveBeenCalledWith(10, 0, 10, 3);
-		        expect(ctx.lineTo).toHaveBeenCalledWith(10, 7);
-		        expect(ctx.quadraticCurveTo).toHaveBeenCalledWith(10, 10, 7, 10);
-		        expect(ctx.lineTo).toHaveBeenCalledWith(3, 10);
-		        expect(ctx.quadraticCurveTo).toHaveBeenCalledWith(0, 10, 0, 7);
-		        expect(ctx.lineTo).toHaveBeenCalledWith(0, 3);
-		        expect(ctx.quadraticCurveTo).toHaveBeenCalledWith(0, 0, 3, 0);
+		        expect(ctx.arcTo).toHaveBeenCalledWith(10, 0, 10, 10, 3);
+		        expect(ctx.arcTo).toHaveBeenCalledWith(10, 10, 0, 10, 3);
+		        expect(ctx.arcTo).toHaveBeenCalledWith(0, 10, 0, 0, 3);
+		        expect(ctx.arcTo).toHaveBeenCalledWith(0, 0, 10, 0, 3);
 		        expect(ctx.closePath).toHaveBeenCalled();
 				expect(ctx.stroke).toHaveBeenCalled();
 
@@ -2089,7 +2154,6 @@ describe("drawer", function () {
 				expect(ctx.save).toHaveBeenCalled();
 
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.fillRect).not.toHaveBeenCalled();
 				expect(ctx.rotate).not.toHaveBeenCalled();
 				expect(ctx.measureText).not.toHaveBeenCalled();
@@ -2101,7 +2165,7 @@ describe("drawer", function () {
 				expect(ctx.drawImage).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();
@@ -2126,7 +2190,6 @@ describe("drawer", function () {
 				expect(ctx.save).toHaveBeenCalled();
 
 				expect(ctx.moveTo).not.toHaveBeenCalled();
-				expect(ctx.lineTo).not.toHaveBeenCalled();
 				expect(ctx.strokeRect).not.toHaveBeenCalled();
 				expect(ctx.rotate).not.toHaveBeenCalled();
 				expect(ctx.measureText).not.toHaveBeenCalled();
@@ -2138,7 +2201,7 @@ describe("drawer", function () {
 				expect(ctx.drawImage).not.toHaveBeenCalled();
 				expect(ctx.createLinearGradient).not.toHaveBeenCalled();
 				expect(ctx.createRadialGradient).not.toHaveBeenCalled();
-				expect(ctx.quadraticCurveTo).not.toHaveBeenCalled();
+				expect(ctx.arcTo).not.toHaveBeenCalled();
 				expect(ctx.clip).not.toHaveBeenCalled();
 
 				expect(ctx.restore).toHaveBeenCalled();

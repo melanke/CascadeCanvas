@@ -413,7 +413,6 @@ if (typeof module !== 'undefined' && module.exports){
 				y: 90,
 				w: 30,
 				h: 30,
-				clickable: true,
 				zIndex: 1 //is behind
 			});
 

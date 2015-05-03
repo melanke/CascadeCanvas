@@ -18,6 +18,7 @@
 
         var loadRecursively = function(index) {
             var img = new Image();
+            img.crossOrigin = "Anonymous";
             img.src = srcs[index];
             img.onload = function(){
 

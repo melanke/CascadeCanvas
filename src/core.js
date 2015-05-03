@@ -245,7 +245,7 @@ var CC;
             
             if (!(el.x > area.x + area.w || 
                    el.x + w < area.x || 
-                   el.y > area.y + area.w ||
+                   el.y > area.y + area.h ||
                    el.y + h < area.y))
             {
                 to.push(el);

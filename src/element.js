@@ -258,9 +258,71 @@ var Element = function(specs, opts){
         }
     };
 
-    this.toggleLayers = function(toHide, toShow) {
-        this.layers[toHide].hidden = true;
-        this.layers[toShow].hidden = false;
+    this.toggleLayers = function(toHide, toShow, steps, effect) {
+
+        if (!steps) {
+            this.layers[toHide].hidden = true;
+            this.layers[toShow].hidden = false;
+            return null;
+        } 
+
+        var opt = {
+            target: {},
+            origin: this.layers[toHide],
+            destination: this.layers[toShow],
+            steps: steps,
+            effect: effect
+        }
+
+        var anim = CC.layerAnimation(this, opt);
+
+        anim.beforeStart(function() {
+            opt.target = {};
+            el.layers["CCTemp-"+toHide+"-"+toShow] = opt.target;
+            opt.origin = el.layers[toHide];
+            opt.origin.hidden = true;
+            opt.destination = el.layers[toShow];
+        }); 
+
+        anim.then(function(){
+
+            delete el.layers["CCTemp-"+toHide+"-"+toShow];
+            el.layers[toShow].hidden = false;
+
+        });
+
+        return anim;
+    };
+
+    this.animateLayer = function(targetLayer, changes, steps, effect) {
+
+        var opt = {
+            target: {},
+            origin: this.layers[targetLayer],
+            destination: {},
+            steps: steps,
+            effect: effect
+        };
+
+        var anim = CC.layerAnimation(this, opt);
+
+        anim.beforeStart(function() {
+            opt.target = {};
+            el.layers["CCTemp-"+targetLayer] = opt.target;
+            opt.origin = el.layers[targetLayer];
+            opt.origin.hidden = true;
+            opt.destination = CC.merge({}, el.layers[targetLayer], changes);
+        });
+
+        anim.then(function(){
+
+            delete el.layers["CCTemp-"+targetLayer];
+            el.layers[targetLayer] = opt.destination;
+            el.layers[targetLayer].hidden = false;
+
+        });
+
+        return anim;
     };
 
     this.getCreationTime = function() {
