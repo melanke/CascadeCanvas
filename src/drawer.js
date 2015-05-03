@@ -137,7 +137,7 @@
             return;
         }
 
-        var layers = CC.sort(el.layers, "zIndex", true);
+        var layers = CC.sort(el.layers, ["zIndex", "DESC"]);
 
         for (var s in layers) {
             var layr = layers[s];
@@ -164,7 +164,8 @@ font
 offsetX (number) default: 0
 offsetY (number) default: 0
 w (number) default: element w
-h (number) default: element h
+h (number) default: element h,
+blendMode (source-over, source-in, source-out, source-atop, destination-over, destination-in, destination-out, destination-atop, lighter, copy, xor, multiply, screen, overlay, darken, lighten, color-dodge, color-burn, hard-light, soft-light, difference, exclusion, hue, saturation, color, luminosity) default: null
 angle (number) default: 0
 anchor
 	x (number) default: center of the element
@@ -263,6 +264,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
         setLayerFlip(layr, config, scr);
         setLayerScale(layr, config, scr);
         setLayerAlpha(layr, scr);
+        setLayerBlendMode(layr, scr);
 
         setLayerShadow(layr, scr);
 
@@ -441,6 +443,14 @@ tiles (string[][]) OBS.: The string is the name of the tile
             scr.context.globalAlpha = 1;
         }
 	};
+
+    var setLayerBlendMode = function(layr, scr) {
+        if (layr.blendMode) {
+            scr.context.globalCompositeOperation = layr.blendMode;
+        } else {
+            scr.context.globalCompositeOperation = null;
+        }
+    }
 
     var setLayerShadow = function(layr, scr) {
 
@@ -1030,6 +1040,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
         transformShapeWidthHeightAndRoundedB(opt.target, opt.origin, opt.destination, percentage, config);
 
         opt.target.text = transformNoTween(opt.origin.text, opt.destination.text, percentage);
+        opt.target.blendMode = transformNoTween(opt.origin.blendMode, opt.destination.blendMode, percentage);
 
         transformFont(opt.target, opt.origin, opt.destination, percentage, config);
 

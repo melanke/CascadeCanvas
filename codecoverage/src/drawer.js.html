@@ -183,16 +183,16 @@
     <h1>Code coverage report for <span class="entity">src/drawer.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">74.23% <small>(504 / 679)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">74.31% <small>(509 / 685)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Branches: <span class="metric">60.68% <small>(358 / 590)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">60.64% <small>(359 / 592)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">88.68% <small>(47 / 53)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">88.89% <small>(48 / 54)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">74.26% <small>(502 / 676)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">74.34% <small>(507 / 682)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
     </h2>
     <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">src/</a> &#187; drawer.js</div>
@@ -1726,7 +1726,18 @@
 1525
 1526
 1527
-1528</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+1528
+1529
+1530
+1531
+1532
+1533
+1534
+1535
+1536
+1537
+1538
+1539</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1960,6 +1971,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1984,6 +1996,7 @@
 <span class="cline-any cline-yes">44</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">44</span>
 <span class="cline-any cline-yes">44</span>
 <span class="cline-any cline-yes">44</span>
 <span class="cline-any cline-yes">44</span>
@@ -2167,6 +2180,14 @@
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">43</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">44</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">44</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2758,6 +2779,7 @@
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2831,8 +2853,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">8</span>
-<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">9</span>
+<span class="cline-any cline-yes">6</span>
 <span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3392,7 +3414,7 @@
             return;
         }
 &nbsp;
-        var layers = CC.sort(el.layers, "zIndex", true);
+        var layers = CC.sort(el.layers, ["zIndex", "DESC"]);
 &nbsp;
         for (var s in layers) {
             var layr = layers[s];
@@ -3419,7 +3441,8 @@ font
 offsetX (number) default: 0
 offsetY (number) default: 0
 w (number) default: element w
-h (number) default: element h
+h (number) default: element h,
+blendMode (source-over, source-in, source-out, source-atop, destination-over, destination-in, destination-out, destination-atop, lighter, copy, xor, multiply, screen, overlay, darken, lighten, color-dodge, color-burn, hard-light, soft-light, difference, exclusion, hue, saturation, color, luminosity) default: null
 angle (number) default: 0
 anchor
 	x (number) default: center of the element
@@ -3518,6 +3541,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
         setLayerFlip(layr, config, scr);
         setLayerScale(layr, config, scr);
         setLayerAlpha(layr, scr);
+        setLayerBlendMode(layr, scr);
 &nbsp;
         setLayerShadow(layr, scr);
 &nbsp;
@@ -3696,6 +3720,14 @@ tiles (string[][]) OBS.: The string is the name of the tile
             scr.context.globalAlpha = 1;
         }
 	};
+&nbsp;
+    var setLayerBlendMode = function(layr, scr) {
+        <span class="missing-if-branch" title="if path not taken"" >I</span>if (layr.blendMode) {
+<span class="cstat-no" title="statement not covered" >            scr.context.globalCompositeOperation = layr.blendMode;</span>
+        } else {
+            scr.context.globalCompositeOperation = null;
+        }
+    }
 &nbsp;
     var setLayerShadow = function(layr, scr) {
 &nbsp;
@@ -4285,6 +4317,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
         transformShapeWidthHeightAndRoundedB(opt.target, opt.origin, opt.destination, percentage, config);
 &nbsp;
         opt.target.text = transformNoTween(opt.origin.text, opt.destination.text, percentage);
+        opt.target.blendMode = transformNoTween(opt.origin.blendMode, opt.destination.blendMode, percentage);
 &nbsp;
         transformFont(opt.target, opt.origin, opt.destination, percentage, config);
 &nbsp;
@@ -4785,7 +4818,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun May 03 2015 10:59:19 GMT-0300 (BRT)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun May 03 2015 11:47:19 GMT-0300 (BRT)</div>
 </div>
 
 <script src="../prettify.js"></script>
