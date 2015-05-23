@@ -1830,9 +1830,6 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
 /***** AJAX *****/
 
-//depends on promise
-//is not a internal dependency
-
 (function(){
 
     //time in milliseconds after which a pending AJAX request is considered unresponsive
@@ -1873,7 +1870,9 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
     };
 
     /**
-    * do ajax request adn the response will be delivered via promise
+    * CC.Promise CC.ajax( String method, String url [, Object data] [, Object headers] )
+    * Make an AJAX request with the specified http method that can be 'GET', 'POST', 'PUT' or 'DELETE', the URL of the Webservice, and optional parameters and headers.
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.ajax%28-%29
     */
     CC.ajax = function(method, url, data, headers) {
 
@@ -4417,6 +4416,17 @@ var ElementList = function(elements, selection){
 
 (function(){
 
+	/**
+	* Constructor( Function[] loopers, Number totalsteps [, String easing] [, Object params])
+	* Constructs an animation with a single or multiple fixed length loopers to start at the same time; 
+	* the number of steps this animation will take; easing effect and params to be passed to the loopers
+	*
+	* Constructor( Function[] loopers [, Object params])
+	* Constructs an animation with a single or multiple autostop loopers to start at the same time and
+	* params to be passed to the loopers
+	*
+	* https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.Animation
+	*/
 	CC.Animation = function() {
 
 		var self = this;
@@ -4451,22 +4461,48 @@ var ElementList = function(elements, selection){
 
 		this.isPlaying = false;
 
+		/**
+		* void then( Function callback )
+		* Register callbacks, functions to be called when the animation completes
+		* https://github.com/CascadeCanvas/CascadeCanvas/wiki/animation.then
+		*/
 		this.then = function(cb) {
 			callbacks.push(cb);
 		};
 
+		/**
+		* void beforeStart( Function callback )
+		* Register a function to be called when the animation is about to start
+		* https://github.com/CascadeCanvas/CascadeCanvas/wiki/animation.beforeStart
+		*/
 		this.beforeStart = function(bf) {
 			beforeStart.push(bf);
 		};
 
+		/**
+		* void removeCallback( Function callback )
+		* Removes a callback registered with animation.then or animation.beforeStart
+		* https://github.com/CascadeCanvas/CascadeCanvas/wiki/animation.removeCallback
+		*/
 		this.removeCallback = function(cb) {
 			for (var i in callbacks){
 				if (cb === callbacks[i]) {
-					callbacks.splice(i, 0);
+					callbacks.splice(i, 1);
+				}
+			}
+
+			for (var i in beforeStart){
+				if (cb === beforeStart[i]) {
+					beforeStart.splice(i, 1);
 				}
 			}
 		};
 
+		/**
+		* void done()
+		* Completes the animation
+		* https://github.com/CascadeCanvas/CascadeCanvas/wiki/animation.done
+		*/
 		this.done = function() {
 			this.pause();
 			currentStep = 0;
@@ -4481,6 +4517,10 @@ var ElementList = function(elements, selection){
 			}
 		};
 
+		/**
+		* void resume()
+		* Starts or resume the paused animation
+		*/
 		this.resume = function() {
 			this.isPlaying = true;
 
@@ -4522,6 +4562,11 @@ var ElementList = function(elements, selection){
 			});
 		};
 
+		/**
+		* void pause()
+		* Pauses the animation
+		* https://github.com/CascadeCanvas/CascadeCanvas/wiki/animation.pause
+		*/
 		this.pause = function() {
 			this.isPlaying = false;
 			if (enterframe) {
@@ -4529,6 +4574,11 @@ var ElementList = function(elements, selection){
 			}
 		};
 
+		/** 
+		* void togglePause()
+		* If the animation is paused it resume it, if the animation is playing it pauses it
+		* https://github.com/CascadeCanvas/CascadeCanvas/wiki/animation.togglePause
+		*/
 		this.togglePause = function() {
 			if (this.isPlaying) {
 				this.pause();
@@ -4537,6 +4587,11 @@ var ElementList = function(elements, selection){
 			}
 		};
 
+		/**
+		* Starts the animation from the beginning
+		* void start()
+		* https://github.com/CascadeCanvas/CascadeCanvas/wiki/animation.start
+		*/
 		this.start = function() {
 			currentStep = 0;
 			this.resume();
@@ -4548,6 +4603,11 @@ var ElementList = function(elements, selection){
 			}
 		};
 
+		/**
+		* void loop()
+		* Makes the animation start from beginning and loop itself forever until pause or done is called
+		* https://github.com/CascadeCanvas/CascadeCanvas/wiki/animation.loop
+		*/
 		this.loop = function() {
 			this.then(function(){
 				self.start();
@@ -4558,8 +4618,11 @@ var ElementList = function(elements, selection){
 
 	};
 
-
-
+	/**
+	* CC.Animation CC.animationChain( CC.Animation[] animations )
+	* let you create an animation that runs a sequence of animations, including delay
+	* https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.animationChain
+	*/
 	CC.animationChain = function(animations) {
         
         if (animations.length === 0) {
@@ -4610,6 +4673,11 @@ var ElementList = function(elements, selection){
         return totalAn;
     };
 
+    /**
+    * CC.Animation CC.layerAnimation( Element element, Object option )
+    * let you transform one layer to another making use of tween technic
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.layerAnimation
+    */
 	CC.layerAnimation = function(element, opt){
 
 		var animation = new CC.Animation(function(pct){
