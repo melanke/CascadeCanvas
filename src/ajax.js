@@ -1,8 +1,5 @@
 /***** AJAX *****/
 
-//depends on promise
-//is not a internal dependency
-
 (function(){
 
     //time in milliseconds after which a pending AJAX request is considered unresponsive
@@ -43,7 +40,9 @@
     };
 
     /**
-    * do ajax request adn the response will be delivered via promise
+    * CC.Promise CC.ajax( String method, String url [, Object data] [, Object headers] )
+    * Make an AJAX request with the specified http method that can be 'GET', 'POST', 'PUT' or 'DELETE', the URL of the Webservice, and optional parameters and headers.
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.ajax%28-%29
     */
     CC.ajax = function(method, url, data, headers) {
 
