@@ -4487,13 +4487,13 @@ var ElementList = function(elements, selection){
 		this.removeCallback = function(cb) {
 			for (var i in callbacks){
 				if (cb === callbacks[i]) {
-					callbacks.splice(i, 1);
+					callbacks[i] = null;
 				}
 			}
 
 			for (var i in beforeStart){
 				if (cb === beforeStart[i]) {
-					beforeStart.splice(i, 1);
+					beforeStart[i] = null;
 				}
 			}
 		};
@@ -4510,7 +4510,13 @@ var ElementList = function(elements, selection){
 			pct = 0;
 
 			for (var i in callbacks) {
-				var resp = callbacks[i]();
+				var resp = null;
+				var cb = callbacks[i];
+				
+				if (cb) { 
+					resp = cb();
+				}
+
 				if (resp && CC.isFunction(resp.start) && resp.isPlaying === false) {
 					resp.start();
 				}
