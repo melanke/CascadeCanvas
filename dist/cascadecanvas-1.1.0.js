@@ -4526,8 +4526,13 @@ var ElementList = function(elements, selection){
 		/**
 		* void resume()
 		* Starts or resume the paused animation
+		* https://github.com/CascadeCanvas/CascadeCanvas/wiki/animation.resume
 		*/
 		this.resume = function() {
+			if (this.isPlaying) {
+				return;
+			}
+
 			this.isPlaying = true;
 
 			enterframe = CC.bind("enterframe", function(){
@@ -4574,6 +4579,10 @@ var ElementList = function(elements, selection){
 		* https://github.com/CascadeCanvas/CascadeCanvas/wiki/animation.pause
 		*/
 		this.pause = function() {
+			if (!this.isPlaying) {
+				return;
+			}
+
 			this.isPlaying = false;
 			if (enterframe) {
 				enterframe.unbind();
@@ -4582,7 +4591,7 @@ var ElementList = function(elements, selection){
 
 		/** 
 		* void togglePause()
-		* If the animation is paused it resume it, if the animation is playing it pauses it
+		* If the animation is paused it resumes it, if the animation is playing it pauses it
 		* https://github.com/CascadeCanvas/CascadeCanvas/wiki/animation.togglePause
 		*/
 		this.togglePause = function() {
@@ -4611,7 +4620,7 @@ var ElementList = function(elements, selection){
 
 		/**
 		* void loop()
-		* Makes the animation start from beginning and loop itself forever until pause or done is called
+		* Makes the animation start from beginning and loop itself forever until pause is called
 		* https://github.com/CascadeCanvas/CascadeCanvas/wiki/animation.loop
 		*/
 		this.loop = function() {
