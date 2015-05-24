@@ -3500,6 +3500,10 @@ tiles (string[][]) OBS.: The string is the name of the tile
     };
 
     var transformAnchor = function(target, origin, destination, percentage, config, el) {
+        if (!origin.anchor && !destination.anchor && !el.anchor) {
+            return;
+        }
+
         var oanchor = origin.anchor || el.anchor || {};
         var danchor = destination.anchor || el.anchor || {};
 
