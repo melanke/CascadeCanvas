@@ -651,26 +651,26 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">282</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">177</span>
+<span class="cline-any cline-yes">174</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">181</span>
+<span class="cline-any cline-yes">178</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">181</span>
+<span class="cline-any cline-yes">178</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">214</span>
+<span class="cline-any cline-yes">210</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">49</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">165</span>
+<span class="cline-any cline-yes">161</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">161</span>
+<span class="cline-any cline-yes">157</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">10</span>
@@ -693,7 +693,7 @@
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">151</span>
+<span class="cline-any cline-yes">147</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">60</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -701,11 +701,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">66</span>
+<span class="cline-any cline-yes">63</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">177</span>
+<span class="cline-any cline-yes">174</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -764,13 +764,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">87</span>
+<span class="cline-any cline-yes">84</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">87</span>
+<span class="cline-any cline-yes">84</span>
 <span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">87</span>
+<span class="cline-any cline-yes">84</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1133,7 +1133,7 @@ var Element = function(specs, opts){
         }
     };
 &nbsp;
-    this.toggleLayers = function(toHide, toShow, steps, effect) {
+    this.toggleLayers = function(toHide, toShow, steps, easing) {
 &nbsp;
         <span class="missing-if-branch" title="else path not taken"" >E</span>if (!steps) {
             this.layers[toHide].hidden = true;
@@ -1146,7 +1146,7 @@ var Element = function(specs, opts){
             origin: this.layers[toHide],
             destination: this.layers[toShow],
             steps: steps,
-            effect: effect
+            easing: easing
         }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        var anim = CC.layerAnimation(this, opt);</span>
@@ -1169,14 +1169,14 @@ var Element = function(specs, opts){
 <span class="cstat-no" title="statement not covered" >        return anim;</span>
     };
 &nbsp;
-    this.animateLayer = <span class="fstat-no" title="function not covered" >function(targetLayer, changes, steps, effect) {</span>
+    this.animateLayer = <span class="fstat-no" title="function not covered" >function(targetLayer, changes, steps, easing) {</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        var opt = {</span>
             target: {},
             origin: this.layers[targetLayer],
             destination: {},
             steps: steps,
-            effect: effect
+            easing: easing
         };
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        var anim = CC.layerAnimation(this, opt);</span>
@@ -1215,7 +1215,7 @@ var Element = function(specs, opts){
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat May 23 2015 10:56:46 GMT-0300 (BRT)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun May 24 2015 12:17:05 GMT-0300 (BRT)</div>
 </div>
 
 <script src="../prettify.js"></script>

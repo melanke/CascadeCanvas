@@ -1070,7 +1070,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
 
         if (originVal === destVal) 
         {
-            return originVal;
+            return originVal || defaultV;
         }
 
         var originVal = !CC.isNumber(originVal) ? defaultV 

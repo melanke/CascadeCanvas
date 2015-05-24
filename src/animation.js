@@ -189,8 +189,8 @@
 		};
 
 		/**
-		* Starts the animation from the beginning
 		* void start()
+		* Starts the animation from the beginning
 		* https://github.com/CascadeCanvas/CascadeCanvas/wiki/animation.start
 		*/
 		this.start = function() {
@@ -283,7 +283,7 @@
 
 		var animation = new CC.Animation(function(pct){
 			CC.transformLayer(element, opt, pct);
-		}, opt.steps, opt.effect);
+		}, opt.steps, opt.easing);
 
 		animation.beforeStart(function(){
 
@@ -302,6 +302,10 @@
 
 	};
 
+	/**
+	* Easing functions specify the speed at which an animation progresses at different points within the animation
+	* https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.easing
+	*/
 	CC.easing = {
 		linear: function (t, b, c, d) {
 			return c*t/d + b;

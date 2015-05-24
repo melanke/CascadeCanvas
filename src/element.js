@@ -258,7 +258,7 @@ var Element = function(specs, opts){
         }
     };
 
-    this.toggleLayers = function(toHide, toShow, steps, effect) {
+    this.toggleLayers = function(toHide, toShow, steps, easing) {
 
         if (!steps) {
             this.layers[toHide].hidden = true;
@@ -271,7 +271,7 @@ var Element = function(specs, opts){
             origin: this.layers[toHide],
             destination: this.layers[toShow],
             steps: steps,
-            effect: effect
+            easing: easing
         }
 
         var anim = CC.layerAnimation(this, opt);
@@ -294,14 +294,14 @@ var Element = function(specs, opts){
         return anim;
     };
 
-    this.animateLayer = function(targetLayer, changes, steps, effect) {
+    this.animateLayer = function(targetLayer, changes, steps, easing) {
 
         var opt = {
             target: {},
             origin: this.layers[targetLayer],
             destination: {},
             steps: steps,
-            effect: effect
+            easing: easing
         };
 
         var anim = CC.layerAnimation(this, opt);

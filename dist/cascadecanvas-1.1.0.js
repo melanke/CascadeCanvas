@@ -3212,7 +3212,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
 
         if (originVal === destVal) 
         {
-            return originVal;
+            return originVal || defaultV;
         }
 
         var originVal = !CC.isNumber(originVal) ? defaultV 
@@ -4032,7 +4032,7 @@ var Element = function(specs, opts){
         }
     };
 
-    this.toggleLayers = function(toHide, toShow, steps, effect) {
+    this.toggleLayers = function(toHide, toShow, steps, easing) {
 
         if (!steps) {
             this.layers[toHide].hidden = true;
@@ -4045,7 +4045,7 @@ var Element = function(specs, opts){
             origin: this.layers[toHide],
             destination: this.layers[toShow],
             steps: steps,
-            effect: effect
+            easing: easing
         }
 
         var anim = CC.layerAnimation(this, opt);
@@ -4068,14 +4068,14 @@ var Element = function(specs, opts){
         return anim;
     };
 
-    this.animateLayer = function(targetLayer, changes, steps, effect) {
+    this.animateLayer = function(targetLayer, changes, steps, easing) {
 
         var opt = {
             target: {},
             origin: this.layers[targetLayer],
             destination: {},
             steps: steps,
-            effect: effect
+            easing: easing
         };
 
         var anim = CC.layerAnimation(this, opt);
@@ -4603,8 +4603,8 @@ var ElementList = function(elements, selection){
 		};
 
 		/**
-		* Starts the animation from the beginning
 		* void start()
+		* Starts the animation from the beginning
 		* https://github.com/CascadeCanvas/CascadeCanvas/wiki/animation.start
 		*/
 		this.start = function() {
@@ -4697,7 +4697,7 @@ var ElementList = function(elements, selection){
 
 		var animation = new CC.Animation(function(pct){
 			CC.transformLayer(element, opt, pct);
-		}, opt.steps, opt.effect);
+		}, opt.steps, opt.easing);
 
 		animation.beforeStart(function(){
 
@@ -4716,6 +4716,10 @@ var ElementList = function(elements, selection){
 
 	};
 
+	/**
+	* Easing functions specify the speed at which an animation progresses at different points within the animation
+	* https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.easing
+	*/
 	CC.easing = {
 		linear: function (t, b, c, d) {
 			return c*t/d + b;
