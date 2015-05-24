@@ -1070,7 +1070,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
 
         if (originVal === destVal) 
         {
-            return originVal || defaultV;
+            return originVal;
         }
 
         var originVal = !CC.isNumber(originVal) ? defaultV 
@@ -1244,8 +1244,8 @@ tiles (string[][]) OBS.: The string is the name of the tile
 
     var transformShapeWidthHeightAndRoundedB = function(target, origin, destination, percentage, config) {
 
-        target.w = transformNumber(origin.w, destination.w, percentage, config.FW);
-        target.h = transformNumber(origin.h, destination.h, percentage, config.FH);
+        target.w = transformNumber(origin.w, destination.w, percentage, config.FW) || config.FW;
+        target.h = transformNumber(origin.h, destination.h, percentage, config.FH) || config.FH;
 
         var oshape = !CC.isString(origin.shape) ? "rect" : origin.shape;
         var dshape = !CC.isString(destination.shape) ? "rect" : destination.shape;
@@ -1253,7 +1253,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
         {
             if (oshape === "rect" && dshape === "circle") 
             {
-                target.h = transformNumber(origin.h, destination.w, percentage, config.FH);
+                target.h = transformNumber(origin.h, destination.w, percentage, config.FH) || config.FH;
 
                 var oroundedBorderRadius = !CC.isNumber(origin.roundedBorderRadius) ? 0 
                     : origin.roundedBorderRadius;
