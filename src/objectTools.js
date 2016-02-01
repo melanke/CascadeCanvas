@@ -1,8 +1,5 @@
 /***** OBJECT TOOLS *****/
 
-//depends on typeChecker
-//is dependency of element, elementlist
-
 (function(){
 
     /**

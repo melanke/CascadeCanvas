@@ -1,8 +1,5 @@
 /***** LOOP *****/
 
-//depends on event and drawer
-//is not a internal dependency
-
 (function(){
     var running = false;
     var requestAnimId;

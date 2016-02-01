@@ -1,8 +1,5 @@
 /***** MATH *****/
 
-//doesnt have any dependency
-//is dependency of mouse
-
 (function(){
 
     /**

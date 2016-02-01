@@ -1,8 +1,5 @@
 /***** ELEMENT *****/
 
-//depends on typeChecker, objectTools, event, resource
-//is dependency of elementlist
-
 var creationCount = 0;
 
 /**

@@ -1,8 +1,5 @@
 /***** PROMISE *****/
 
-//depends on drawer, typeChecker
-//is dependency of drawer
-
 (function(){
 
     CC.Color = function(arg) {

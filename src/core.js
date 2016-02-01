@@ -1,8 +1,5 @@
 /***** CORE *****/
 
-//depends on element and elementlist
-//is dependency of all classes
-
 var CC;
 
 (function(){
@@ -17,9 +14,8 @@ var CC;
 
 
     /**
-    * returns a collection of elements that match the string passed as argument
-    * @param selector '*' to select all, '#elementId' to select the element by id 'elementId', 
-    * 'Class1 Class2' to select elements that contain both classes 'Class1' and 'Class2'
+    * Select an Element List by #id, class names or * for all
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC(-)
     */
     CC = function(selector){
 
@@ -88,6 +84,7 @@ var CC;
     * @param specs a string where you can specify the id and the classes it inherit, example:
     * '#elementId Class1 Class2' - it will have id: elementId and will inherit Class1 and Class2
     * @opts an object with params that can be used in the class constructor, will affect all inherited classes
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.new%28-%29
     */
     CC.new = function(specs, opts){
 
@@ -124,6 +121,7 @@ var CC;
     * @param classesStr a string with the name of the classes that will have tis behaviour, example:
     * 'Class1 Class2' - those 2 classes will have this behaviour
     * @param constructor a function that will be used as constructor
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.def%28-%29
     */
     CC.def = function(classesStr, constructor){
         if (!CC.isString(classesStr) || !CC.isFunction(constructor)) {
@@ -149,6 +147,7 @@ var CC;
 
     /**
     * erase all information in CascadeCanvas
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.clear%28-%29
     */
     CC.clear = function() {
 
@@ -163,6 +162,7 @@ var CC;
 
     /**
     * removes an element
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.remove%28-%29
     */
     CC.remove = function(el){
 
@@ -193,6 +193,10 @@ var CC;
 
     };
 
+    /**
+    * Search for elements inside de area specified
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.areaSearch%28-%29
+    */
     CC.areaSearch = function(area) {
 
         if (area == null || area.x === undefined || area.y === undefined || area.w === undefined || area.h == undefined) {
@@ -254,6 +258,10 @@ var CC;
 
     };
 
+    /**
+    * Instantiate a lot of elements at once
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.level%28-%29
+    */
     CC.level = function(description, startX, startY, tileW, tileH) {
 
         if (CC.isObject(description)) {
@@ -276,14 +284,17 @@ var CC;
                 return;
             }
 
+            var resp = [];
+
             var y = startY;
             for (var l in description) {
                 var line = description[l];
                 var x = startX;
+                var respline = [];
 
                 for (var i in line) {
 
-                    CC.new(line[i], {
+                    var el = CC.new(line[i], {
                         x: x,
                         y: y,
                         w: tileW,
@@ -291,11 +302,14 @@ var CC;
                     });
 
                     x += tileW;
+                    respline.push(el);
                 }
 
                 y += tileH;
+                resp.push(respline);
             }
 
+            return resp;
         }
 
     };

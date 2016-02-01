@@ -1,22 +1,6 @@
 /***** MOUSE *****/
 
-
-
 var mouseEnvironmentBuilder = function(canvas, screen) {
-
-    var mouseHistory = []; //current mouse interaction, movement while it is pressed
-    var touchHistory = {}; //current finger interaction, movement while it is touching (separated by an identifier)
-    var fingersPositionWhenFingerAmountChange = {};
-    var currentFingerCount = 0;
-    var lastClickOrTapTime = 0;
-
-    var longPressOrClickTimeout = 1000; //1 second
-    var longPressTimeout = null;
-    var tapOrClickDistance = 32; //32 px
-    var swipeMinSpeed = 0.5;
-    var swipeMinDistance = 200;
-    var swipeMaxDeviation = 100;
-    var doubleClickOrTapTime = 200;
 
     /******** SIMPLE EVENTS ********/
 
@@ -63,10 +47,27 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
         CC.trigger("touchmove", event);
     }, false);
 
+};
+
+(function(){
+
+    var mouseHistory = []; //current mouse interaction, movement while it is pressed
+    var touchHistory = {}; //current finger interaction, movement while it is touching (separated by an identifier)
+    var fingersPositionWhenFingerAmountChange = {};
+    var currentFingerCount = 0;
+    var lastClickOrTapTime = 0;
+
+    var longPressOrClickTimeout = 1000; //1 second
+    var longPressTimeout = null;
+    var tapOrClickDistance = 32; //32 px
+    var swipeMinSpeed = 0.5;
+    var swipeMinDistance = 200;
+    var swipeMaxDeviation = 100;
+    var doubleClickOrTapTime = 200;
 
     /********** COMPLEX EVENTS ***********/
 
-    CC.bind("mousedown", function(event){
+    CC.bind("mousedown._cc_", function(event){
 
         mouseHistory.push({
             type: "start",
@@ -79,7 +80,7 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
     });
 
-    CC.bind("mousemove", function(event){
+    CC.bind("mousemove._cc_", function(event){
         
         if (mouseHistory.length) {
             CC.trigger("mousedrag", event);
@@ -93,7 +94,7 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
         }
     });
 
-    CC.bind("mouseup", function(event){
+    CC.bind("mouseup._cc_", function(event){
 
         for (var a in mouseHistory) {
             if (mouseHistory[a].type === "move") {
@@ -110,7 +111,7 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
 
 
-    CC.bind("touchstart", function(event){
+    CC.bind("touchstart._cc_", function(event){
 
         var touches = event.changedTouches;
 
@@ -145,7 +146,7 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
     });
 
-    CC.bind("touchmove", function(event){
+    CC.bind("touchmove._cc_", function(event){
 
         var touches = event.changedTouches;
 
@@ -166,7 +167,7 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
         }
     });
 
-    CC.bind("touchend", function(event){
+    CC.bind("touchend._cc_", function(event){
 
         var touches = event.changedTouches;
 
@@ -195,6 +196,40 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
             }
         }
     });
+
+    var elclickbinder = function(eventname, nickname){
+
+        CC.bind(eventname+"._cc_", function(event){
+
+            var pos = getEventScreenPosition(event);
+
+            if (!pos) {
+                return;
+            }
+
+            var clicked = CC.findFirstClickableElementInArea(pos.x, pos.y);
+
+            if (clicked && clicked.trigger)
+            {
+                if (!nickname) {
+                    nickname = eventname;
+                }
+
+                clicked.trigger(nickname, event);
+            }
+        });
+    };
+
+    elclickbinder("click");
+    elclickbinder("doubleclick");
+    elclickbinder("longclick");
+    elclickbinder("rightclick");
+    elclickbinder("tap");
+    elclickbinder("doubletap");
+    elclickbinder("longpress");
+    elclickbinder("mousemove", "mousemoveover");
+    elclickbinder("mousedrag", "mousedragover");
+    elclickbinder("touchmove", "touchmoveover");
 
     /******** IDENTIFY GESTURES ***********/
 
@@ -391,6 +426,9 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
         }
 
         if (!isMouse) {
+            var last = history[history.length-1];
+            event.x = last.x;
+            event.y = last.y;
             event.fingerCount = currentFingerCount;
         }
 
@@ -475,42 +513,6 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
         }
     };
 
-    /******* ELEMENTS ********/
-
-    var elclickbinder = function(eventname, nickname){
-
-        CC.bind(eventname, function(event){
-
-            var pos = getEventScreenPosition(event);
-
-            if (!pos) {
-                return;
-            }
-
-            var clicked = CC.findFirstClickableElementInArea(pos.x, pos.y);
-
-            if (clicked && clicked.trigger)
-            {
-                if (!nickname) {
-                    nickname = eventname;
-                }
-
-                clicked.trigger(nickname, event);
-            }
-        });
-    };
-
-    elclickbinder("click");
-    elclickbinder("doubleclick");
-    elclickbinder("longclick");
-    elclickbinder("rightclick");
-    elclickbinder("tap");
-    elclickbinder("doubletap");
-    elclickbinder("longpress");
-    elclickbinder("mousemove", "mousemoveover");
-    elclickbinder("mousedrag", "mousedragover");
-    elclickbinder("touchmove", "touchmoveover");
-
     var getEventScreenPosition = function(event) {
         if (!event.screen || event.screen.htmlId != screen.htmlId)
         {
@@ -563,4 +565,4 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
     };
 
-};
+})();

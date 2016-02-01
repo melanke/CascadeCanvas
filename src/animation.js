@@ -121,7 +121,10 @@
 
 			this.isPlaying = true;
 
-			enterframe = CC.bind("enterframe", function(){
+			CC.bind("enterframe", eventLoop);
+		};
+
+		var eventLoop = function(){
 				var keepGoing = undefined;
 
 				if (currentStep === 0) {
@@ -156,8 +159,7 @@
 				if (pct >= 100 || finishedLoopers >= loopers.length) {
 					self.done();
 				}
-			});
-		};
+			};
 
 		/**
 		* void pause()
@@ -170,9 +172,7 @@
 			}
 
 			this.isPlaying = false;
-			if (enterframe) {
-				enterframe.unbind();
-			}
+			CC.unbind("enterframe", eventLoop);
 		};
 
 		/** 

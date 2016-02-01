@@ -23,9 +23,6 @@
 
 /***** CORE *****/
 
-//depends on element and elementlist
-//is dependency of all classes
-
 var CC;
 
 (function(){
@@ -40,9 +37,8 @@ var CC;
 
 
     /**
-    * returns a collection of elements that match the string passed as argument
-    * @param selector '*' to select all, '#elementId' to select the element by id 'elementId', 
-    * 'Class1 Class2' to select elements that contain both classes 'Class1' and 'Class2'
+    * Select an Element List by #id, class names or * for all
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC(-)
     */
     CC = function(selector){
 
@@ -111,6 +107,7 @@ var CC;
     * @param specs a string where you can specify the id and the classes it inherit, example:
     * '#elementId Class1 Class2' - it will have id: elementId and will inherit Class1 and Class2
     * @opts an object with params that can be used in the class constructor, will affect all inherited classes
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.new%28-%29
     */
     CC.new = function(specs, opts){
 
@@ -147,6 +144,7 @@ var CC;
     * @param classesStr a string with the name of the classes that will have tis behaviour, example:
     * 'Class1 Class2' - those 2 classes will have this behaviour
     * @param constructor a function that will be used as constructor
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.def%28-%29
     */
     CC.def = function(classesStr, constructor){
         if (!CC.isString(classesStr) || !CC.isFunction(constructor)) {
@@ -172,6 +170,7 @@ var CC;
 
     /**
     * erase all information in CascadeCanvas
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.clear%28-%29
     */
     CC.clear = function() {
 
@@ -186,6 +185,7 @@ var CC;
 
     /**
     * removes an element
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.remove%28-%29
     */
     CC.remove = function(el){
 
@@ -216,6 +216,10 @@ var CC;
 
     };
 
+    /**
+    * Search for elements inside de area specified
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.areaSearch%28-%29
+    */
     CC.areaSearch = function(area) {
 
         if (area == null || area.x === undefined || area.y === undefined || area.w === undefined || area.h == undefined) {
@@ -277,6 +281,10 @@ var CC;
 
     };
 
+    /**
+    * Instantiate a lot of elements at once
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.level%28-%29
+    */
     CC.level = function(description, startX, startY, tileW, tileH) {
 
         if (CC.isObject(description)) {
@@ -299,14 +307,17 @@ var CC;
                 return;
             }
 
+            var resp = [];
+
             var y = startY;
             for (var l in description) {
                 var line = description[l];
                 var x = startX;
+                var respline = [];
 
                 for (var i in line) {
 
-                    CC.new(line[i], {
+                    var el = CC.new(line[i], {
                         x: x,
                         y: y,
                         w: tileW,
@@ -314,11 +325,14 @@ var CC;
                     });
 
                     x += tileW;
+                    respline.push(el);
                 }
 
                 y += tileH;
+                resp.push(respline);
             }
 
+            return resp;
         }
 
     };
@@ -329,9 +343,6 @@ var CC;
 
 
 /***** EVENT *****/
-
-//have no dependency
-//is dependency of element, loop, keyboard, mouse, promise
 
 /**
 * builds an enviroment for event handling (internal use)
@@ -370,8 +381,10 @@ var eventEnvironmentBuilder = function(owner, shouldTrigger){
         }
 
         return {
+            action: action,
             unbind: function(){
-                owner.unbind(eventsStr, action);
+                var a = this.action;
+                owner.unbind(eventsStr, a);
             }
         };
 
@@ -490,8 +503,25 @@ var eventEnvironmentBuilder = function(owner, shouldTrigger){
 
     };
 
+    /**
+    * Removes all events, except the events registered by CascadeCanvas itself
+    */
     owner.clearEvents = function(){
-        events = [];
+        for (var evName in events) {
+            var hasCCEv = false;
+
+            for (var namespace in events[evName]) {
+                if (namespace !== "_cc_") {
+                    delete events[evName][namespace];
+                } else {
+                    hasCCEv = true;
+                }
+            }
+
+            if (!hasCCEv) {
+                delete events[evName];
+            }
+        }
     };
 
 };
@@ -502,9 +532,6 @@ eventEnvironmentBuilder(CC);
 
 
 /***** TYPE CHECKER *****/
-
-//have no dependency
-//is dependency of objectTools, element, promise
 
 (function(){
 
@@ -554,9 +581,6 @@ eventEnvironmentBuilder(CC);
 
 
 /***** OBJECT TOOLS *****/
-
-//depends on typeChecker
-//is dependency of element, elementlist
 
 (function(){
 
@@ -702,9 +726,6 @@ eventEnvironmentBuilder(CC);
 
 /***** MATH *****/
 
-//doesnt have any dependency
-//is dependency of mouse
-
 (function(){
 
     /**
@@ -845,9 +866,6 @@ eventEnvironmentBuilder(CC);
 
 /***** PROMISE *****/
 
-//depends on event, typeChecker
-//is dependency of ajax
-
 (function(){
 
     CC.Promise = function() {
@@ -964,23 +982,7 @@ eventEnvironmentBuilder(CC);
 
 /***** MOUSE *****/
 
-
-
 var mouseEnvironmentBuilder = function(canvas, screen) {
-
-    var mouseHistory = []; //current mouse interaction, movement while it is pressed
-    var touchHistory = {}; //current finger interaction, movement while it is touching (separated by an identifier)
-    var fingersPositionWhenFingerAmountChange = {};
-    var currentFingerCount = 0;
-    var lastClickOrTapTime = 0;
-
-    var longPressOrClickTimeout = 1000; //1 second
-    var longPressTimeout = null;
-    var tapOrClickDistance = 32; //32 px
-    var swipeMinSpeed = 0.5;
-    var swipeMinDistance = 200;
-    var swipeMaxDeviation = 100;
-    var doubleClickOrTapTime = 200;
 
     /******** SIMPLE EVENTS ********/
 
@@ -1027,10 +1029,27 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
         CC.trigger("touchmove", event);
     }, false);
 
+};
+
+(function(){
+
+    var mouseHistory = []; //current mouse interaction, movement while it is pressed
+    var touchHistory = {}; //current finger interaction, movement while it is touching (separated by an identifier)
+    var fingersPositionWhenFingerAmountChange = {};
+    var currentFingerCount = 0;
+    var lastClickOrTapTime = 0;
+
+    var longPressOrClickTimeout = 1000; //1 second
+    var longPressTimeout = null;
+    var tapOrClickDistance = 32; //32 px
+    var swipeMinSpeed = 0.5;
+    var swipeMinDistance = 200;
+    var swipeMaxDeviation = 100;
+    var doubleClickOrTapTime = 200;
 
     /********** COMPLEX EVENTS ***********/
 
-    CC.bind("mousedown", function(event){
+    CC.bind("mousedown._cc_", function(event){
 
         mouseHistory.push({
             type: "start",
@@ -1043,7 +1062,7 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
     });
 
-    CC.bind("mousemove", function(event){
+    CC.bind("mousemove._cc_", function(event){
         
         if (mouseHistory.length) {
             CC.trigger("mousedrag", event);
@@ -1057,7 +1076,7 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
         }
     });
 
-    CC.bind("mouseup", function(event){
+    CC.bind("mouseup._cc_", function(event){
 
         for (var a in mouseHistory) {
             if (mouseHistory[a].type === "move") {
@@ -1074,7 +1093,7 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
 
 
-    CC.bind("touchstart", function(event){
+    CC.bind("touchstart._cc_", function(event){
 
         var touches = event.changedTouches;
 
@@ -1109,7 +1128,7 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
     });
 
-    CC.bind("touchmove", function(event){
+    CC.bind("touchmove._cc_", function(event){
 
         var touches = event.changedTouches;
 
@@ -1130,7 +1149,7 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
         }
     });
 
-    CC.bind("touchend", function(event){
+    CC.bind("touchend._cc_", function(event){
 
         var touches = event.changedTouches;
 
@@ -1159,6 +1178,40 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
             }
         }
     });
+
+    var elclickbinder = function(eventname, nickname){
+
+        CC.bind(eventname+"._cc_", function(event){
+
+            var pos = getEventScreenPosition(event);
+
+            if (!pos) {
+                return;
+            }
+
+            var clicked = CC.findFirstClickableElementInArea(pos.x, pos.y);
+
+            if (clicked && clicked.trigger)
+            {
+                if (!nickname) {
+                    nickname = eventname;
+                }
+
+                clicked.trigger(nickname, event);
+            }
+        });
+    };
+
+    elclickbinder("click");
+    elclickbinder("doubleclick");
+    elclickbinder("longclick");
+    elclickbinder("rightclick");
+    elclickbinder("tap");
+    elclickbinder("doubletap");
+    elclickbinder("longpress");
+    elclickbinder("mousemove", "mousemoveover");
+    elclickbinder("mousedrag", "mousedragover");
+    elclickbinder("touchmove", "touchmoveover");
 
     /******** IDENTIFY GESTURES ***********/
 
@@ -1355,6 +1408,9 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
         }
 
         if (!isMouse) {
+            var last = history[history.length-1];
+            event.x = last.x;
+            event.y = last.y;
             event.fingerCount = currentFingerCount;
         }
 
@@ -1439,42 +1495,6 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
         }
     };
 
-    /******* ELEMENTS ********/
-
-    var elclickbinder = function(eventname, nickname){
-
-        CC.bind(eventname, function(event){
-
-            var pos = getEventScreenPosition(event);
-
-            if (!pos) {
-                return;
-            }
-
-            var clicked = CC.findFirstClickableElementInArea(pos.x, pos.y);
-
-            if (clicked && clicked.trigger)
-            {
-                if (!nickname) {
-                    nickname = eventname;
-                }
-
-                clicked.trigger(nickname, event);
-            }
-        });
-    };
-
-    elclickbinder("click");
-    elclickbinder("doubleclick");
-    elclickbinder("longclick");
-    elclickbinder("rightclick");
-    elclickbinder("tap");
-    elclickbinder("doubletap");
-    elclickbinder("longpress");
-    elclickbinder("mousemove", "mousemoveover");
-    elclickbinder("mousedrag", "mousedragover");
-    elclickbinder("touchmove", "touchmoveover");
-
     var getEventScreenPosition = function(event) {
         if (!event.screen || event.screen.htmlId != screen.htmlId)
         {
@@ -1527,15 +1547,12 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
     };
 
-};
+})();
 
 
 
 
 /***** KEYBOARD *****/
-
-//depends on event
-//is not an internal dependency
 
 (function(){
 
@@ -1938,9 +1955,6 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
 /***** RESOURCE *****/
 
-//depends on promise
-//is dependency of element
-
 (function(){
 
     var sprites = {}; //sprites loaded stored by url
@@ -1987,9 +2001,6 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
 
 /***** PROMISE *****/
-
-//depends on drawer, typeChecker
-//is dependency of drawer
 
 (function(){
 
@@ -2142,15 +2153,16 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
 /***** DRAWER *****/
 
-//depends on typeChecker, event, objectTools, resource, color
-//is dependency of loop
-
 (function(){
 
     CC.screens = [];
     CC.tiles = {};
     CC.step = 0; //each loop increments the step, it is used for animation proposes
 
+    /**
+    * Draws everything, called at each gameloop, only useful if the gameloop is stopped.
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.draw%28-%29
+    */
 	CC.draw = function(){
 
         for (var i in CC.screens) {
@@ -2176,6 +2188,11 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
         CC.step++;
 	};
 
+    /**
+    * Configures the screens, it is called at the CC.startLoop( ), only useful 
+    * if you configured the screens after the game loop or if you don't want a game loop.
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.loadScreens%28-%29
+    */
     CC.loadScreens = function() {
 
         if (!CC.screens || !CC.screens.length) {
@@ -2189,8 +2206,8 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
                     context: canvas.getContext("2d"),
                     x: 0,
                     y: 0,
-                    w: canvas.offsetWidth,
-                    h: canvas.offsetHeight,
+                    w: canvas.width,
+                    h: canvas.height,
                     setCenter: setCenter
                 };
 
@@ -2216,8 +2233,6 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
                     continue;
                 }
 
-                mouseEnvironmentBuilder(canvas, s);
-
                 if (!s.context) {
 
                     s.context = canvas.getContext('2d');
@@ -2241,6 +2256,7 @@ var mouseEnvironmentBuilder = function(canvas, screen) {
 
                 if (!s.setCenter) {
                     s.setCenter = setCenter;
+                    mouseEnvironmentBuilder(canvas, s);
                 }
 
             };
@@ -2299,6 +2315,7 @@ shape ('rect', 'circle', 'text', number[]) default: 'rect'
 text (string) default: null
 font
 	size (number) default: 10
+    align ('start', 'end', 'center', 'left', 'right') default: 'start'
 	baseline ('alphabetic', 'top', 'hanging', 'middle', 'ideographic', 'bottom') default: 'top'
 	style ('normal', 'italic', 'oblique') default: 'normal'
 	weight ('normal', 'bold', 'bolder', 'lighter', '100', '200', '300', '400', '500', '600', '700', '800', '900') default: normal
@@ -2470,9 +2487,10 @@ tiles (string[][]) OBS.: The string is the name of the tile
         }
 
         config.offsetX = layr.offsetX || 0,
-        config.offsetY = layr.offsetY || 0,
-        config.FW = layr.w || config.EW, //final W
-        config.FH = layr.h || config.EH; //final H
+        config.offsetY = layr.offsetY || 0;
+
+        config.FW = CC.isNumber(layr.w) ? layr.w : config.EW, //final W
+        config.FH = CC.isNumber(layr.h) ? layr.h : config.EH; //final H
 
         if (layr.shape === "circle") {
             config.FH = config.FW;
@@ -2656,6 +2674,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
         } else if (layr.shape === "text" && CC.isString(layr.text) && layr.text.length) {
 
             scr.context.font = config.font;
+            scr.context.textAlign = layr.font.align;
             scr.context.textBaseline = layr.font.baseline;
             drawText(layr, config, scr, function(line, x, y) { scr.context.fillText(line, x, y); });
 
@@ -2704,6 +2723,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
         } else if (layr.shape === "text" && CC.isString(layr.text) && layr.text.length) {
 
             scr.context.font = config.font;
+            scr.context.textAlign = layr.font.align;
             scr.context.textBaseline = layr.font.baseline;
             drawText(layr, config, scr, function(line, x, y) { scr.context.strokeText(line, x, y); });
 
@@ -3030,6 +3050,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
         layr.font.weight = layr.font.weight || "";
         layr.font.size = layr.font.size || 10;
         layr.font.family = layr.font.family || "sans-serif";
+        layr.font.align = layr.font.align || "start";
         layr.font.baseline = layr.font.baseline || "top";
         return layr.font.style + b + layr.font.weight + b + layr.font.size + px + b + layr.font.family;
     };
@@ -3071,6 +3092,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
         } else if (layr.shape === "text" && CC.isString(layr.text) && layr.text.length) {
 
             scr.context.font = config.font;
+            scr.context.textAlign = layr.font.align;
             scr.context.textBaseline = layr.font.baseline;
 
             var pathText = scr.context.pathText ||
@@ -3171,7 +3193,8 @@ tiles (string[][]) OBS.: The string is the name of the tile
     /* @melanke - 30/11/2014 ****************************************************************/
 
     /**
-    * creates a transition step between origin and destination and put it on target
+    * Makes a transition between 2 layers, making a halfway based on the percentage
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.transformLayer(-)
     */
     CC.transformLayer = function (element, opt, percentage) {
 
@@ -3437,6 +3460,21 @@ tiles (string[][]) OBS.: The string is the name of the tile
 
         target.font.size = transformNumber(ofont.size, dfont.size, percentage, 0);
 
+        //align
+        var oalign = !CC.isString(ofont.align) ? "start" : ofont.align;
+        var dalign = !CC.isString(dfont.align) ? "start" : dfont.align;
+        if (oalign !== dalign) {
+            if (percentage < 50) {
+                target.font.align = ofont.align;
+            } else {
+                target.font.align = dfont.align;
+            }
+        }
+        else
+        {
+            target.font.align = ofont.align;
+        }
+
         //baseline
         var obaseline = !CC.isString(ofont.baseline) ? "top" : ofont.baseline;
         var dbaseline = !CC.isString(dfont.baseline) ? "top" : dfont.baseline;
@@ -3689,9 +3727,6 @@ tiles (string[][]) OBS.: The string is the name of the tile
 
 /***** LOOP *****/
 
-//depends on event and drawer
-//is not a internal dependency
-
 (function(){
     var running = false;
     var requestAnimId;
@@ -3777,9 +3812,6 @@ tiles (string[][]) OBS.: The string is the name of the tile
 
 
 /***** ELEMENT *****/
-
-//depends on typeChecker, objectTools, event, resource
-//is dependency of elementlist
 
 var creationCount = 0;
 
@@ -4119,10 +4151,6 @@ var Element = function(specs, opts){
 
 
 /***** ELEMENTLIST *****/
-
-//depends on element, objectTools
-//is not a internal dependency
-
 
 CC.fn = {}; //functions elementlist implement (global methods)
 
@@ -4539,7 +4567,10 @@ var ElementList = function(elements, selection){
 
 			this.isPlaying = true;
 
-			enterframe = CC.bind("enterframe", function(){
+			CC.bind("enterframe", eventLoop);
+		};
+
+		var eventLoop = function(){
 				var keepGoing = undefined;
 
 				if (currentStep === 0) {
@@ -4574,8 +4605,7 @@ var ElementList = function(elements, selection){
 				if (pct >= 100 || finishedLoopers >= loopers.length) {
 					self.done();
 				}
-			});
-		};
+			};
 
 		/**
 		* void pause()
@@ -4588,9 +4618,7 @@ var ElementList = function(elements, selection){
 			}
 
 			this.isPlaying = false;
-			if (enterframe) {
-				enterframe.unbind();
-			}
+			CC.unbind("enterframe", eventLoop);
 		};
 
 		/** 

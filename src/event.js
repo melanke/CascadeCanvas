@@ -1,8 +1,5 @@
 /***** EVENT *****/
 
-//have no dependency
-//is dependency of element, loop, keyboard, mouse, promise
-
 /**
 * builds an enviroment for event handling (internal use)
 */
@@ -40,8 +37,10 @@ var eventEnvironmentBuilder = function(owner, shouldTrigger){
         }
 
         return {
+            action: action,
             unbind: function(){
-                owner.unbind(eventsStr, action);
+                var a = this.action;
+                owner.unbind(eventsStr, a);
             }
         };
 
@@ -160,8 +159,25 @@ var eventEnvironmentBuilder = function(owner, shouldTrigger){
 
     };
 
+    /**
+    * Removes all events, except the events registered by CascadeCanvas itself
+    */
     owner.clearEvents = function(){
-        events = [];
+        for (var evName in events) {
+            var hasCCEv = false;
+
+            for (var namespace in events[evName]) {
+                if (namespace !== "_cc_") {
+                    delete events[evName][namespace];
+                } else {
+                    hasCCEv = true;
+                }
+            }
+
+            if (!hasCCEv) {
+                delete events[evName];
+            }
+        }
     };
 
 };

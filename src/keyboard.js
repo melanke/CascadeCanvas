@@ -1,8 +1,5 @@
 /***** KEYBOARD *****/
 
-//depends on event
-//is not an internal dependency
-
 (function(){
 
     var keyPressed = {} //keys pressed

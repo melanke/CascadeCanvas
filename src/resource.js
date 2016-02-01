@@ -1,8 +1,5 @@
 /***** RESOURCE *****/
 
-//depends on promise
-//is dependency of element
-
 (function(){
 
     var sprites = {}; //sprites loaded stored by url

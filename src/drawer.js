@@ -1,14 +1,15 @@
 /***** DRAWER *****/
 
-//depends on typeChecker, event, objectTools, resource, color
-//is dependency of loop
-
 (function(){
 
     CC.screens = [];
     CC.tiles = {};
     CC.step = 0; //each loop increments the step, it is used for animation proposes
 
+    /**
+    * Draws everything, called at each gameloop, only useful if the gameloop is stopped.
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.draw%28-%29
+    */
 	CC.draw = function(){
 
         for (var i in CC.screens) {
@@ -34,6 +35,11 @@
         CC.step++;
 	};
 
+    /**
+    * Configures the screens, it is called at the CC.startLoop( ), only useful 
+    * if you configured the screens after the game loop or if you don't want a game loop.
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.loadScreens%28-%29
+    */
     CC.loadScreens = function() {
 
         if (!CC.screens || !CC.screens.length) {
@@ -47,8 +53,8 @@
                     context: canvas.getContext("2d"),
                     x: 0,
                     y: 0,
-                    w: canvas.offsetWidth,
-                    h: canvas.offsetHeight,
+                    w: canvas.width,
+                    h: canvas.height,
                     setCenter: setCenter
                 };
 
@@ -74,8 +80,6 @@
                     continue;
                 }
 
-                mouseEnvironmentBuilder(canvas, s);
-
                 if (!s.context) {
 
                     s.context = canvas.getContext('2d');
@@ -99,6 +103,7 @@
 
                 if (!s.setCenter) {
                     s.setCenter = setCenter;
+                    mouseEnvironmentBuilder(canvas, s);
                 }
 
             };
@@ -157,6 +162,7 @@ shape ('rect', 'circle', 'text', number[]) default: 'rect'
 text (string) default: null
 font
 	size (number) default: 10
+    align ('start', 'end', 'center', 'left', 'right') default: 'start'
 	baseline ('alphabetic', 'top', 'hanging', 'middle', 'ideographic', 'bottom') default: 'top'
 	style ('normal', 'italic', 'oblique') default: 'normal'
 	weight ('normal', 'bold', 'bolder', 'lighter', '100', '200', '300', '400', '500', '600', '700', '800', '900') default: normal
@@ -328,9 +334,10 @@ tiles (string[][]) OBS.: The string is the name of the tile
         }
 
         config.offsetX = layr.offsetX || 0,
-        config.offsetY = layr.offsetY || 0,
-        config.FW = layr.w || config.EW, //final W
-        config.FH = layr.h || config.EH; //final H
+        config.offsetY = layr.offsetY || 0;
+
+        config.FW = CC.isNumber(layr.w) ? layr.w : config.EW, //final W
+        config.FH = CC.isNumber(layr.h) ? layr.h : config.EH; //final H
 
         if (layr.shape === "circle") {
             config.FH = config.FW;
@@ -514,6 +521,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
         } else if (layr.shape === "text" && CC.isString(layr.text) && layr.text.length) {
 
             scr.context.font = config.font;
+            scr.context.textAlign = layr.font.align;
             scr.context.textBaseline = layr.font.baseline;
             drawText(layr, config, scr, function(line, x, y) { scr.context.fillText(line, x, y); });
 
@@ -562,6 +570,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
         } else if (layr.shape === "text" && CC.isString(layr.text) && layr.text.length) {
 
             scr.context.font = config.font;
+            scr.context.textAlign = layr.font.align;
             scr.context.textBaseline = layr.font.baseline;
             drawText(layr, config, scr, function(line, x, y) { scr.context.strokeText(line, x, y); });
 
@@ -888,6 +897,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
         layr.font.weight = layr.font.weight || "";
         layr.font.size = layr.font.size || 10;
         layr.font.family = layr.font.family || "sans-serif";
+        layr.font.align = layr.font.align || "start";
         layr.font.baseline = layr.font.baseline || "top";
         return layr.font.style + b + layr.font.weight + b + layr.font.size + px + b + layr.font.family;
     };
@@ -929,6 +939,7 @@ tiles (string[][]) OBS.: The string is the name of the tile
         } else if (layr.shape === "text" && CC.isString(layr.text) && layr.text.length) {
 
             scr.context.font = config.font;
+            scr.context.textAlign = layr.font.align;
             scr.context.textBaseline = layr.font.baseline;
 
             var pathText = scr.context.pathText ||
@@ -1029,7 +1040,8 @@ tiles (string[][]) OBS.: The string is the name of the tile
     /* @melanke - 30/11/2014 ****************************************************************/
 
     /**
-    * creates a transition step between origin and destination and put it on target
+    * Makes a transition between 2 layers, making a halfway based on the percentage
+    * https://github.com/CascadeCanvas/CascadeCanvas/wiki/CC.transformLayer(-)
     */
     CC.transformLayer = function (element, opt, percentage) {
 
@@ -1294,6 +1306,21 @@ tiles (string[][]) OBS.: The string is the name of the tile
         var dfont = destination.font || {};
 
         target.font.size = transformNumber(ofont.size, dfont.size, percentage, 0);
+
+        //align
+        var oalign = !CC.isString(ofont.align) ? "start" : ofont.align;
+        var dalign = !CC.isString(dfont.align) ? "start" : dfont.align;
+        if (oalign !== dalign) {
+            if (percentage < 50) {
+                target.font.align = ofont.align;
+            } else {
+                target.font.align = dfont.align;
+            }
+        }
+        else
+        {
+            target.font.align = ofont.align;
+        }
 
         //baseline
         var obaseline = !CC.isString(ofont.baseline) ? "top" : ofont.baseline;

@@ -1,8 +1,5 @@
 /***** TYPE CHECKER *****/
 
-//have no dependency
-//is dependency of objectTools, element, promise
-
 (function(){
 
     /**

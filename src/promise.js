@@ -1,8 +1,5 @@
 /***** PROMISE *****/
 
-//depends on event, typeChecker
-//is dependency of ajax
-
 (function(){
 
     CC.Promise = function() {
